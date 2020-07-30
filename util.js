@@ -1,0 +1,65 @@
+import {titleCase} from "title-case";
+import {parsePhoneNumberFromString} from "libphonenumber-js";
+
+const convertStr = (input) => {
+    if(!input) {
+        return null;
+    }
+    return titleCase(input.trim());
+};
+
+const strEquals = (s1, s2) => {
+    return s1.trim().toLowerCase() === s2.trim().toLowerCase();
+};
+
+const nestedGet = (object, key) => {
+    let parts = key.split('.');
+
+    for(let part of parts) {
+        if(object === null || typeof object === 'undefined') {
+            return null;
+        }
+
+        object = object[part];
+    }
+    
+    if(typeof object === 'undefined') {
+        return null;
+    }
+
+    return object;
+};
+
+const nestedSet = (object, key, value) => {
+    let parts = key.split('.');
+
+    for(let i = 0; i < parts.length; i++) {
+        if(i < parts.length - 1) {
+            if(object[parts[i]] === null || typeof object[parts[i]] === 'undefined') {
+                object[parts[i]] = {};
+            }
+            object = object[parts[i]];
+        } else {
+            object[parts[i]] = value;
+        }
+    }
+};
+
+const tryParseTelephone = (telephone) => {
+    if(typeof telephone !== 'string') {
+        return null;
+    }
+    let result = parsePhoneNumberFromString(telephone, 'AU');
+    if(typeof result === 'undefined' || !result.isValid()) {
+        // manual fix for telephone numbers like 9123 4567 which are considered valid by most Australians
+        let localPhone = telephone.replace(' ', '');
+        if(localPhone.length === 8 && localPhone.match(/^\d+$/)) {
+            return telephone;
+        }
+        return null;
+    } else {
+        return result.formatNational();
+    }
+};
+
+export { strEquals, convertStr, nestedGet, nestedSet, tryParseTelephone };

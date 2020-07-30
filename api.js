@@ -2,7 +2,7 @@ import { NotificationProgrammatic as Notification } from 'buefy';
 
 const getCSRFToken = () => {
     return document.querySelector('meta[name="csrf-token"]').attributes.content.nodeValue;
-}
+};
 
 class FetchBuilder {
     constructor(method) {
@@ -61,9 +61,6 @@ class FetchBuilder {
         return window.fetch(url.toString(), this)
             .then(respond.checkStatus)
             .then(respond.json)
-            .then((data) => {
-                return data;
-            })
             .then(respond.checkNotificationStatus)
             .then(callback)
             .catch(respond.handleAPIError);
@@ -112,20 +109,6 @@ const respond = {
         }
     },
 
-// handle network errors
-// if(error.response.readyState === 0) {
-//     console.error(response);
-// }
-// Oxygen.error.jsonParseError = function(error, text) {
-//     console.error('Error while parsing JSON: ', error);
-//     console.log('Raw response: ', text);
-//
-//     new Notification({
-//         content: 'Could not parse JSON response. This is a bug.',
-//         status: 'failed'
-//     });
-// };
-
     handleAPIError: function (error) {
         if(error.data) {
             handleAPIError(error.data);
@@ -167,6 +150,12 @@ function morphToNotification(data) {
 
 const handleAPIError = function(content) {
     console.error('API error: ', content);
+    if(content.authenticated === false) {
+        // server is telling us to login again
+        window.location.replace('/oxygen/auth/login?intended=' + window.location);
+        return;
+    }
+    
     if(content.content && content.status) {
         Notification.open(morphToNotification(content));
     } else if(content.error) {
