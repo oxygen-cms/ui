@@ -78,7 +78,7 @@ export default {
                     this.paginatedItems.loading = false;
                     this.paginatedItems.itemsPerPage = data.itemsPerPage;
                     for(let item of this.paginatedItems.items) {
-                        this.geoIP(item.ip);
+                        this.geoIP(item.ipAddress);
                     }
                 })
         },
@@ -92,13 +92,13 @@ export default {
                 .then((data) => {
                     this.ipInfo.set(ip, data);
                     for(let item of this.paginatedItems.items) {
-                        if(item.ip === ip) {
+                        if(item.ipAddress === ip) {
                             item.geolocationInfo = this.getGeolocationInfo(data);
                         }
                     }
                 }).catch(() => {
                     for(let item of this.paginatedItems.items) {
-                        if(item.ip === ip) {
+                        if(item.ipAddress === ip) {
                             item.geolocationInfo = '';
                         }
                     }
