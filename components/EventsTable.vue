@@ -27,7 +27,7 @@
                     <span v-else>{{ props.row.startDate ? new Date(props.row.startDate).toDateString() : '?'}} - {{ props.row.endDate ? new Date(props.row.endDate).toDateString() : '?'}}</span>
                 </b-table-column>
 
-                <b-table-column label="Actions">
+                <b-table-column>
                     <slot name="actions" v-bind:row="props.row"></slot>
                 </b-table-column>
             </template>
