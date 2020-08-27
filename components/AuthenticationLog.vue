@@ -51,6 +51,8 @@ import {FetchBuilder} from "../api";
 import Internationalize from "../Internationalize";
 import UAParser from 'ua-parser-js';
 
+const IP_INFO_LOADING = 'loading';
+
 export default {
     name: "AuthenticationLog",
     data() {
@@ -84,25 +86,28 @@ export default {
         },
         geoIP(ip) {
             if(this.ipInfo.has(ip)) {
+                if(this.ipInfo.get(ip) !== IP_INFO_LOADING) {
+                    this.updateInfoForIp(ip);
+                }
                 return;
             }
-            this.ipInfo.set(ip, 'loading');
+            this.ipInfo.set(ip, IP_INFO_LOADING);
             FetchBuilder.default('post')
                 .fetch('/oxygen/api/auth/ip-location/' + ip, (data) => data)
                 .then((data) => {
                     this.ipInfo.set(ip, data);
-                    for(let item of this.paginatedItems.items) {
-                        if(item.ipAddress === ip) {
-                            item.geolocationInfo = this.getGeolocationInfo(data);
-                        }
-                    }
+                    this.updateInfoForIp(ip);
                 }).catch(() => {
-                    for(let item of this.paginatedItems.items) {
-                        if(item.ipAddress === ip) {
-                            item.geolocationInfo = '';
-                        }
-                    }
+                    this.updateInfoForIp(ip);
                 })
+        },
+        updateInfoForIp(ip) {
+            let geolocationInfo = this.ipInfo.has(ip) ? this.getGeolocationInfo(this.ipInfo.get(ip)) : '';
+            for(let item of this.paginatedItems.items) {
+                if(item.ipAddress === ip) {
+                    item.geolocationInfo = geolocationInfo;
+                }
+            }
         },
         parseUserAgent(userAgent) {
             let ua = new UAParser(userAgent);
