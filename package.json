@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Various utilities for UI-building in Vue.js",
   "main": "none",
-  "repository": "https://github.com/oxygen-cms/utils",
+  "repository": "https://github.com/oxygen-cms/ui-utils",
   "author": "Chris Chamberlain <chris@chamberlain.id.au>",
   "license": "MIT",
   "private": false
