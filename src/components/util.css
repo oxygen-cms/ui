@@ -1,0 +1,16 @@
+.full-height-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.full-height {
+    flex: 1;
+    position: relative;
+}
+
+.transition-element.is-loading {
+    margin: 2rem auto;
+    max-width: 100%;
+    width: 30em;
+}

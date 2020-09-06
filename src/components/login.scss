@@ -1,0 +1,72 @@
+.login-fullscreen {
+   min-height: 100vh;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   background-attachment: fixed;
+}
+
+.login-welcome {
+   margin-bottom: 2.5rem;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+
+.login-justify-content {
+   display: flex;
+   flex-direction: row-reverse;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.login-input-align-left {
+   max-width: 20em;
+}
+
+.login-fullscreen .container {
+   flex-grow: 0;
+   margin: 2rem auto;
+   width: 25em;
+}
+
+.login-fullscreen .container.is-wider {
+   width: 90%;
+   max-width: 55em;
+}
+
+.login-logo {
+   max-width: 100%;
+}
+
+.login-theme-autumn {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/autumn-min.jpg');
+}
+
+.login-theme-city {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/city-min.jpg');
+}
+
+.login-theme-clouds {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/clouds-min.jpg');
+}
+
+.login-theme-coast {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/coast-min.jpg');
+}
+
+.login-theme-speckles {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/speckles-min.jpg');
+}
+
+.login-theme-trees {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/trees-min.jpg');
+}
+
+.login-theme-waves {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/waves.jpg');
+}
+
+.login-theme-yosemite {
+   background-image: url('/vendor/oxygen/ui-theme/img/bg/yosemite-falls-min.jpg');
+}
