@@ -1,6 +1,6 @@
 <template>
     <div class="app-container">
-        <MainNav />
+        <MainNav :items="navbarItems" />
         <div class="transition-container">
         <transition name="slide-left">
             <router-view></router-view>
@@ -15,6 +15,7 @@
         name: "App",
         props: {
             appTitle: { type: String },
+            navbarItems: { type: Array },
             defaultRouteTitle: { type: String }
         },
         components: { MainNav },
