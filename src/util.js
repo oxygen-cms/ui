@@ -1,5 +1,5 @@
-import {titleCase} from "title-case";
-import {parsePhoneNumberFromString} from "libphonenumber-js";
+import { titleCase } from "title-case";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const convertStr = (input) => {
     if(!input) {

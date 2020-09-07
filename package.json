@@ -1,6 +1,6 @@
 {
   "name": "@oxygen-cms/utils",
-  "version": "1.0.",
+  "version": "1.0.2",
   "description": "Various utilities for UI-building in Vue.js",
   "main": "none",
   "repository": {

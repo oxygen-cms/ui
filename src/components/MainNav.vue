@@ -7,7 +7,8 @@
                 </b-navbar-item>
             </template>
             <template slot="start">
-                <b-navbar-item v-for="item in items" v-if="can(item.permissionKey)" :href="item.href ? item.href : null" :tag="item.tag ? item.tag : 'a'">
+                <b-navbar-item v-for="item in items" :key="item.permissionKey" v-if="can(item.permissionKey)"
+                               :href="item.href ? item.href : null" :tag="item.tag ? item.tag : 'a'" :to="item.to ? item.to : null">
                     <b-icon
                         :icon="item.icon"
                         size="is-small" class="push-right">

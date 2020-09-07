@@ -4,7 +4,7 @@
 
 const isDefined = (o) => {
     return typeof o !== 'undefined' && o !== null;
-}
+};
 
 class UserPreferences {
 
