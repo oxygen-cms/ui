@@ -58,7 +58,7 @@ class UserPreferences {
             i++;
         }
 
-        return o;
+        return !!o;
     }
 }
 
