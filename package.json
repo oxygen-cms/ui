@@ -1,9 +1,12 @@
 {
   "name": "@oxygen-cms/utils",
-  "version": "1.0.0",
+  "version": "1.0.",
   "description": "Various utilities for UI-building in Vue.js",
   "main": "none",
-  "repository": "https://github.com/oxygen-cms/ui-utils",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxygen-cms/ui-utils.git"
+  },
   "author": "Chris Chamberlain <chris@chamberlain.id.au>",
   "license": "MIT",
   "private": false,
@@ -25,8 +28,7 @@
     "vue": "^2.6.11",
     "vue-loader": "^15.9.3",
     "vue-router": "^3.3.4",
-    "vue-template-compiler": "^2.6.11",
-    "webpack-bundle-analyzer": "^3.8.0"
+    "vue-template-compiler": "^2.6.11"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -43,5 +45,9 @@
   },
   "scripts": {
     "test": "jest"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/oxygen-cms/ui-utils/issues"
+  },
+  "homepage": "https://github.com/oxygen-cms/ui-utils#readme"
 }
