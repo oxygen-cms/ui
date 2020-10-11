@@ -1,6 +1,6 @@
 {
   "name": "@oxygen-cms/ui",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Various utilities for UI-building in Vue.js",
   "main": "none",
   "repository": {
@@ -34,16 +34,23 @@
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.0",
+    "babel-jest": "^26.5.2",
+    "babel-polyfill": "^6.26.0",
     "css-loader": "^3.5.1",
     "jest": "^26.5.2",
     "node-sass": "^4.13.1",
     "postcss-loader": "^3.0.0",
+    "regenerator-runtime": "^0.13.7",
     "sass-loader": "^8.0.2",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.11"
   },
   "scripts": {
     "test": "jest"
+  },
+  "jest": {
+    "verbose": true,
+    "setupFiles": ["./jest.init.js"]
   },
   "bugs": {
     "url": "https://github.com/oxygen-cms/ui/issues"

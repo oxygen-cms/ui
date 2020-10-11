@@ -14,9 +14,8 @@
                 </b-menu-list>
 
                 <b-menu-list label="System Preferences">
-
                     <b-menu-item tag="a" href="/oxygen/preferences/system.admin/update" label="Administration"></b-menu-item>
-                    <b-menu-item tag="a" href="/oxygen/preferences/modules.auth" label="Authentication"></b-menu-item>
+                    <b-menu-item tag="a" href="/oxygen/preferences/modules.auth/update" label="Authentication"></b-menu-item>
                     <b-menu-item tag="a" href="/oxygen/preferences/modules.pages/update" label="Pages"></b-menu-item>
                     <b-menu-item tag="a" href="/oxygen/preferences/modules.people/update" label="People"></b-menu-item>
                     <b-menu-item expanded>
