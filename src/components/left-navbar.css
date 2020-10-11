@@ -1,0 +1,29 @@
+.left-navigation-container {
+    padding: 0 !important;
+    position: relative;
+    height: 100%;
+    /*padding: 0;*/
+    /*position: relative;*/
+    /*display: flex;*/
+}
+
+.left-navigation {
+    padding: 2rem;
+    position: fixed;
+    background-color: #333;
+    box-shadow: 0 0 10px inset #000;
+    /* why these parameters? well because they JUST WORK */
+    /* I avoided using top/left attributes because they seemed to create jolts with page transitions */
+    width: 20%;
+    margin-top: -6rem;
+    height: calc(100vh + 6rem);
+    padding-top: 7.5rem;
+}
+
+.column.pad {
+    padding: 2rem;
+}
+
+.is-pulled-right {
+    margin-left: auto;
+}

@@ -19,7 +19,7 @@
 
             <template slot="end">
                 <b-navbar-dropdown :label="userName" class="rhs-dropdown">
-                    <b-navbar-item href="/oxygen/auth/profile">
+                    <b-navbar-item tag="router-link" to="/auth/profile">
                         Profile
                     </b-navbar-item>
                     <b-navbar-item href="/oxygen/auth/preferences">

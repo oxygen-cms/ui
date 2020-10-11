@@ -28,12 +28,12 @@ class FetchBuilder {
         this.setContentType('application/json')
         return this;
     }
-    
+
     withQueryParams(queryParams) {
         this.queryParams = queryParams;
         return this;
     }
-    
+
     withCsrfToken() {
         this.headers.set('X-CSRF-TOKEN', getCSRFToken());
         return this;
@@ -45,7 +45,7 @@ class FetchBuilder {
     }
 
     fetch(url, callback) {
-        
+
         let v = { ... this};
         v.queryParams = undefined;
 
@@ -82,7 +82,7 @@ const respond = {
     json: function (response) {
         return response.json();
     },
-    
+
     checkNotificationStatus: function (data) {
         if(data.status && data.status === 'failed') {
             let error = new Error();
@@ -155,7 +155,7 @@ const handleAPIError = function(content) {
         window.location.replace('/oxygen/auth/login?intended=' + window.location);
         return;
     }
-    
+
     if(content.content && content.status) {
         Notification.open(morphToNotification(content));
     } else if(content.error) {

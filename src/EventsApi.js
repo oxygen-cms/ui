@@ -1,4 +1,4 @@
-import  { CrudApi }  from './CrudApi';
+import  { CrudApi } from './CrudApi';
 
 export default class EventsApi extends CrudApi {
 
