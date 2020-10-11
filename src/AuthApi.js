@@ -2,29 +2,45 @@ import {FetchBuilder} from "./api.js";
 import {API_ROOT} from "./CrudApi";
 
 export default class AuthApi {
-    static logout(callback) {
-        return FetchBuilder
+    static async logout() {
+        let data = await FetchBuilder
             .default('post')
-            .fetch('/oxygen/auth/logout', (data) => {
-                window.location = data.redirect;
-                callback(data);
-            });
+            .fetch('/oxygen/auth/logout');
+        window.location = data.redirect;
+        return data;
     }
 
-    static userDetails(callback) {
-        return FetchBuilder
+    static async userDetails() {
+        if(AuthApi.currentUserDetails) {
+            return AuthApi.currentUserDetails;
+        }
+
+        let response = await FetchBuilder
             .default('get')
-            .fetch(API_ROOT + 'auth/user', callback);
+            .fetch(API_ROOT + 'auth/user');
+
+        AuthApi.currentUserDetails = response;
+
+        return response;
     }
 
-    static changePassword(oldPass, newPass, newPassAgain, callback) {
+    static async changePassword(oldPass, newPass, newPassAgain) {
+        const params = {
+            oldPassword: oldPass,
+            password: newPass,
+            passwordConfirmation: newPassAgain
+        };
+        console.log(params);
         return FetchBuilder
             .default('post')
-            .withJson({
-                oldPassword: oldPass,
-                password: newPass,
-                passwordConfirmation: newPassAgain
-            })
-            .fetch(API_ROOT + 'auth/change-password', callback);
+            .withJson(params)
+            .fetch(API_ROOT + 'auth/change-password');
+    }
+
+    static async terminateAccount() {
+        return FetchBuilder
+            .default('post')
+            .withJson(params)
+            .fetch(API_ROOT + 'auth/terminate-account');
     }
 }

@@ -1,18 +1,21 @@
 // this is a straight JavaScript port of the `Oxygen\Auth\Permissions\SimplePermissionsSystem` PHP class.
 
+import AuthApi from "./AuthApi";
+
 export default class UserPermissions {
 
     static get ROOT_CONTENT_TYPE() { return '_root'; }
     static get ACCESS_KEY() { return '_access'; }
     static get PARENT_KEY() { return '_parent'; }
     static get MAX_INHERITANCE_DEPTH() { return 10; }
-    
-    static has(key) {
-        if(!window.OXYGEN_USER_PERMISSIONS) {
+
+    static async has(key) {
+        let permissions;
+        try {
+            permissions = (await AuthApi.userDetails()).user.permissions;
+        } catch(e) {
             return false;
         }
-
-        let permissions = window.OXYGEN_USER_PERMISSIONS;
 
         let keyParts = key.split('.');
 
@@ -28,14 +31,14 @@ export default class UserPermissions {
         // check for the specific key
         return this.hasKey(permissions, keyParts[0], keyParts[1]);
     }
-    
+
     static hasKey(permissions, contentType, key, depth = 0) {
         // check we're not looping
         if(depth > this.MAX_INHERITANCE_DEPTH) {
             console.warn('Max Depth Reached due to Inheritance Loop');
             return false;
         }
-        
+
         // if the key is set then we will return the value of it
         if(contentType in permissions && key in permissions[contentType]) {
             return permissions[contentType][key];
@@ -50,5 +53,5 @@ export default class UserPermissions {
             return false;
         }
     }
-    
+
 }

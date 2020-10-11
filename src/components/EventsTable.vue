@@ -17,20 +17,18 @@
                 aria-previous-label="Previous page"
                 aria-page-label="Page"
                 aria-current-label="Current page">
-            <template slot-scope="props">
-                <b-table-column label="Title">
-                    {{ props.row.title }}
-                </b-table-column>
+            <b-table-column label="Title" v-slot="props">
+                {{ props.row.title }}
+            </b-table-column>
 
-                <b-table-column label="Display on website">
-                    <em v-if="!props.row.active">No</em>
-                    <span v-else>{{ props.row.startDate ? new Date(props.row.startDate).toDateString() : '?'}} - {{ props.row.endDate ? new Date(props.row.endDate).toDateString() : '?'}}</span>
-                </b-table-column>
+            <b-table-column label="Display on website" v-slot="props">
+                <em v-if="!props.row.active">No</em>
+                <span v-else>{{ props.row.startDate ? new Date(props.row.startDate).toDateString() : '?'}} - {{ props.row.endDate ? new Date(props.row.endDate).toDateString() : '?'}}</span>
+            </b-table-column>
 
-                <b-table-column>
-                    <slot name="actions" v-bind:row="props.row"></slot>
-                </b-table-column>
-            </template>
+            <b-table-column v-slot="props">
+                <slot name="actions" v-bind:row="props.row"></slot>
+            </b-table-column>
 
             <template slot="empty">
                 <section class="section">

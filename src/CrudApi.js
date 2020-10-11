@@ -9,7 +9,7 @@ class CrudApi {
     static getResourceName() {
         throw new Error();
     }
-    
+
     static getResourceRoot() {
         return API_ROOT + this.getResourceName();
     }
@@ -20,7 +20,7 @@ class CrudApi {
         return m;
     }
 
-    static list(inTrash, page, searchQuery, callback) {
+    static async list(inTrash, page, searchQuery) {
         return FetchBuilder
             .default('get')
             .withQueryParams({
@@ -28,77 +28,74 @@ class CrudApi {
                 trash: (inTrash ? 'true' : 'false'),
                 q: (searchQuery !== null && searchQuery !== '' ) ? searchQuery : null
             })
-            .fetch(
-                this.getResourceRoot(),
-                callback
-            );
+            .fetch(this.getResourceRoot());
     }
 
-    static create(data, callback) {
+    static async create(data) {
         return FetchBuilder
             .default('post')
             .withJson(this.prepareModelForAPI(data))
-            .fetch(this.getResourceRoot(), callback);
+            .fetch(this.getResourceRoot());
     }
 
-    static get(id, callback) {
+    static async get(id) {
         return FetchBuilder
             .default('get')
-            .fetch(this.getResourceRoot() + '/' + id, callback);
+            .fetch(this.getResourceRoot() + '/' + id);
     }
 
-    static update(data, callback) {
+    static async update(data) {
         let id = data.id;
         return FetchBuilder
             .default('put')
             .withJson(this.prepareModelForAPI(data))
-            .fetch(this.getResourceRoot() + '/' + id, callback);
+            .fetch(this.getResourceRoot() + '/' + id);
     }
 
-    static delete(id, callback) {
+    static async delete(id) {
         return FetchBuilder
             .default('delete')
-            .fetch(this.getResourceRoot() + '/' + id, callback);
+            .fetch(this.getResourceRoot() + '/' + id);
     }
 
-    static search(searchQuery, callback) {
+    static async search(searchQuery) {
         return FetchBuilder.default('post')
             .withJson(searchQuery)
-            .fetch(this.getResourceRoot() + '/search', callback);
+            .fetch(this.getResourceRoot() + '/search');
     }
 
-    static forceDelete(id, callback) {
+    static async forceDelete(id, callback) {
         return FetchBuilder
             .default('delete')
-            .fetch(this.getResourceRoot() + '/' + id + '?force=true', callback);
+            .fetch(this.getResourceRoot() + '/' + id + '?force=true');
     }
 
-    static confirmForceDelete(id, callback) {
-        Dialog.confirm({
-            message: 'Are you sure you want to delete this record forever?',
-            onConfirm: () => {
-                this.forceDelete(id, (data) => {
-                    Toast.open(morphToNotification(data));
-                    callback(data);
-                });
-            }
-        });
-    }
-
-    static restoreAndNotify(id, callback) {
-        return FetchBuilder
-            .default('post')
-            .fetch(this.getResourceRoot() + '/' + id + '/restore', (data) => {
-                Toast.open(morphToNotification(data));
-                callback(data);
+    static async confirmForceDelete(id) {
+        const promise = new Promise((resolve, reject) => {
+            Dialog.confirm({
+                message: 'Are you sure you want to delete this record forever?',
+                onConfirm: resolve
             });
+        });
+
+        let result = await promise;
+        let data = await this.forceDelete(id);
+        Toast.open(morphToNotification(data));
+        return data;
     }
 
-    static deleteAndNotify(id, callback) {
-        this.delete(id, (data) => {
-            Toast.open(morphToNotification(data));
-            callback(data);
-        });
+    static async restoreAndNotify(id) {
+        let data = await FetchBuilder
+            .default('post')
+            .fetch(this.getResourceRoot() + '/' + id + '/restore');
+        Toast.open(morphToNotification(data));
+        return data;
+    }
+
+    static async deleteAndNotify(id) {
+        let data = await this.delete(id);
+        Toast.open(morphToNotification(data));
+        return data;
     }
 }
 

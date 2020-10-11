@@ -1,10 +1,16 @@
 import UserPreferences from './UserPreferences';
+import AuthApi from "./AuthApi";
 
 test('gets and sets preferences', () => {
-    UserPreferences.preferences = {
-        foo: 'bar',
-        baz: { qux: 'fub '}
+    AuthApi.currentUserDetails = {
+        user: {
+            preferences: {
+                foo: 'bar',
+                baz: { qux: 'fub '}
+            }
+        }
     };
+
     expect(UserPreferences.get('foo')).toBe('bar');
     expect(UserPreferences.has('fob')).toBe(false);
     expect(UserPreferences.has('baz.qux')).toBe(true);

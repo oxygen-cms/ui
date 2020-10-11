@@ -18,12 +18,15 @@
             </template>
 
             <template slot="end">
-                <b-navbar-dropdown :label="userName" class="rhs-dropdown">
+                <b-navbar-dropdown class="rhs-dropdown">
+                    <template slot="label">
+                        <transition name="fade-out-in">
+                            <span v-if="user" style="min-width: 8em; text-align: right">{{ user.fullName }}</span>
+                            <b-skeleton width="8em" v-else></b-skeleton>
+                        </transition>
+                    </template>
                     <b-navbar-item tag="router-link" to="/auth/profile">
                         Profile
-                    </b-navbar-item>
-                    <b-navbar-item href="/oxygen/auth/preferences">
-                        Preferences
                     </b-navbar-item>
                     <b-navbar-item v-if="can('auth.getAuthenticationLogEntries')"  tag="router-link" to="/auth/login-log">
                         Login Log
@@ -46,24 +49,28 @@
             items: Array
         },
         data() {
-            return {}
+            return {
+                user: null,
+            }
+        },
+        created() {
+            this.fetchData()
         },
         computed: {
-            userName() {
-                return window.OXYGEN_USER_NAME;
-            },
             logoSrc() {
                 return window.OXYGEN_VENDOR_LOGO_SRC;
             }
         },
         methods: {
-            can(key) {
-                return UserPermissions.has(key);
+            async fetchData() {
+                this.user = (await AuthApi.userDetails()).user;
+            },
+            async can(key) {
+                return await UserPermissions.has(key);
             },
             signOut() {
                 console.log('user requested logout');
-                AuthApi.logout((_) => {
-                });
+                AuthApi.logout();
             }
         }
     }

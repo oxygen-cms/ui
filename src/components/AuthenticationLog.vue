@@ -1,7 +1,5 @@
 <template>
     <div>
-        <section class="section">
-            <div class="container">
                 <div class="box">
                     <h1 class="title">Logins, Logouts &amp; Login Attempts</h1>
 
@@ -13,36 +11,32 @@
                              :total="paginatedItems.totalItems"
                              :row-class="(row) => row.type === 1 ? 'is-danger' : ''"
                              @page-change="paginatedItems.currentPage = $event">
-                        <template slot-scope="props">
-                            <b-table-column label="IP Address">
-                                {{ props.row.ipAddress }}
-                            </b-table-column>
+                        <b-table-column label="IP Address" v-slot="props">
+                            {{ props.row.ipAddress }}
+                        </b-table-column>
 
-                            <b-table-column label="Location">
-                                <div v-if="props.row.geolocationInfo !== null">
-                                    {{ props.row.geolocationInfo }}
-                                </div>
-                                <b-progress v-else></b-progress>
+                        <b-table-column label="Location" v-slot="props">
+                            <div v-if="props.row.geolocationInfo !== null">
+                                {{ props.row.geolocationInfo }}
+                            </div>
+                            <b-progress v-else></b-progress>
 
-                            </b-table-column>
+                        </b-table-column>
 
-                            <b-table-column label="Browser / Device">
-                                <b-tooltip :label="props.row.userAgent" animated>{{ parseUserAgent(props.row.userAgent) }}</b-tooltip>
+                        <b-table-column label="Browser / Device" v-slot="props">
+                            <b-tooltip :label="props.row.userAgent" animated>{{ parseUserAgent(props.row.userAgent) }}</b-tooltip>
 
-                            </b-table-column>
+                        </b-table-column>
 
-                            <b-table-column label="Time">
-                                {{ Internationalize.formatDateTime(props.row.timestamp) }}
-                            </b-table-column>
+                        <b-table-column label="Time" v-slot="props">
+                            {{ Internationalize.formatDateTime(props.row.timestamp) }}
+                        </b-table-column>
 
-                            <b-table-column label="Type">
-                                {{ getInfo(props.row) }}
-                            </b-table-column>
-                         </template>
+                        <b-table-column label="Type" v-slot="props">
+                            {{ getInfo(props.row) }}
+                        </b-table-column>
                     </b-table>
                 </div>
-            </div>
-        </section>
     </div>
 </template>
 
@@ -69,20 +63,20 @@ export default {
         this.fetchData()
     },
     methods: {
-        fetchData() {
+        async fetchData() {
             this.paginatedItems.loading = true;
-            FetchBuilder
+            let data = await FetchBuilder
                 .default('post')
                 .withQueryParams({ page: this.paginatedItems.currentPage })
-                .fetch('/oxygen/api/auth/login-log-entries', (data) => {
-                    this.paginatedItems.items = data.items.map((item) => { return { geolocationInfo: this.ipInfo.get(item.ip), ...item } });
-                    this.paginatedItems.totalItems = data.totalItems;
-                    this.paginatedItems.loading = false;
-                    this.paginatedItems.itemsPerPage = data.itemsPerPage;
-                    for(let item of this.paginatedItems.items) {
-                        this.geoIP(item.ipAddress);
-                    }
-                })
+                .fetch('/oxygen/api/auth/login-log-entries');
+
+            this.paginatedItems.items = data.items.map((item) => { return { geolocationInfo: this.ipInfo.get(item.ip), ...item } });
+            this.paginatedItems.totalItems = data.totalItems;
+            this.paginatedItems.loading = false;
+            this.paginatedItems.itemsPerPage = data.itemsPerPage;
+            for(let item of this.paginatedItems.items) {
+                this.geoIP(item.ipAddress);
+            }
         },
         geoIP(ip) {
             if(this.ipInfo.has(ip)) {

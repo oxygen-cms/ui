@@ -44,26 +44,43 @@ class FetchBuilder {
         return this;
     }
 
-    fetch(url, callback) {
-
+    async fetch(url) {
         let v = { ... this};
         v.queryParams = undefined;
 
         if(this.queryParams) {
             url = new URL(url, window.location);
             for(let name in this.queryParams) {
-                if(this.queryParams[name] !== null) {
+                if(this.queryParams.hasOwnProperty(name) && this.queryParams[name] !== null) {
                     url.searchParams.append(name, this.queryParams[name]);
                 }
             }
         }
 
-        return window.fetch(url.toString(), this)
-            .then(respond.checkStatus)
-            .then(respond.json)
-            .then(respond.checkNotificationStatus)
-            .then(callback)
-            .catch(respond.handleAPIError);
+        let response = await window.fetch(url.toString(), this);
+
+        let data;
+        try {
+            data = await response.json();
+        } catch(e) {
+            console.error('Response did not contain valid JSON: ', e);
+
+            Notification.open({
+                message: 'Whoops, looks like something went wrong.',
+                type: 'is-warning'
+            });
+
+            throw e;
+        }
+
+        if(!response.ok || (data.status && data.status === 'failed')) {
+            handleAPIError(data);
+            let e = new Error();
+            e.response = data;
+            throw e;
+        } else {
+            return data;
+        }
     }
 
     static default(method) {
@@ -73,63 +90,6 @@ class FetchBuilder {
             .wantJson();
     }
 }
-
-const respond = {
-    text: function (response) {
-        return response.text();
-    },
-
-    json: function (response) {
-        return response.json();
-    },
-
-    checkNotificationStatus: function (data) {
-        if(data.status && data.status === 'failed') {
-            let error = new Error();
-            error.data = data;
-            throw error;
-        } else {
-            return data;
-        }
-    },
-
-    checkStatus: function (response) {
-        if (response.ok) {
-            return response;
-        } else {
-            let error = new Error();
-            error.response = response;
-            throw error;
-            /*.catch(error => {
-                response.text().then(text => {
-                    Oxygen.error.jsonParseError(error, text);
-                });
-                throw error;
-            })*/
-        }
-    },
-
-    handleAPIError: function (error) {
-        if(error.data) {
-            handleAPIError(error.data);
-        } else if (error.response && error.response instanceof Response) {
-            error.response
-                .json()
-                .then(handleAPIError)
-                .catch(err => {
-                    console.error('Error response did not contain valid JSON: ', err);
-
-                    Notification.open({
-                        message: 'Whoops, looks like something went wrong.',
-                        type: 'is-warning'
-                    });
-                });
-        } else {
-            throw error;
-        }
-    }
-
-};
 
 function statusToBueify(status) {
     if(status === 'failed') {
@@ -179,4 +139,4 @@ const handleAPIError = function(content) {
     }
 };
 
-export { FetchBuilder, respond, handleAPIError, morphToNotification, getCSRFToken };
+export { FetchBuilder, morphToNotification, getCSRFToken };

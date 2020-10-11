@@ -1,30 +1,22 @@
 import UserProfile from "./components/UserProfile.vue";
 import ViewProfile from "./components/ViewProfile.vue";
-import EditProfile from "./components/EditProfile.vue";
-import ChangePassword from "./components/ChangePassword.vue";
+import AuthenticationLog from "./components/AuthenticationLog.vue";
 
 const UserProfileRoutes = {
-    path: '/auth/profile',
+    path: '/auth',
     component: UserProfile,
     children: [
         {
-            path: '/',
+            path: 'profile',
             name: 'auth.viewProfile',
             component: ViewProfile,
             meta: { title: 'View Profile' }
         },
         {
-            path: 'edit',
-            name: 'auth.editProfile',
-            component: EditProfile,
-            meta: { title: 'Edit Profile' }
+            path: 'login-log',
+            component: AuthenticationLog,
+            meta: { title: 'Logins & Login Attempts' }
         },
-        {
-            path: 'change-password',
-            name: 'auth.changePassword',
-            component: ChangePassword,
-            meta: { title: 'Change Password' }
-        }
     ]
 };
 

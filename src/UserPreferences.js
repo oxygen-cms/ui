@@ -2,18 +2,20 @@
 //             Notification
 // ================================
 
+import AuthApi from "./AuthApi";
+
 const isDefined = (o) => {
     return typeof o !== 'undefined' && o !== null;
 };
 
 class UserPreferences {
 
-    static get(key, fallback = null) {
-        if(!isDefined(UserPreferences.preferences)) {
-            UserPreferences.preferences = window.OXYGEN_USER_PREFERENCES;
-        }
-        
-        var o = UserPreferences.preferences;
+    static async getPrefs() {
+        return (await AuthApi.userDetails()).user.preferences;
+    }
+
+    static async get(key, fallback = null) {
+        let o = await this.getPrefs();
 
         if(!isDefined(o)) {
             return fallback;
@@ -38,11 +40,8 @@ class UserPreferences {
         }
     }
 
-    static has(key) {
-        if(!isDefined(UserPreferences.preferences)) {
-            UserPreferences.preferences = window.OXYGEN_USER_PREFERENCES;
-        }
-        var o = UserPreferences.preferences;
+    static async has(key) {
+        let o = await this.getPrefs();
 
         if(!o) {
             return false;
