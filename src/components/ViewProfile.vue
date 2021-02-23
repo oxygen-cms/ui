@@ -34,9 +34,10 @@
                     </div>
                     <div class="level level-left"><strong class="mr-2">Joined: </strong>
                         <transition name="fade-out-in">
-                    <span v-if="user">{{ joined }}, on {{ joinedAbs }}</span>
-                    <b-skeleton width="20%" :animated="true" v-else />
-                    </transition></div>
+                            <span v-if="user">{{ joined }}, on {{ joinedAbs }}</span>
+                            <b-skeleton width="20%" :animated="true" v-else />
+                        </transition>
+                    </div>
                 </div>
 
                 <b-notification :closable="false">
@@ -152,7 +153,13 @@ export default {
         async changePassword() {
             let response = await AuthApi.changePassword(this.oldPassword, this.newPassword, this.newPasswordAgain);
             this.$buefy.toast.open(morphToNotification(response));
-            this.isChangePasswordModalActive = false;
+            if(response.status === 'success') {
+                this.oldPassword = '';
+                this.newPassword = '';
+                this.newPasswordAgain = '';
+                this.isChangePasswordModalActive = false;
+            }
+
         },
         deleteAccount() {
             this.$buefy.dialog.confirm({

@@ -5,7 +5,7 @@ export default class AuthApi {
     static async logout() {
         let data = await FetchBuilder
             .default('post')
-            .fetch('/oxygen/auth/logout');
+            .fetch(API_ROOT + 'auth/logout');
         window.location = data.redirect;
         return data;
     }

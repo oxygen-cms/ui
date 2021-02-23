@@ -1,12 +1,13 @@
 <template>
     <div>
         <b-navbar>
-            <template slot="brand">
+            <template #brand>
                 <b-navbar-item tag="router-link" to="/dashboard">
-                    <img :src="logoSrc" alt="Oxygen CMS" />
+                    <slot name="vendor-logo"></slot>
                 </b-navbar-item>
             </template>
-            <template slot="start">
+
+            <template #start>
                 <b-navbar-item v-for="item in items" :key="item.permissionKey" v-if="can(item.permissionKey)"
                                :href="item.href ? item.href : null" :tag="item.tag ? item.tag : 'a'" :to="item.to ? item.to : null">
                     <b-icon
@@ -17,9 +18,9 @@
                 </b-navbar-item>
             </template>
 
-            <template slot="end">
+            <template #end>
                 <b-navbar-dropdown class="rhs-dropdown">
-                    <template slot="label">
+                    <template v-slot:label>
                         <transition name="fade-out-in">
                             <span v-if="user" style="min-width: 8em; text-align: right">{{ user.fullName }}</span>
                             <b-skeleton width="8em" v-else></b-skeleton>
@@ -28,7 +29,7 @@
                     <b-navbar-item tag="router-link" to="/auth/profile">
                         Profile
                     </b-navbar-item>
-                    <b-navbar-item v-if="can('auth.getAuthenticationLogEntries')"  tag="router-link" to="/auth/login-log">
+                    <b-navbar-item v-if="can('auth.getAuthenticationLogEntries')" tag="router-link" to="/auth/login-log">
                         Login Log
                     </b-navbar-item>
                     <b-navbar-item @click="signOut">
@@ -45,8 +46,17 @@
     import UserPermissions from '../UserPermissions';
 
     export default {
+        name: 'main-nav',
         props: {
-            items: Array
+            items: Array,
+            allExternalLinks: {
+                type: Boolean,
+                default: false
+            },
+            externalLinkPrefix: {
+                type: String,
+                default: null
+            }
         },
         data() {
             return {
@@ -55,11 +65,6 @@
         },
         created() {
             this.fetchData()
-        },
-        computed: {
-            logoSrc() {
-                return window.OXYGEN_VENDOR_LOGO_SRC;
-            }
         },
         methods: {
             async fetchData() {

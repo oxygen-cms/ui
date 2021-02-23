@@ -8,27 +8,27 @@
                 </b-menu-list>
 
                 <b-menu-list label="User Preferences">
-                    <b-menu-item tag="a" href="/oxygen/preferences/user.general/update" label="Configure font-size"></b-menu-item>
-                    <b-menu-item tag="a" href="/oxygen/preferences/user.editor/update" label="Configure editor appearance"></b-menu-item>
-                    <b-menu-item tag="a" href="/oxygen/preferences/user.editor/update" label="Configure page loading"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/user.general/update" label="Configure font-size"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/user.editor/update" label="Configure editor appearance"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/user.pageLoad/update" label="Configure page loading"></b-menu-item>
                 </b-menu-list>
 
                 <b-menu-list label="System Preferences">
-                    <b-menu-item tag="a" href="/oxygen/preferences/system.admin/update" label="Administration"></b-menu-item>
-                    <b-menu-item tag="a" href="/oxygen/preferences/modules.auth/update" label="Authentication"></b-menu-item>
-                    <b-menu-item tag="a" href="/oxygen/preferences/modules.pages/update" label="Pages"></b-menu-item>
-                    <b-menu-item tag="a" href="/oxygen/preferences/modules.people/update" label="People"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/system.admin/update" label="Administration"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/modules.auth/update" label="Authentication"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/modules.pages/update" label="Pages"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/modules.people/update" label="People"></b-menu-item>
                     <b-menu-item expanded>
                         <template slot="label" slot-scope="props">
                             Appearance
                             <b-icon class="is-pulled-right" :icon="props.expanded ? 'chevron-circle-down' : 'chevron-circle-up'"></b-icon>
                         </template>
-                        <b-menu-item tag="a" href="/oxygen/preferences/appearance.themes/update" label="Themes"></b-menu-item>
-                        <b-menu-item tag="a" href="/oxygen/preferences/appearance.admin/update" label="Administration"></b-menu-item>
-                        <b-menu-item tag="a" href="/oxygen/preferences/appearance.auth/update" label="Login and Logout"></b-menu-item>
-                        <b-menu-item tag="a" href="/oxygen/preferences/appearance.pages/update" label="Pages and Partials"></b-menu-item>
-                        <b-menu-item tag="a" href="/oxygen/preferences/appearance.events/update" label="Events"></b-menu-item>
-                        <b-menu-item tag="a" href="/oxygen/preferences/appearance.emails/update" label="Emails"></b-menu-item>
+                        <b-menu-item tag="router-link" to="/preferences/appearance.themes/update" label="Themes"></b-menu-item>
+                        <b-menu-item tag="router-link" to="/preferences/appearance.admin/update" label="Administration"></b-menu-item>
+                        <b-menu-item tag="router-link" to="/preferences/appearance.auth/update" label="Login and Logout"></b-menu-item>
+                        <b-menu-item tag="router-link" to="/preferences/appearance.pages/update" label="Pages and Partials"></b-menu-item>
+                        <b-menu-item tag="router-link" to="/preferences/appearance.events/update" label="Events"></b-menu-item>
+                        <b-menu-item tag="router-link" to="/preferences/appearance.emails/update" label="Emails"></b-menu-item>
                     </b-menu-item>
                 </b-menu-list>
             </b-menu>

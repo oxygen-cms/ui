@@ -1,7 +1,11 @@
 import { NotificationProgrammatic as Notification } from 'buefy';
 
 const getCSRFToken = () => {
-    return document.querySelector('meta[name="csrf-token"]').attributes.content.nodeValue;
+    let csrfTokenNode = document.querySelector('meta[name="csrf-token"]');
+    if(csrfTokenNode === null) {
+        return null;
+    }
+    return csrfTokenNode.attributes.content.nodeValue;
 };
 
 class FetchBuilder {
@@ -103,7 +107,8 @@ function morphToNotification(data) {
     return {
         message: data.content,
         type: statusToBueify(data.status),
-        indefinite: true,
+        indefinite: !data.duration,
+        duration: data.duration,
         queue: false
     };
 }

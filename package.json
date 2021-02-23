@@ -50,7 +50,9 @@
   },
   "jest": {
     "verbose": true,
-    "setupFiles": ["./jest.init.js"]
+    "setupFiles": [
+      "./jest.init.js"
+    ]
   },
   "bugs": {
     "url": "https://github.com/oxygen-cms/ui/issues"

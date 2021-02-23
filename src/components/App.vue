@@ -1,6 +1,10 @@
 <template>
     <div class="app-container">
-        <MainNav :items="navbarItems" />
+        <MainNav :items="navbarItems">
+            <template v-slot:vendor-logo>
+                <slot name="navbar-vendor-logo"></slot>
+            </template>
+        </MainNav>
         <div class="transition-container">
         <transition name="slide-left">
             <router-view></router-view>
@@ -16,7 +20,7 @@
         props: {
             appTitle: { type: String },
             navbarItems: { type: Array },
-            defaultRouteTitle: { type: String }
+            defaultRouteTitle: String
         },
         components: { MainNav },
         created() {

@@ -1,42 +1,42 @@
 <template>
     <div>
-                <div class="box">
-                    <h1 class="title">Logins, Logouts &amp; Login Attempts</h1>
+        <div class="box">
+            <h1 class="title">Logins, Logouts &amp; Login Attempts</h1>
 
-                    <b-table :data="paginatedItems.items === null ? [] : paginatedItems.items"
-                             :loading="paginatedItems.loading"
-                             paginated
-                             backend-pagination
-                             :per-page="paginatedItems.itemsPerPage"
-                             :total="paginatedItems.totalItems"
-                             :row-class="(row) => row.type === 1 ? 'is-danger' : ''"
-                             @page-change="paginatedItems.currentPage = $event">
-                        <b-table-column label="IP Address" v-slot="props">
-                            {{ props.row.ipAddress }}
-                        </b-table-column>
+            <b-table :data="paginatedItems.items === null ? [] : paginatedItems.items"
+                     :loading="paginatedItems.loading"
+                     paginated
+                     backend-pagination
+                     :per-page="paginatedItems.itemsPerPage"
+                     :total="paginatedItems.totalItems"
+                     :row-class="(row) => row.type === 1 ? 'is-danger' : ''"
+                     @page-change="paginatedItems.currentPage = $event">
+                <b-table-column label="IP Address" v-slot="props">
+                    {{ props.row.ipAddress }}
+                </b-table-column>
 
-                        <b-table-column label="Location" v-slot="props">
-                            <div v-if="props.row.geolocationInfo !== null">
-                                {{ props.row.geolocationInfo }}
-                            </div>
-                            <b-progress v-else></b-progress>
+                <b-table-column label="Location" v-slot="props">
+                    <div v-if="props.row.geolocationInfo !== null">
+                        {{ props.row.geolocationInfo }}
+                    </div>
+                    <b-progress v-else></b-progress>
 
-                        </b-table-column>
+                </b-table-column>
 
-                        <b-table-column label="Browser / Device" v-slot="props">
-                            <b-tooltip :label="props.row.userAgent" animated>{{ parseUserAgent(props.row.userAgent) }}</b-tooltip>
+                <b-table-column label="Browser / Device" v-slot="props">
+                    <b-tooltip :label="props.row.userAgent" animated>{{ parseUserAgent(props.row.userAgent) }}</b-tooltip>
 
-                        </b-table-column>
+                </b-table-column>
 
-                        <b-table-column label="Time" v-slot="props">
-                            {{ Internationalize.formatDateTime(props.row.timestamp) }}
-                        </b-table-column>
+                <b-table-column label="Time" v-slot="props">
+                    {{ Internationalize.formatDateTime(props.row.timestamp) }}
+                </b-table-column>
 
-                        <b-table-column label="Type" v-slot="props">
-                            {{ getInfo(props.row) }}
-                        </b-table-column>
-                    </b-table>
-                </div>
+                <b-table-column label="Type" v-slot="props">
+                    {{ getInfo(props.row) }}
+                </b-table-column>
+            </b-table>
+        </div>
     </div>
 </template>
 
@@ -111,6 +111,9 @@ export default {
             return browser.name + ' ' + browser.version + ' on ' + ua.getOS().name + ', ' + (device.vendor ? device.vendor : '(unknown device)');
         },
         getGeolocationInfo(data) {
+            if(!data.city || !data.country_name) {
+                return 'unknown';
+            }
             return data.city + ', ' + data.country_name;
         },
         getInfo(data) {
