@@ -1,5 +1,4 @@
 import {FetchBuilder} from './api.js';
-import { DialogProgrammatic as Dialog, ToastProgrammatic as Toast } from 'buefy';
 import {morphToNotification} from "./api";
 
 const API_ROOT = '/oxygen/api/';
@@ -70,9 +69,9 @@ class CrudApi {
             .fetch(this.getResourceRoot() + '/' + id + '?force=true');
     }
 
-    static async confirmForceDelete(id) {
+    static async confirmForceDelete(id, $buefy) {
         const promise = new Promise((resolve, reject) => {
-            Dialog.confirm({
+            $buefy.dialog.confirm({
                 message: 'Are you sure you want to delete this record forever?',
                 onConfirm: resolve
             });
@@ -80,21 +79,21 @@ class CrudApi {
 
         let result = await promise;
         let data = await this.forceDelete(id);
-        Toast.open(morphToNotification(data));
+        $buefy.toast.open(morphToNotification(data));
         return data;
     }
 
-    static async restoreAndNotify(id) {
+    static async restoreAndNotify(id, $buefy) {
         let data = await FetchBuilder
             .default('post')
             .fetch(this.getResourceRoot() + '/' + id + '/restore');
-        Toast.open(morphToNotification(data));
+        $buefy.toast.open(morphToNotification(data));
         return data;
     }
 
-    static async deleteAndNotify(id) {
+    static async deleteAndNotify(id, $buefy) {
         let data = await this.delete(id);
-        Toast.open(morphToNotification(data));
+        $buefy.toast.open(morphToNotification(data));
         return data;
     }
 }

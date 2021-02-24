@@ -2,9 +2,6 @@
     padding: 0 !important;
     position: relative;
     height: 100%;
-    /*padding: 0;*/
-    /*position: relative;*/
-    /*display: flex;*/
 }
 
 .left-navigation {
@@ -26,4 +23,30 @@
 
 .is-pulled-right {
     margin-left: auto;
+}
+
+/deep/ .router-link-exact-active {
+    background-color: white;
+    color: #333;
+}
+
+/deep/ .menu-list a {
+    margin: 0 -2em;
+    padding-left: 2.75em;
+    padding-right: 2.75em;
+    border-radius: 0;
+}
+
+/deep/ .router-link-exact-active:hover {
+    background-color: white;
+    color: #333;
+}
+
+/deep/ .menu .menu-list a {
+    display: flex;
+    align-items: center;
+}
+
+/deep/ .menu .menu-list a .icon {
+    margin-right: 10px;
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container">
+    <div class="full-height-container">
         <MainNav :items="navbarItems">
             <template v-slot:vendor-logo>
                 <slot name="navbar-vendor-logo"></slot>
@@ -43,15 +43,9 @@
 </script>
 
 <style scoped>
-    .app-container {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
+    @import 'util.css';
 </style>
 
 <style lang="scss">
-
-    @import './app.scss';
-
+    @import '../styles/app.scss';
 </style>

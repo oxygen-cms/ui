@@ -81,27 +81,18 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+    @import '../styles/variables.scss';
+
     .push-right {
-        margin-right: 10px;
+        margin-right: 0.7rem;
     }
 
     .rhs-dropdown {
         margin-right: 1rem;
     }
 
-    >>> .menu .menu-list a {
-        display: flex;
-        align-items: center;
+    .navbar a.router-link-exact-active {
+        color: $primary;
     }
-
-    >>> .menu .menu-list a .icon {
-        margin-right: 10px;
-    }
-</style>
-
-<style>
-
-
-
 </style>

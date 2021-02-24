@@ -48,31 +48,6 @@ export default {
 }
 </script>
 
-<style scoped>
-    @import './left-navbar.css';
-    >>> .router-link-exact-active {
-      background-color: white;
-      color: #333;
-    }
-
-    >>> .menu-list a {
-      margin: 0 -2em;
-      padding-left: 2.75em;
-      padding-right: 2.75em;
-      border-radius: 0;
-    }
-
-    >>> .router-link-exact-active:hover {
-      background-color: white;
-      color: #333;
-    }
-
-    >>> .menu .menu-list a {
-      display: flex;
-      align-items: center;
-    }
-
-    >>> .menu .menu-list a .icon {
-      margin-right: 10px;
-    }
+<style scoped lang="scss">
+    @import 'left-navbar.scss';
 </style>

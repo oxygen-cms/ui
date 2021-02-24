@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Buefy from "buefy";
-import './components/app.scss';
+import './styles/app.scss';
+import './styles/login.scss';
 import {morphToNotification} from "./api";
 
 Vue.use(Buefy, {
