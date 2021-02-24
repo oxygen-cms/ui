@@ -5,6 +5,14 @@ const API_ROOT = '/oxygen/api/';
 
 class CrudApi {
 
+    constructor($buefy) {
+        this.$buefy = $buefy;
+    }
+
+    request(method) {
+        return FetchBuilder.default(this.$buefy, method);
+    }
+
     static getResourceName() {
         throw new Error();
     }
@@ -19,59 +27,53 @@ class CrudApi {
         return m;
     }
 
-    static async list(inTrash, page, searchQuery) {
-        return FetchBuilder
-            .default('get')
+    async list(inTrash, page, searchQuery) {
+        return this.request('get')
             .withQueryParams({
                 page: page,
                 trash: (inTrash ? 'true' : 'false'),
                 q: (searchQuery !== null && searchQuery !== '' ) ? searchQuery : null
             })
-            .fetch(this.getResourceRoot());
+            .fetch(this.constructor.getResourceRoot());
     }
 
-    static async create(data) {
-        return FetchBuilder
-            .default('post')
-            .withJson(this.prepareModelForAPI(data))
-            .fetch(this.getResourceRoot());
+    async create(data) {
+        return this.request('post')
+            .withJson(this.constructor.prepareModelForAPI(data))
+            .fetch(this.constructor.getResourceRoot());
     }
 
-    static async get(id) {
-        return FetchBuilder
-            .default('get')
-            .fetch(this.getResourceRoot() + '/' + id);
+    async get(id) {
+        return this.request('get')
+            .fetch(this.constructor.getResourceRoot() + '/' + id);
     }
 
-    static async update(data) {
+    async update(data) {
         let id = data.id;
-        return FetchBuilder
-            .default('put')
-            .withJson(this.prepareModelForAPI(data))
-            .fetch(this.getResourceRoot() + '/' + id);
+        return this.request('put')
+            .withJson(this.constructor.prepareModelForAPI(data))
+            .fetch(this.constructor.getResourceRoot() + '/' + id);
     }
 
-    static async delete(id) {
-        return FetchBuilder
-            .default('delete')
-            .fetch(this.getResourceRoot() + '/' + id);
+    async delete(id) {
+        return this.request('delete')
+            .fetch(this.constructor.getResourceRoot() + '/' + id);
     }
 
-    static async search(searchQuery) {
-        return FetchBuilder.default('post')
+    async search(searchQuery) {
+        return this.request('post')
             .withJson(searchQuery)
-            .fetch(this.getResourceRoot() + '/search');
+            .fetch(this.constructor.getResourceRoot() + '/search');
     }
 
-    static async forceDelete(id, callback) {
-        return FetchBuilder
-            .default('delete')
-            .fetch(this.getResourceRoot() + '/' + id + '?force=true');
+    async forceDelete(id, callback) {
+        return this.request('delete')
+            .fetch(this.constructor.getResourceRoot() + '/' + id + '?force=true');
     }
 
-    static async confirmForceDelete(id, $buefy) {
+    async confirmForceDelete(id) {
         const promise = new Promise((resolve, reject) => {
-            $buefy.dialog.confirm({
+            this.$buefy.dialog.confirm({
                 message: 'Are you sure you want to delete this record forever?',
                 onConfirm: resolve
             });
@@ -79,21 +81,20 @@ class CrudApi {
 
         let result = await promise;
         let data = await this.forceDelete(id);
-        $buefy.toast.open(morphToNotification(data));
+        this.$buefy.toast.open(morphToNotification(data));
         return data;
     }
 
-    static async restoreAndNotify(id, $buefy) {
-        let data = await FetchBuilder
-            .default('post')
-            .fetch(this.getResourceRoot() + '/' + id + '/restore');
-        $buefy.toast.open(morphToNotification(data));
+    async restoreAndNotify(id) {
+        let data = await this.request('post')
+            .fetch(this.constructor.getResourceRoot() + '/' + id + '/restore');
+        this.$buefy.toast.open(morphToNotification(data));
         return data;
     }
 
-    static async deleteAndNotify(id, $buefy) {
+    async deleteAndNotify(id) {
         let data = await this.delete(id);
-        $buefy.toast.open(morphToNotification(data));
+        this.$buefy.toast.open(morphToNotification(data));
         return data;
     }
 }

@@ -4,6 +4,10 @@ import AuthApi from "./AuthApi";
 
 export default class UserPermissions {
 
+    static setBuefy($buefy) {
+        this.$buefy = $buefy;
+    }
+
     static get ROOT_CONTENT_TYPE() { return '_root'; }
     static get ACCESS_KEY() { return '_access'; }
     static get PARENT_KEY() { return '_parent'; }
@@ -12,7 +16,7 @@ export default class UserPermissions {
     static async has(key) {
         let permissions;
         try {
-            permissions = (await AuthApi.userDetails()).user.permissions;
+            permissions = (await (new AuthApi(this.$buefy)).userDetails()).user.permissions;
         } catch(e) {
             return false;
         }

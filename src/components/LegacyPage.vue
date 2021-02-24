@@ -30,7 +30,6 @@ const onNavigated = (iframe, callback) => {
 };
 
 import { morphToNotification } from "../api";
-import { NotificationProgrammatic as Notification } from 'buefy';
 
 // This component manages the tricky/hacky integration of two incompatible GUI systems.
 // Legacy pages are rendered inside an iframe, and legacy pages can transition between each other using SmoothState.js
@@ -64,6 +63,7 @@ export default {
         elem.contentWindow.Oxygen.notify = this.showInnerNotification.bind(this);
         elem.contentWindow.Oxygen.openAlertDialog = this.openAlertDialog.bind(this);
         elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
+        elem.contentWindow.Oxygen.popState = this.popState.bind(this);
 
         elem.onload = (_event) => {
             console.warn('Loaded OldPage contents from scratch for URL', elem.src);
@@ -122,6 +122,9 @@ export default {
         },
         openConfirmDialog(options) {
             this.$buefy.dialog.confirm(options);
+        },
+        popState() {
+            this.$router.back();
         },
         onLoaded() {
             console.log('Loaded');

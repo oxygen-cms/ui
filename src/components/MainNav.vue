@@ -61,6 +61,7 @@
         data() {
             return {
                 user: null,
+                authApi: new AuthApi(this.$buefy)
             }
         },
         created() {
@@ -68,14 +69,14 @@
         },
         methods: {
             async fetchData() {
-                this.user = (await AuthApi.userDetails()).user;
+                this.user = (await this.authApi.userDetails()).user;
             },
             async can(key) {
                 return await UserPermissions.has(key);
             },
             signOut() {
                 console.log('user requested logout');
-                AuthApi.logout();
+                this.authApi.logout();
             }
         }
     }

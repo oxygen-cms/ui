@@ -10,8 +10,12 @@ const isDefined = (o) => {
 
 class UserPreferences {
 
+    static setBuefy($buefy) {
+        this.$buefy = $buefy;
+    }
+
     static async getPrefs() {
-        return (await AuthApi.userDetails()).user.preferences;
+        return (await (new AuthApi(this.$buefy)).userDetails()).user.preferences;
     }
 
     static async get(key, fallback = null) {

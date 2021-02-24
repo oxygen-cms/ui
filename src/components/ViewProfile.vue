@@ -128,7 +128,8 @@ export default {
             oldPassword: '',
             newPassword: '',
             newPasswordAgain: '',
-            isChangePasswordModalActive: false
+            isChangePasswordModalActive: false,
+            authApi: new AuthApi(this.$buefy)
         }
     },
     created() {
@@ -148,10 +149,10 @@ export default {
     },
     methods: {
         async fetchUserDetails() {
-            this.user = (await AuthApi.userDetails()).user;
+            this.user = (await this.authApi.userDetails()).user;
         },
         async changePassword() {
-            let response = await AuthApi.changePassword(this.oldPassword, this.newPassword, this.newPasswordAgain);
+            let response = await this.authApi.changePassword(this.oldPassword, this.newPassword, this.newPasswordAgain);
             this.$buefy.toast.open(morphToNotification(response));
             if(response.status === 'success') {
                 this.oldPassword = '';
@@ -168,7 +169,7 @@ export default {
                 type: 'is-danger',
                 hasIcon: true,
                 onConfirm: async () => {
-                    let response = await AuthApi.terminateAccount();
+                    let response = await this.authApi.terminateAccount();
                     window.location = '/';
                 }
             })

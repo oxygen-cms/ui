@@ -66,7 +66,7 @@ export default {
         async fetchData() {
             this.paginatedItems.loading = true;
             let data = await FetchBuilder
-                .default('post')
+                .default(this.$buefy, 'post')
                 .withQueryParams({ page: this.paginatedItems.currentPage })
                 .fetch('/oxygen/api/auth/login-log-entries');
 
@@ -86,7 +86,7 @@ export default {
                 return;
             }
             this.ipInfo.set(ip, IP_INFO_LOADING);
-            FetchBuilder.default('post')
+            FetchBuilder.default(this.$buefy, 'post')
                 .fetch('/oxygen/api/auth/ip-location/' + ip, (data) => data)
                 .then((data) => {
                     this.ipInfo.set(ip, data);

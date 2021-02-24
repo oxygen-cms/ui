@@ -1,5 +1,3 @@
-import { NotificationProgrammatic as Notification } from 'buefy';
-
 const getCSRFToken = () => {
     let csrfTokenNode = document.querySelector('meta[name="csrf-token"]');
     if(csrfTokenNode === null) {
@@ -9,7 +7,8 @@ const getCSRFToken = () => {
 };
 
 class FetchBuilder {
-    constructor(method) {
+    constructor($buefy, method) {
+        this.$buefy = $buefy;
         this.method = method;
         this.headers = new Headers();
         this.body = undefined;
@@ -69,7 +68,7 @@ class FetchBuilder {
         } catch(e) {
             console.error('Response did not contain valid JSON: ', e);
 
-            Notification.open({
+            this.$buefy.notification.open({
                 message: 'Whoops, looks like something went wrong.',
                 type: 'is-warning'
             });
@@ -78,7 +77,7 @@ class FetchBuilder {
         }
 
         if(!response.ok || (data.status && data.status === 'failed')) {
-            handleAPIError(data);
+            handleAPIError(data, this.$buefy);
             let e = new Error();
             e.response = data;
             throw e;
@@ -87,8 +86,8 @@ class FetchBuilder {
         }
     }
 
-    static default(method) {
-        return (new FetchBuilder(method))
+    static default($buefy, method) {
+        return (new FetchBuilder($buefy, method))
             .cookies()
             .withCsrfToken()
             .wantJson();
@@ -113,7 +112,7 @@ function morphToNotification(data) {
     };
 }
 
-const handleAPIError = function(content) {
+const handleAPIError = function(content, $buefy) {
     console.error('API error: ', content);
     if(content.authenticated === false) {
         // server is telling us to login again
@@ -122,9 +121,9 @@ const handleAPIError = function(content) {
     }
 
     if(content.content && content.status) {
-        Notification.open(morphToNotification(content));
+        $buefy.notification.open(morphToNotification(content));
     } else if(content.error) {
-        Notification.open({
+        $buefy.notification.open({
             message:
                 'PHP Exception of type <pre class="no-pre">' + content.error.type +
                 '</pre> with message <pre class="no-pre">' + content.error.message +
@@ -135,7 +134,7 @@ const handleAPIError = function(content) {
             type: 'is-danger'
         });
     } else {
-        Notification.open({
+        $buefy.notification.open({
             message:'Whoops, looks like something went wrong.',
             type: 'is-danger',
             animation: 'fade',
