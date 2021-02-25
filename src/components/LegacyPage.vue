@@ -54,19 +54,14 @@ export default {
         let elem = this.$refs.legacyPage;
         console.log(elem);
         this.loadPath(this.$route.fullPath);
-        onNavigated(elem, this.onNavigated.bind(this));
 
         // SmoothState will call this callback when the path changes
-        elem.contentWindow.Oxygen = elem.contentWindow.Oxygen || {};
-        elem.contentWindow.Oxygen.onNavigationBegin = this.onNavigated.bind(this);
-        elem.contentWindow.Oxygen.onNavigationEnd = this.onLoaded.bind(this);
-        elem.contentWindow.Oxygen.notify = this.showInnerNotification.bind(this);
-        elem.contentWindow.Oxygen.openAlertDialog = this.openAlertDialog.bind(this);
-        elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
-        elem.contentWindow.Oxygen.popState = this.popState.bind(this);
+        onNavigated(elem, this.onNavigated.bind(this));
 
+        this.setupIframeIntegrations(elem);
         elem.onload = (_event) => {
             console.warn('Loaded OldPage contents from scratch for URL', elem.src);
+            this.setupIframeIntegrations(elem);
             this.onLoaded();
         };
     },
@@ -87,6 +82,15 @@ export default {
         next();
     },
     methods: {
+        setupIframeIntegrations(elem) {
+            elem.contentWindow.Oxygen = elem.contentWindow.Oxygen || {};
+            elem.contentWindow.Oxygen.onNavigationBegin = this.onNavigated.bind(this);
+            elem.contentWindow.Oxygen.onNavigationEnd = this.onLoaded.bind(this);
+            elem.contentWindow.Oxygen.notify = this.showInnerNotification.bind(this);
+            elem.contentWindow.Oxygen.openAlertDialog = this.openAlertDialog.bind(this);
+            elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
+            elem.contentWindow.Oxygen.popState = this.popState.bind(this);
+        },
         fullURLToVuePath(url) {
             let urlObj = new URL(url);
             let urlString = urlObj.toString();
