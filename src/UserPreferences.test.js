@@ -5,7 +5,8 @@ jest.mock('./AuthApi');
 
 
 test('gets and sets preferences', async () => {
-    AuthApi.userDetails.mockResolvedValue({
+    UserPreferences.setBuefy({});
+    UserPreferences.authApi.userDetails.mockResolvedValue({
         user: {
             preferences: {
                 foo: 'bar',

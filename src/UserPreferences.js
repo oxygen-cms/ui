@@ -12,10 +12,11 @@ class UserPreferences {
 
     static setBuefy($buefy) {
         this.$buefy = $buefy;
+        this.authApi = new AuthApi(this.$buefy);
     }
 
     static async getPrefs() {
-        return (await (new AuthApi(this.$buefy)).userDetails()).user.preferences;
+        return (await this.authApi.userDetails()).user.preferences;
     }
 
     static async get(key, fallback = null) {
