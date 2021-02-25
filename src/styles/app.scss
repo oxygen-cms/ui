@@ -1,8 +1,8 @@
 @import 'variables.scss';
 
 // Import Bulma and Buefy styles
-@import "../../node_modules/bulma";
-@import "../../node_modules/buefy/src/scss/buefy";
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
 
 .navbar {
   box-shadow: 0px 0px 2px $dark;
@@ -74,6 +74,3 @@ pre.no-pre {
 .columns:last-child {
   margin-bottom: 0;
 }
-//
-//.navbar a.router-link-exact-active
-

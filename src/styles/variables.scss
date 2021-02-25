@@ -1,5 +1,5 @@
 // Import Bulma's core
-@import "../../node_modules/bulma/sass/utilities/all";
+@import "~bulma/sass/utilities/all";
 
 // Set your colors
 $primary: #0053b1;
@@ -27,8 +27,9 @@ $menu-item-active-color: $primary;
 $menu-item-hover-background-color: rgba(255, 255, 255, 0.1);
 $menu-item-hover-color: #ccc;
 
-$navbar-item-hover-background-color: #f3f3f9;
+$scheme-main: $white;
 
+$navbar-item-hover-background-color: #f3f3f9;
 
 // Links
 $link: $primary;
