@@ -83,7 +83,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import '../styles/variables.scss';
+    @import "../styles/_variables.scss";
 
     .push-right {
         margin-right: 0.7rem;
