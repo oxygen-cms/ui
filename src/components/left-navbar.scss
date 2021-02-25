@@ -25,28 +25,28 @@
     margin-left: auto;
 }
 
-/deep/ .router-link-exact-active {
+::v-deep .router-link-exact-active {
     background-color: white;
     color: #333;
 }
 
-/deep/ .menu-list a {
+::v-deep .menu-list a {
     margin: 0 -2em;
     padding-left: 2.75em;
     padding-right: 2.75em;
     border-radius: 0;
 }
 
-/deep/ .router-link-exact-active:hover {
+::v-deep .router-link-exact-active:hover {
     background-color: white;
     color: #333;
 }
 
-/deep/ .menu .menu-list a {
+::v-deep .menu .menu-list a {
     display: flex;
     align-items: center;
 }
 
-/deep/ .menu .menu-list a .icon {
+::v-deep .menu .menu-list a .icon {
     margin-right: 10px;
 }
