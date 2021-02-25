@@ -14,22 +14,14 @@
                 </b-menu-list>
 
                 <b-menu-list label="System Preferences">
-                    <b-menu-item tag="router-link" to="/preferences/system.admin/update" label="Administration"></b-menu-item>
                     <b-menu-item tag="router-link" to="/preferences/modules.auth/update" label="Authentication"></b-menu-item>
-                    <b-menu-item tag="router-link" to="/preferences/modules.pages/update" label="Pages"></b-menu-item>
-                    <b-menu-item tag="router-link" to="/preferences/modules.people/update" label="People"></b-menu-item>
-                    <b-menu-item expanded>
-                        <template slot="label" slot-scope="props">
-                            Appearance
-                            <b-icon class="is-pulled-right" :icon="props.expanded ? 'chevron-circle-down' : 'chevron-circle-up'"></b-icon>
-                        </template>
-                        <b-menu-item tag="router-link" to="/preferences/appearance.themes/update" label="Themes"></b-menu-item>
-                        <b-menu-item tag="router-link" to="/preferences/appearance.admin/update" label="Administration"></b-menu-item>
-                        <b-menu-item tag="router-link" to="/preferences/appearance.auth/update" label="Login and Logout"></b-menu-item>
-                        <b-menu-item tag="router-link" to="/preferences/appearance.pages/update" label="Pages and Partials"></b-menu-item>
-                        <b-menu-item tag="router-link" to="/preferences/appearance.events/update" label="Events"></b-menu-item>
-                        <b-menu-item tag="router-link" to="/preferences/appearance.emails/update" label="Emails"></b-menu-item>
-                    </b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/modules.pages/update" label="Page caching"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/modules.people/update" label="Mailgun and trybooking integration"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/appearance.themes/update" label="Themes"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/appearance.auth/update" label="Login look & feel"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/appearance.pages/update" label="Pages templates"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/appearance.events/update" label="Event templates"></b-menu-item>
+                    <b-menu-item tag="router-link" to="/preferences/appearance.emails/update" label="Email templates"></b-menu-item>
                 </b-menu-list>
             </b-menu>
         </div>
