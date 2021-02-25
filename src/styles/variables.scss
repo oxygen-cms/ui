@@ -1,5 +1,5 @@
 // Import Bulma's core
-@import "~bulma/sass/utilities/all";
+@import "~bulma/sass/utilities/_all";
 
 // Set your colors
 $primary: #0053b1;
@@ -21,16 +21,11 @@ $colors: (
         "twitter": ($twitter, $twitter-invert)
 );
 
-$form-colors: $colors;
-
 $menu-item-color: #ccc;
 $menu-item-active-background-color: transparent;
 $menu-item-active-color: $primary;
 $menu-item-hover-background-color: rgba(255, 255, 255, 0.1);
 $menu-item-hover-color: #ccc;
-
-$scheme-main: $white;
-$scheme-invert: $black;
 
 $navbar-item-hover-background-color: #f3f3f9;
 
