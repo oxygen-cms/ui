@@ -21,6 +21,8 @@ $colors: (
         "twitter": ($twitter, $twitter-invert)
 );
 
+$form-colors: $colors;
+
 $menu-item-color: #ccc;
 $menu-item-active-background-color: transparent;
 $menu-item-active-color: $primary;
