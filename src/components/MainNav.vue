@@ -8,9 +8,9 @@
             </template>
 
             <template #start>
-                <template v-for="item in items" :key="item.permissionKey">
+                <template v-for="item in items">
                     <template v-if="item.href && can(item.permissionKey)">
-                        <b-navbar-item :href="item.href" :tag="item.tag">
+                        <b-navbar-item :href="item.href" :tag="item.tag" :key="item.permissionKey">
                             <b-icon
                                 :icon="item.icon"
                                 size="is-small" class="push-right">
@@ -19,7 +19,7 @@
                         </b-navbar-item>
                     </template>
                     <template v-else-if="can(item.permissionKey)">
-                        <b-navbar-item :tag="item.tag ? item.tag : 'a'" :to="item.to">
+                        <b-navbar-item :tag="item.tag ? item.tag : 'a'" :to="item.to" :key="item.permissionKey">
                             <b-icon
                                 :icon="item.icon"
                                 size="is-small" class="push-right">
