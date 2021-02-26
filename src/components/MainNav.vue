@@ -13,7 +13,7 @@
                         <b-navbar-item :href="item.href" :tag="item.tag" :key="item.permissionKey">
                             <b-icon
                                 :icon="item.icon"
-                                size="is-small" class="push-right">
+                                size="is-small" style="margin-right: 0.7rem;">
                             </b-icon>
                             <span>{{ item.name }}</span>
                         </b-navbar-item>
@@ -22,7 +22,7 @@
                         <b-navbar-item :tag="item.tag ? item.tag : 'a'" :to="item.to" :key="item.permissionKey">
                             <b-icon
                                 :icon="item.icon"
-                                size="is-small" class="push-right">
+                                size="is-small" style="margin-right: 0.7rem;">
                             </b-icon>
                             <span>{{ item.name }}</span>
                         </b-navbar-item>
@@ -96,10 +96,6 @@
 
 <style scoped lang="scss">
     @import "../styles/_variables.scss";
-
-    .push-right {
-        margin-right: 0.7rem;
-    }
 
     .rhs-dropdown {
         margin-right: 1rem;
