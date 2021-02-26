@@ -8,14 +8,26 @@
             </template>
 
             <template #start>
-                <b-navbar-item v-for="item in items" :key="item.permissionKey" v-if="can(item.permissionKey)"
-                               :href="item.href ? item.href : null" :tag="item.tag ? item.tag : 'a'" :to="item.to ? item.to : null">
-                    <b-icon
-                        :icon="item.icon"
-                        size="is-small" class="push-right">
-                    </b-icon>
-                    <span>{{ item.name }}</span>
-                </b-navbar-item>
+                <template v-for="item in items" :key="item.permissionKey">
+                    <template v-if="item.href && can(item.permissionKey)">
+                        <b-navbar-item :href="item.href" :tag="item.tag">
+                            <b-icon
+                                :icon="item.icon"
+                                size="is-small" class="push-right">
+                            </b-icon>
+                            <span>{{ item.name }}</span>
+                        </b-navbar-item>
+                    </template>
+                    <template v-else-if="can(item.permissionKey)">
+                        <b-navbar-item :tag="item.tag ? item.tag : 'a'" :to="item.to">
+                            <b-icon
+                                :icon="item.icon"
+                                size="is-small" class="push-right">
+                            </b-icon>
+                            <span>{{ item.name }}</span>
+                        </b-navbar-item>
+                    </template>
+                </template>
             </template>
 
             <template #end>
