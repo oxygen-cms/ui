@@ -97,6 +97,16 @@ class CrudApi {
         this.$buefy.toast.open(morphToNotification(data));
         return data;
     }
+
+    async listVersions(id) {
+        return this.request('get')
+            .fetch(this.constructor.getResourceRoot() + '/' + id + '/versions');
+    }
+
+    async makeHeadVersion(id) {
+        return this.request('post')
+            .fetch(this.constructor.getResourceRoot() + '/' + id + '/make-head');
+    }
 }
 
 export { CrudApi, API_ROOT };

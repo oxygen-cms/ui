@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="full-height scroll-container pad">
         <div class="box">
             <h1 class="title">Logins, Logouts &amp; Login Attempts</h1>
 
@@ -129,7 +129,9 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+    @import './util.css';
+
     tr.is-danger {
         color: #f00;
     }

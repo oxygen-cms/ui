@@ -1,12 +1,29 @@
 .full-height-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+}
+.column.full-height-container {
+    display: flex;
+}
+.box.full-height-container {
+    display: flex;
+}
+
+.scroll-container.pad,
+.full-height-container.pad {
+    padding: 2em;
+}
+
+.full-height-flex {
+    flex: 1 1 auto;
 }
 
 .full-height {
-    flex: 1;
-    position: relative;
+    height: 100%;
+}
+
+.scroll-container {
+    overflow-y: scroll;
 }
 
 .transition-element.is-loading {
