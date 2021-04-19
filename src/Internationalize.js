@@ -12,6 +12,11 @@ export default class Internationalize {
         return format.format(date);
     }
 
+    static formatLastUpdated(updatedAt) {
+        let d = new Date(updatedAt);
+        return d.toDateString() + ' ' + d.toLocaleTimeString();
+    }
+
     static formatDateTime(datetime) {
         let format = new Intl.DateTimeFormat(this.locale , {
             year: 'numeric', month: 'numeric', day: 'numeric',

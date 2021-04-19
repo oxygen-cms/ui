@@ -1,18 +1,21 @@
 // Set your colors
 $primary: #0053b1;
-$twitter: #4099FF;
+//$twitter: #4099FF;
 
-$menu-item-color: #ccc;
+@import "~bulma/sass/utilities/_all";
+
+$menu-item-color: $text-invert;
 $menu-item-active-background-color: transparent;
-$menu-item-active-color: $primary;
+//$menu-item-active-color: $primary;
 $menu-item-hover-background-color: rgba(255, 255, 255, 0.1);
-$menu-item-hover-color: #ccc;
+$menu-item-hover-color: $white-bis;
 
-$navbar-item-hover-background-color: #f3f3f9;
-
-// Links
-$link: $primary;
-$link-focus-border: $primary;
+//$navbar-item-active-color: #fff;
+//$navbar-item-hover-background-color: #f3f3f9;
+//
+//// Links
+//$link: $primary;
+//$link-focus-border: $primary;
 
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";

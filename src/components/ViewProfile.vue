@@ -1,10 +1,10 @@
 <template>
-    <div class="full-height-container">
-        <div class="card full-height">
+    <div class="full-height scroll-container pad">
+        <div class="card">
             <div class="card-content">
                 <div class="media">
-                    <div class="media-left has-background-light centered-icon">
-                        <b-icon icon="user" size="is-medium"></b-icon>
+                    <div class="media-left has-background-grey-lighter centered-icon">
+                        <b-icon icon="user" size="is-large"></b-icon>
                     </div>
                     <div class="media-content">
                         <transition name="fade-out-in">

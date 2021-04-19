@@ -1,11 +1,16 @@
 <template>
-    <div>
+    <div class="full-height full-height-container legacy-container">
         <iframe ref="legacyPage" class="stretch" />
-        <b-loading :is-full-page="true" v-model="loading" :can-cancel="false"></b-loading>
+        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>
+        <b-modal :active.sync="isInsertMediaItemModalActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus width="80%" class="media-insert-modal">
+            <MediaInsertModal @close="closeInsertMediaItemModal" @select="onFilesSelected" />
+        </b-modal>
     </div>
 </template>
 
 <script>
+import MediaInsertModal from "./MediaInsertModal.vue";
+
 const onNavigated = (iframe, callback) => {
     const unloadHandler = () => {
         // Timeout needed because the URL changes immediately after
@@ -30,6 +35,7 @@ const onNavigated = (iframe, callback) => {
 };
 
 import { morphToNotification } from "../api";
+import MediaApi from "../MediaApi";
 
 // This component manages the tricky/hacky integration of two incompatible GUI systems.
 // Legacy pages are rendered inside an iframe, and legacy pages can transition between each other using SmoothState.js
@@ -42,9 +48,13 @@ export default {
     },
     data() {
         return {
-            loadingPath: null
+            loadingPath: null,
+            isInsertMediaItemModalActive: false,
+            resolveInsertMediaItems: null,
+            rejectInsertMediaItems: null
         }
     },
+    components: { MediaInsertModal },
     computed: {
         loading() { return this.loadingPath != null; }
     },
@@ -88,6 +98,7 @@ export default {
             elem.contentWindow.Oxygen.onNavigationEnd = this.onLoaded.bind(this);
             elem.contentWindow.Oxygen.notify = this.showInnerNotification.bind(this);
             elem.contentWindow.Oxygen.openAlertDialog = this.openAlertDialog.bind(this);
+            elem.contentWindow.Oxygen.insertMediaItem = this.openInsertMediaItemModal.bind(this);
             elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
             elem.contentWindow.Oxygen.popState = this.popState.bind(this);
         },
@@ -151,14 +162,39 @@ export default {
                 // load the page from scratch
                 elem.src = path;
             }
+        },
+        openInsertMediaItemModal() {
+            this.isInsertMediaItemModalActive = true;
+            return new Promise((resolve, reject) => {
+                this.resolveInsertMediaItems = resolve;
+                this.rejectInsertMediaItems = reject;
+            });
+        },
+        closeInsertMediaItemModal() {
+            this.rejectInsertMediaItems({ message: 'modal closed' });
+            this.isInsertMediaItemModalActive = false;
+        },
+        onFilesSelected(files) {
+            console.log(files);
+            let include = files.map(item => MediaApi.generateIncludeStatement(item)).join("\n") + "\n";
+            let filenames = files.map(item => item.fullPath).join(",");
+            this.resolveInsertMediaItems(include);
+            this.isInsertMediaItemModalActive = false;
+            this.$buefy.toast.open({
+                message: 'Inserted ' + filenames,
+                type: 'is-info',
+                queue: false
+            });
         }
     }
 }
 </script>
 
 <style scoped>
+    @import  './util.css';
+
     .stretch {
-        height: 100%;
+        flex: 1;
         width: 100%;
     }
 
@@ -171,5 +207,17 @@ export default {
     .visible {
         opacity: 1;
         visibility: visible;
+    }
+
+    .legacy-container {
+        position: relative;
+    }
+
+    .media-insert-modal ::v-deep .animation-content {
+        width: 80%;
+        height: 90%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>

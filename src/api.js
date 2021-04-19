@@ -21,14 +21,13 @@ class FetchBuilder {
         this.headers.set('Content-Type', type);
         return this;
     }
-
     setBody(body) {
         this.body = body;
         return this;
     }
     withJson(json) {
         this.body = JSON.stringify(json);
-        this.setContentType('application/json')
+        this.setContentType('application/json');
         return this;
     }
 
@@ -106,8 +105,8 @@ function morphToNotification(data) {
     return {
         message: data.content,
         type: statusToBueify(data.status),
-        indefinite: !data.duration,
-        duration: data.duration,
+        indefinite: data.duration === 'indefinite',
+        duration: data.duration ? data.duration : 4000,
         queue: false
     };
 }
