@@ -9,7 +9,7 @@
 
             <b-menu class="left-navigation">
 
-                <slot name="main-navigation"></slot>
+                <slot name="main-navigation" v-bind:can="can"></slot>
 
             </b-menu>
 
@@ -40,12 +40,6 @@
                     <b-dropdown-item aria-role="listitem" @click="signOut"><b-icon icon="sign-out-alt"></b-icon>Sign Out</b-dropdown-item>
                 </b-dropdown>
             </div>
-
-<!--                <footer class="powered-by-oxygen has-background-grey-darker">-->
-<!--                    <p class="is-size-7 has-text-centered has-text-white-ter">-->
-<!--                        Powered by <strong class="has-text-white-ter">Oxygen CMS</strong>-->
-<!--                    </p>-->
-<!--                </footer>-->
         </div>
 
         <div class="no-pad full-height-container content-column">

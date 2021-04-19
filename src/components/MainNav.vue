@@ -83,9 +83,7 @@
             async fetchData() {
                 this.user = (await this.authApi.userDetails()).user;
             },
-            async can(key) {
-                return await UserPermissions.has(key);
-            },
+
             signOut() {
                 console.log('user requested logout');
                 this.authApi.logout();
