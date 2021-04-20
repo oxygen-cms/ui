@@ -13,11 +13,13 @@ export default class UserPermissions {
     static get PARENT_KEY() { return '_parent'; }
     static get MAX_INHERITANCE_DEPTH() { return 10; }
 
-    static async has(key) {
-        let permissions;
-        try {
-            permissions = (await (new AuthApi(this.$buefy)).userDetails()).user.permissions;
-        } catch(e) {
+    constructor(permissions) {
+        this.permissions = permissions;
+    }
+
+    has(key) {
+        if(!this.permissions) {
+            console.warn('permissions not loaded');
             return false;
         }
 
@@ -28,31 +30,42 @@ export default class UserPermissions {
         }
 
         // check for the access key
-        if(!this.hasKey(permissions, keyParts[0], this.ACCESS_KEY)) {
+        if(!this.hasKey(keyParts[0], UserPermissions.ACCESS_KEY)) {
+            console.warn('no access');
             return false;
         }
 
         // check for the specific key
-        return this.hasKey(permissions, keyParts[0], keyParts[1]);
+        return this.hasKey(keyParts[0], keyParts[1]);
     }
 
-    static hasKey(permissions, contentType, key, depth = 0) {
+    static async has(key) {
+        try {
+            let permissions = new UserPermissions((await (new AuthApi(this.$buefy)).userDetails()).user.permissions);
+            return permissions.has(key);
+        } catch(e) {
+            return false;
+        }
+    }
+
+    hasKey(contentType, key, depth = 0) {
         // check we're not looping
-        if(depth > this.MAX_INHERITANCE_DEPTH) {
+        if(depth > UserPermissions.MAX_INHERITANCE_DEPTH) {
             console.warn('Max Depth Reached due to Inheritance Loop');
             return false;
         }
 
+        console.log(this.permissions, contentType, key);
         // if the key is set then we will return the value of it
-        if(contentType in permissions && key in permissions[contentType]) {
-            return permissions[contentType][key];
-        } else if(contentType in permissions && this.PARENT_KEY in permissions[contentType]) {
+        if(contentType in this.permissions && key in this.permissions[contentType]) {
+            return this.permissions[contentType][key];
+        } else if(contentType in this.permissions && UserPermissions.PARENT_KEY in this.permissions[contentType]) {
             // look in the parent contentType
-            let parent = permissions[contentType][this.PARENT_KEY];
-            return this.hasKey(permissions, parent, key, depth + 1);
-        } else if(this.ROOT_CONTENT_TYPE in permissions && key in permissions[this.ROOT_CONTENT_TYPE]) {
+            let parent = this.permissions[contentType][UserPermissions.PARENT_KEY];
+            return this.hasKey(parent, key, depth + 1);
+        } else if(UserPermissions.ROOT_CONTENT_TYPE in this.permissions && key in this.permissions[UserPermissions.ROOT_CONTENT_TYPE]) {
             // return the root content type
-            return permissions[this.ROOT_CONTENT_TYPE][key];
+            return this.permissions[UserPermissions.ROOT_CONTENT_TYPE][key];
         } else {
             return false;
         }

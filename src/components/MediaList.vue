@@ -54,6 +54,7 @@
                 :key="dir.id"
                 :directory="dir"
                 @rename="renameDirectory"
+                @move="fetchData"
                 @delete="fetchData"
                 @select="(item, toggle) => handleSelect(paginatedItems.directories, item, toggle)"
                 @navigate="navigateTo"></MediaDirectory>

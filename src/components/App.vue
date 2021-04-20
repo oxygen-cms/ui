@@ -9,7 +9,7 @@
 
             <b-menu class="left-navigation">
 
-                <slot name="main-navigation" v-bind:can="can"></slot>
+                <slot name="main-navigation" v-bind:userPermissions="userPermissions"></slot>
 
             </b-menu>
 
@@ -54,7 +54,6 @@
 </template>
 
 <script>
-    import MainNav from './MainNav.vue';
     import AuthApi from "../AuthApi";
     import UserPermissions from "../UserPermissions";
     export default {
@@ -67,7 +66,8 @@
         data() {
             return {
                 user: null,
-                authApi: new AuthApi(this.$buefy)
+                authApi: new AuthApi(this.$buefy),
+                userPermissions: null
             }
         },
         created() {
@@ -88,9 +88,8 @@
             },
             async fetchUserDetails() {
                 this.user = (await this.authApi.userDetails()).user;
-            },
-            async can(key) {
-                return await UserPermissions.has(key);
+                this.userPermissions = new UserPermissions(this.user.permissions);
+                console.log('permissions loaded');
             },
             signOut() {
                 console.log('user requested logout');
