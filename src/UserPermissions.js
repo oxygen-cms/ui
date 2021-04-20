@@ -55,7 +55,6 @@ export default class UserPermissions {
             return false;
         }
 
-        console.log(this.permissions, contentType, key);
         // if the key is set then we will return the value of it
         if(contentType in this.permissions && key in this.permissions[contentType]) {
             return this.permissions[contentType][key];

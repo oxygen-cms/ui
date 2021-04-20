@@ -159,7 +159,7 @@ export default {
                     width: 'Full size'
                 }
             ]);
-        },
+        }
     },
     methods: {
         select(toggle) {

@@ -62,7 +62,6 @@
             appTitle: { type: String },
             defaultRouteTitle: String
         },
-        components: { MainNav },
         data() {
             return {
                 user: null,

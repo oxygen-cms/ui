@@ -7,8 +7,8 @@
         ref="dropdown"
     >
         <template #trigger>
-            <b-button size="is-small" rounded icon-left="landmark">
-                <span>Move to directory</span>
+            <b-button size="is-small" rounded icon-left="folder-open">
+                <span v-if="buttonText">{{ buttonText }}</span>
             </b-button>
         </template>
 
@@ -88,6 +88,12 @@ export default {
             directoriesList: [],
             selectedDirectory: null,
             getDirectoryPathString: getDirectoryPathString
+        }
+    },
+    props: {
+        buttonText: {
+            type: String,
+            default: "Move to directory"
         }
     },
     created() {
