@@ -91,13 +91,19 @@ export default {
                 });
             }
             this.isUploading = true;
-            let data = await this.mediaApi.create({
-                files: this.filesToUpload,
-                currentDirectory: this.currentDirectory
-            });
-            this.$buefy.toast.open(morphToNotification(data));
-            this.closeModal();
-            this.$emit('uploaded');
+            try {
+                let data = await this.mediaApi.create({
+                    files: this.filesToUpload,
+                    currentDirectory: this.currentDirectory
+                });
+                this.$buefy.toast.open(morphToNotification(data));
+                this.$emit('uploaded');
+                this.closeModal();
+            } catch(e) {
+                // upload failed
+                console.warn(e);
+                this.closeModal();
+            }
         },
         closeModal() {
             this.isUploading = false;

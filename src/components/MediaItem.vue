@@ -104,7 +104,7 @@
                         <b-input v-model="description" type="textarea"></b-input>
                     </b-field>
 
-                    <label class="label">Filename</label>
+                    <label class="label">Variants</label>
                     <b-table striped :data="variants">
                         <b-table-column label="Filename" field="filename" v-slot="props"><a :href="'/content/media/' + props.row.filename">{{ props.row.filename }}</a></b-table-column>
                         <b-table-column label="Width (px)" field="width" v-slot="props">{{ props.row.width }}</b-table-column>

@@ -196,7 +196,7 @@ export default {
         async doCreateDirectory() {
             let data = await this.mediaDirectoryApi.create({
                 name: this.newDirectoryName,
-                parentDirectory: this.paginatedItems.currentDirectory !== null ? this.paginatedItems.currentDirectory.id : null
+                parentDirectory: this.paginatedItems.currentDirectory
             });
             this.$buefy.toast.open(morphToNotification(data));
             this.newDirectoryName = '';

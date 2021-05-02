@@ -65,8 +65,17 @@ class FetchBuilder {
         try {
             data = await response.json();
         } catch(e) {
-            console.error('Response did not contain valid JSON: ', e);
+            if(response.status === 413) {
+                this.$buefy.notification.open({
+                    message: 'Upload failed: file(s) too large',
+                    type: 'is-danger',
+                    animation: 'fade',
+                    queue: false
+                });
+                return {};
+            }
 
+            console.error('Response did not contain valid JSON: ', e);
             this.$buefy.notification.open({
                 message: 'Whoops, looks like something went wrong.',
                 type: 'is-warning'
@@ -75,14 +84,14 @@ class FetchBuilder {
             throw e;
         }
 
-        if(!response.ok || (data.status && data.status === 'failed')) {
-            handleAPIError(data, this.$buefy);
-            let e = new Error();
-            e.response = data;
-            throw e;
-        } else {
+        if(response.ok && data.status !== 'failed') {
             return data;
         }
+
+        handleAPIError(data, this.$buefy);
+        let e = new Error();
+        e.response = data;
+        throw e;
     }
 
     static default($buefy, method) {
