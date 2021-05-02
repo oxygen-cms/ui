@@ -1,5 +1,5 @@
 <template>
-    <MediaList @navigate="onNavigate" :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" />
+    <MediaList @navigate="onNavigate" :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" @double-click-action="viewItem" />
 </template>
 
 <script>
@@ -31,6 +31,9 @@ export default {
             } else {
                 this.$router.push({ name: 'media.list', params: { currentPath: options.currentPath } });
             }
+        },
+        viewItem(item) {
+            window.location.href = '/media/' + item.fullPath;
         }
     }
 }

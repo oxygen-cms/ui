@@ -5,6 +5,7 @@
         aria-role="menu"
         trap-focus
         ref="dropdown"
+        class="choose-directory-dropdown"
     >
         <template #trigger>
             <b-button size="is-small" rounded icon-left="folder-open">
@@ -18,9 +19,12 @@
             :focusable="false"
             custom
             paddingless>
-            <div class="modal-card" style="width: 40rem; overflow: visible;">
+            <div class="modal-card" style="width: 30rem; overflow: visible;">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Choose a directory</p>
+                </header>
                 <section class="modal-card-body" style="overflow: visible;">
-                    <b-field label="Choose a directory">
+                    <b-field>
                         <b-autocomplete
                             :disabled="isLoading"
                             v-model="searchQuery"
@@ -131,6 +135,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style>
+    .dropdown-content {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
 </style>

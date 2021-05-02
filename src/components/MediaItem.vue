@@ -7,19 +7,46 @@
         </div>
         <div class="card-content">
             <p class="title is-4 cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">{{ item.name }}</p>
-            <p class="subtitle is-6 cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">{{ item.slug }}.{{ item.extension }}</p>
+            <p class="subtitle is-6 cursor-pointer" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">
+                inside '{{ directoryPath }}'
+<!--                <b-icon icon="file-image" v-if="item.type === TYPE_IMAGE"></b-icon>-->
+<!--                <b-icon icon="file" v-else-if="item.type === TYPE_DOCUMENT"></b-icon>-->
+<!--                <b-icon icon="file-audio" v-else-if="item.type === TYPE_AUDIO"></b-icon>-->
+<!--                {{ item.slug }}.{{ item.extension }}-->
+            </p>
 
-            <div class="content">
-                <div v-if="item.selected" class="media-item-toolbar">
-                    <b-button icon-left="photo-video" size="is-small" rounded tag="a" :href="'/media/' + this.item.fullPath">View</b-button>
-                    <b-button icon-left="pencil-alt" size="is-small" rounded @click="openEditModal">Edit info</b-button>
-                    <MediaChooseDirectory v-if="!item.deletedAt" @submit="moveToDirectory"></MediaChooseDirectory>
-                    <b-button v-if="!item.deletedAt" icon-left="trash" size="is-small" rounded outlined type="is-danger" @click="deleteItem">Delete</b-button>
-                    <b-button v-if="item.deletedAt" icon-left="recycle" size="is-small" rounded outlined @click="restoreItem">Restore</b-button>
-                    <b-button v-if="item.deletedAt" icon-left="trash" size="is-small" rounded outlined type="is-danger" @click="confirmForceDeleteItem">Delete forever</b-button>
-                </div>
+            <div v-if="item.selected" class="content media-item-toolbar">
+                <b-button icon-left="photo-video" size="is-small" rounded tag="a" :href="externalLink">View</b-button>
+                <b-button icon-left="pencil-alt" size="is-small" rounded @click="openEditModal">Edit info</b-button>
+                <MediaChooseDirectory v-if="!item.deletedAt" @submit="moveToDirectory"></MediaChooseDirectory>
+                <b-button v-if="!item.deletedAt" icon-left="share" size="is-small" rounded outlined @click="isShareModalActive = true">Share</b-button>
+                <b-button v-if="!item.deletedAt" icon-left="trash" size="is-small" rounded outlined type="is-danger" @click="deleteItem">Delete</b-button>
+                <b-button v-if="item.deletedAt" icon-left="recycle" size="is-small" rounded outlined @click="restoreItem">Restore</b-button>
+                <b-button v-if="item.deletedAt" icon-left="trash" size="is-small" rounded outlined type="is-danger" @click="confirmForceDeleteItem">Delete forever</b-button>
             </div>
         </div>
+
+        <b-modal :active.sync="isShareModalActive" trap-focus has-modal-card width="80%">
+            <div class="modal-card" style="width: auto;">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Share a public link</p>
+                </header>
+                <section class="modal-card-body">
+                    <p>When referencing "{{ item.name }}" externally, use the following URL:<br/>
+                    <a :href="externalLink">{{ externalLink }}</a>
+                    </p>
+                    <br />
+
+                    <p>To use this item within Oxygen, use the <em>"Insert Photo or File"</em> button inside the content editor.</p>
+                </section>
+                <footer class="modal-card-foot is-flex">
+                    <div class="is-flex-grow-1"></div>
+                    <b-button
+                        label="Close"
+                        @click="isShareModalActive = false" />
+                </footer>
+            </div>
+        </b-modal>
 
         <b-modal :active.sync="isEditModalActive" trap-focus has-modal-card width="80%">
             <div class="modal-card" style="width: auto">
@@ -37,7 +64,23 @@
                                 <b-icon size="is-small" icon="question-circle"></b-icon>
                             </b-tooltip>
                         </template>
-                        <b-input v-model="slug" placeholder="will be set from 'Name'"></b-input>
+                        <p class="control">
+                            <b-tooltip label="To change, move this item to another directory."
+                                       multilined
+                                       type="is-dark"
+                                       position="is-right">
+                                <b-button disabled>{{ directorySlug }}/</b-button>
+                            </b-tooltip>
+                        </p>
+                        <b-input v-model="slug" placeholder="will be set from 'Name'" expanded></b-input>
+                        <p class="control">
+                            <b-tooltip label="The extension is set from the file type."
+                                       multilined
+                                       type="is-dark"
+                                       position="is-left">
+                                <b-button disabled>.{{ item.extension }}</b-button>
+                            </b-tooltip>
+                        </p>
                     </b-field>
                     <b-field label="Author">
                         <b-input v-model="author"></b-input>
@@ -60,8 +103,13 @@
                         </template>
                         <b-input v-model="description" type="textarea"></b-input>
                     </b-field>
+
                     <label class="label">Filename</label>
-                    <b-table striped :data="variants" :columns="variantsColumns"></b-table>
+                    <b-table striped :data="variants">
+                        <b-table-column label="Filename" field="filename" v-slot="props"><a :href="'/content/media/' + props.row.filename">{{ props.row.filename }}</a></b-table-column>
+                        <b-table-column label="Width (px)" field="width" v-slot="props">{{ props.row.width }}</b-table-column>
+                    </b-table>
+
                     <label class="label">Versions</label>
 
                     <b-table striped :data="versions"
@@ -113,6 +161,7 @@ import {morphToNotification} from "../api";
 import MediaApi from "../MediaApi";
 import MediaChooseDirectory from "./MediaChooseDirectory.vue";
 import Internationalize from "../Internationalize";
+import {getDirectoryFullSlug, getDirectoryPathString} from "../MediaDirectoryApi";
 
 const TYPE_IMAGE = 0;
 const TYPE_DOCUMENT = 1;
@@ -123,9 +172,7 @@ export default {
     components: {MediaChooseDirectory},
     props: {
         item: Object,
-        doubleClickAction: {
-            type: Function
-        }
+        displayFullPath: Boolean
     },
     data() {
         return {
@@ -133,18 +180,11 @@ export default {
             TYPE_AUDIO: TYPE_AUDIO,
             TYPE_DOCUMENT: TYPE_DOCUMENT,
             isEditModalActive: false,
+            isShareModalActive: false,
             name: null,
             author: null,
             slug: null,
             versions: [],
-            variantsColumns: [{
-                field: 'filename',
-                label: 'Filename'
-            },
-            {
-                field: 'width',
-                label: 'Width (px)'
-            }],
             caption: null,
             description: null,
             mediaApi: new MediaApi(this.$buefy),
@@ -159,12 +199,21 @@ export default {
                     width: 'Full size'
                 }
             ]);
+        },
+        externalLink() {
+            return window.location.origin + '/media/' + this.item.fullPath;
+        },
+        directoryPath() {
+            return getDirectoryPathString(this.item.parentDirectory);
+        },
+        directorySlug() {
+            return getDirectoryFullSlug(this.item.parentDirectory);
         }
     },
     methods: {
         select(toggle) {
-            if(this.item.selected && this.doubleClickAction !== null) {
-                this.doubleClickAction();
+            if(this.item.selected) {
+                this.$emit('double-click-action', this.item);
                 return;
             }
             this.$emit('select', this.item, toggle);
@@ -217,7 +266,7 @@ export default {
             console.log('move to directory', directory);
             let data = await this.mediaApi.update({
                 id: this.item.id,
-                parentDirectory: directory.id
+                parentDirectory: directory
             });
             this.$buefy.toast.open(morphToNotification(data));
             this.$emit('update:item', this.item);

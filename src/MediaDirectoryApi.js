@@ -10,6 +10,7 @@ export default class MediaDirectoryApi extends CrudApi {
         let m = { ...data  };
         delete m.id;
         delete m.fullPath;
+        m.parentDirectory = m.parentDirectory ? m.parentDirectory.id : null;
         delete m.selected;
         return m;
     }
@@ -37,12 +38,27 @@ export const getDirectoryBreadcrumbItems = (currentDir) => {
 export const getDirectoryPathString = (dir) => {
     if(dir === null) {
         return '/';
-    } else {
-        let path = '';
-        while(dir !== null && typeof dir !== 'undefined') {
-            path = dir.name + ' / ' + path;
-            dir = dir.parentDirectory;
-        }
-        return path;
     }
+
+    let path = '';
+    while(dir !== null && typeof dir !== 'undefined') {
+        if(path !== '') {
+            path = '/' + path;
+        }
+        path = dir.name + path;
+        dir = dir.parentDirectory;
+    }
+    return path;
+};
+
+export const getDirectoryFullSlug = (dir) => {
+    let path = '';
+    while(dir !== null && typeof dir !== 'undefined') {
+        if(path !== '') {
+            path = '/' + path;
+        }
+        path = dir.slug + path;
+        dir = dir.parentDirectory;
+    }
+    return path;
 };

@@ -6,18 +6,18 @@
                 <ul>
                     <li v-for="item in getDirectoryBreadcrumbItems(paginatedItems.currentDirectory)" :class="item.separator ? 'separator' : ''">
                         <b-icon v-if="item.home && paginatedItems.currentDirectory === null" class="subtitle" icon="home"></b-icon>
-                        <b-button v-else-if="item.home" type="is-text" @click="navigateTo({ path: '' })" class="subtitle" icon-left="home"></b-button>
-                        <b-button v-else-if="item.link !== null" type="is-text" @click="navigateTo({ path: item.link })" class="subtitle">{{ item.text }}</b-button>
+                        <b-button v-else-if="item.home" type="is-text" @click="navigateTo({ currentPath: '' })" class="subtitle" icon-left="home"></b-button>
+                        <b-button v-else-if="item.link !== null" type="is-text" @click="navigateTo({ currentPath: item.link })" class="subtitle">{{ item.text }}</b-button>
                         <span v-else class="subtitle is-active">{{ item.text }}</span>
                     </li>
                 </ul>
             </div>
             <div v-else-if="inTrash" class="is-flex">
-                <b-button @click="navigateTo({ path: '' })" outlined rounded icon-left="arrow-left" class="action-bar-pad">All Items</b-button>
+                <b-button @click="navigateTo({ currentPath: '' })" outlined rounded icon-left="arrow-left" class="action-bar-pad">All Items</b-button>
                 <div class="title action-bar-pad">Deleted Photos & Files</div>
             </div>
             <div v-else-if="searchQuery" class="is-flex">
-                <b-button @click="navigateTo({ path: '' })" outlined rounded icon-left="arrow-left" class="action-bar-pad">All Items</b-button>
+                <b-button @click="navigateTo({ currentPath: '' })" outlined rounded icon-left="arrow-left" class="action-bar-pad">All Items</b-button>
                 <div class="title action-bar-pad">Search results for "{{ searchQuery }}"</div>
             </div>
             <ul v-else>
@@ -25,11 +25,7 @@
             </ul>
 
             <div class="is-flex-grow-1"></div>
-            <b-button v-if="!inTrash && !searchQuery" icon-left="folder-plus" @click="isCreateDirectoryModalActive = true" class="action-bar-pad">New Directory</b-button>
-            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" @click="isUploadModalActive = true" type="is-success" class="action-bar-pad">Upload Files</b-button>
-            <b-input rounded placeholder="Search photos and files..." icon="search" icon-pack="fas"
-                     :value="searchQuery" @input="value => navigateTo({searchQuery: value})" class="action-bar-pad" v-if="!inTrash"></b-input>
-            <b-button v-if="!inTrash" icon-left="trash" @click="navigateTo({inTrash: true})" type="is-danger" outlined class="action-bar-pad">View Trash</b-button>
+
             <b-field class="action-bar-pad">
                 <p class="control">
                     <b-button disabled v-if="numberOfItemsSelected > 0" type="is-primary">{{ numberOfItemsSelected }} item(s) selected</b-button>
@@ -38,6 +34,12 @@
                     <b-button v-if="numberOfItemsSelected > 0" @click="resetSelection" icon-left="times" type="is-primary"></b-button>
                 </p>
             </b-field>
+
+            <b-button v-if="!inTrash && !searchQuery" icon-left="folder-plus" @click="isCreateDirectoryModalActive = true" class="action-bar-pad">New Directory</b-button>
+            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" @click="isUploadModalActive = true" type="is-success" class="action-bar-pad">Upload Files</b-button>
+            <b-input rounded placeholder="Search photos and files..." icon="search" icon-pack="fas"
+                     :value="searchQuery" @input="value => navigateTo({searchQuery: value})" class="action-bar-pad" v-if="!inTrash"></b-input>
+            <b-button v-if="!inTrash" icon-left="trash" @click="navigateTo({inTrash: true})" type="is-danger" outlined class="action-bar-pad">View Trash</b-button>
         </div>
 
 
@@ -53,6 +55,7 @@
                 v-for="dir in paginatedItems.directories"
                 :key="dir.id"
                 :directory="dir"
+                :display-full-path="!!searchQuery"
                 @rename="renameDirectory"
                 @move="fetchData"
                 @delete="fetchData"
@@ -62,7 +65,8 @@
                 v-for="item in paginatedItems.files"
                 :key="item.id"
                 :item="item"
-                :double-click-action="doubleClickAction"
+                :display-full-path="!!searchQuery || inTrash"
+                @double-click-action="args => $emit('double-click-action', args)"
                 @update:item="fetchData"
                 @select="(i, toggle) => handleSelect(paginatedItems.files, i, toggle)"></MediaItem>
 
@@ -71,7 +75,7 @@
         <b-modal :active.sync="isCreateDirectoryModalActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus>
             <div class="modal-card">
                 <header class="modal-card-head">
-                    <p class="modal-card-title">Create directory inside of '{{ currentPathDisplay }}'</p>
+                    <p class="modal-card-title">Create directory inside of '{{ displayPath }}'</p>
                 </header>
                 <section class="modal-card-body">
                     <b-field label-position="inside" label="Name">
@@ -113,10 +117,6 @@ export default {
         },
         searchQuery: {
             type: String
-        },
-        doubleClickAction: {
-            type: Function,
-            default: null
         }
     },
     watch: {
@@ -127,8 +127,8 @@ export default {
     data() {
         return {
             paginatedItems: {files: [], directories: [], currentDirectory: null, totalFiles: null, filesPerPage: null, loading: false, currentPage: 1},
-            isCreateDirectoryModalActive: false,
             isUploadModalActive: false,
+            isCreateDirectoryModalActive: false,
             newDirectoryName: '',
             searchDebounce: null,
             mediaApi: new MediaApi(this.$buefy),
@@ -141,7 +141,7 @@ export default {
         this.fetchData()
     },
     computed: {
-        currentPathDisplay() {
+        displayPath() {
             return getDirectoryPathString(this.paginatedItems.currentDirectory);
         },
         numberOfItemsSelected() {

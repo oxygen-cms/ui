@@ -4,7 +4,7 @@
             <p class="modal-card-title">Choose an item to insert</p>
         </header>
         <section class="modal-card-body">
-            <MediaList @navigate="onNavigate" :double-click-action="doInsert" @select-files="items => selectedFiles = items" :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" />
+            <MediaList @navigate="onNavigate" @double-click-action="doInsert" @select-files="items => selectedFiles = items" :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" />
         </section>
         <footer class="modal-card-foot is-flex">
             <div class="is-flex-grow-1"></div>

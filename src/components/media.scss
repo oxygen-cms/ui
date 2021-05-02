@@ -13,6 +13,11 @@
   width: 20rem;
 }
 
+.media-item .card-image,
+.media-item .card-content {
+  user-select: none;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }

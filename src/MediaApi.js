@@ -11,6 +11,7 @@ export default class MediaApi extends CrudApi {
         delete m.id;
         delete m.filename;
         delete m.extension;
+        m.parentDirectory = m.parentDirectory ? m.parentDirectory.id : null;
         delete m.selected;
         return m;
     }
