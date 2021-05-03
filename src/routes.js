@@ -1,6 +1,7 @@
 import ViewProfile from "./components/ViewProfile.vue";
 import AuthenticationLog from "./components/AuthenticationLog.vue";
 import MediaPage from "./components/MediaPage.vue";
+import MediaResponsiveImages from "./components/MediaResponsiveImages.vue";
 
 const UserProfileRoutes =  [
     {
@@ -48,6 +49,12 @@ const MediaRoutes = [
         props: true,
         component: MediaPage,
         meta: { title: 'Search Photos & File Uploads'}
+    },
+    {
+        path: '/media2/responsive-images',
+        name: 'media.responsiveImages',
+        component: MediaResponsiveImages,
+        meta: { title: 'Responsive Images'}
     }
 ];
 
