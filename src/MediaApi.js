@@ -2,6 +2,10 @@ import  { CrudApi } from './CrudApi';
 
 export default class MediaApi extends CrudApi {
 
+    static get TYPE_IMAGE() { return 0; }
+    static get TYPE_DOCUMENT() { return 1; }
+    static get TYPE_AUDIO() { return 2; }
+
     static getResourceName() {
         return 'media';
     }

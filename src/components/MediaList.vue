@@ -39,7 +39,7 @@
             <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" @click="isUploadModalActive = true" type="is-success" class="action-bar-pad">Upload Files</b-button>
             <b-input rounded placeholder="Search photos and files..." icon="search" icon-pack="fas"
                      :value="searchQuery" @input="value => navigateTo({searchQuery: value})" class="action-bar-pad" v-if="!inTrash"></b-input>
-            <b-button v-if="!inTrash" icon-left="trash" @click="navigateTo({inTrash: true})" type="is-danger" outlined class="action-bar-pad">View Trash</b-button>
+            <b-button v-if="!inTrash" icon-left="trash" @click="navigateTo({inTrash: true})" type="is-danger" outlined class="action-bar-pad">Deleted Items</b-button>
         </div>
 
 
@@ -70,6 +70,18 @@
                 @update:item="fetchData"
                 @select="(i, toggle) => handleSelect(paginatedItems.files, i, toggle)"></MediaItem>
 
+        </div>
+
+        <div class="pagination-container" v-if="paginatedItems.totalFiles > paginatedItems.filesPerPage">
+            <b-pagination
+                :total="paginatedItems.totalFiles"
+                v-model="paginatedItems.currentPage"
+                :per-page="paginatedItems.filesPerPage"
+                aria-next-label="Next page"
+                aria-previous-label="Previous page"
+                aria-page-label="Page"
+                aria-current-label="Current page">
+            </b-pagination>
         </div>
 
         <b-modal :active.sync="isCreateDirectoryModalActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus>
@@ -122,6 +134,7 @@ export default {
     watch: {
         'searchQuery': 'debounceFetchData',
         'inTrash': 'fetchData',
+        'paginatedItems.currentPage': 'fetchData',
         'currentPath': 'fetchData'
     },
     data() {
@@ -162,7 +175,7 @@ export default {
             this.paginatedItems.currentDirectory = data.currentDirectory;
             this.paginatedItems.directories = data.directories.map(dir => { dir.selected = false; return dir; });
             this.paginatedItems.files = data.files.map(file => {file.selected = false; return file;});
-            this.paginatedItems.totalItems = data.totalFiles;
+            this.paginatedItems.totalFiles = data.totalFiles;
             this.paginatedItems.filesPerPage = data.filesPerPage;
             this.paginatedItems.loading = false;
         },
@@ -232,6 +245,13 @@ export default {
         padding: 1rem;
     }
 
+    .pagination-container {
+        padding: 1rem;
+        background-color: white;
+        border-top: 1px solid $grey-lighter;
+
+    }
+
     .media-container {
         background-color: $white-bis;
     }
@@ -242,7 +262,7 @@ export default {
         background-color: white;
         padding: 1rem;
         margin-bottom: 0;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid $grey-lighter;
         width: 100%;
         position: sticky;
         top: 0;

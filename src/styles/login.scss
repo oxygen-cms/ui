@@ -8,10 +8,27 @@
 }
 
 .login-welcome {
-   margin-bottom: 2.5rem;
    display: flex;
-   flex-direction: column;
+   flex-direction: row;
    align-items: center;
+   justify-content: center;
+   padding: 1rem 0;
+   margin: 2rem 0;
+}
+
+.login-title {
+   padding: 1rem 0;
+   margin-bottom: 2rem;
+}
+
+.app-logo {
+   margin-right: 0.75rem;
+   width: 4rem;
+}
+
+.app-title {
+   font-weight: 200;
+   font-size: 2.2rem;
 }
 
 .login-justify-content {
@@ -34,10 +51,6 @@
 .login-fullscreen .container.is-wider {
    width: 90%;
    max-width: 55em;
-}
-
-.login-logo {
-   max-width: 100%;
 }
 
 .login-theme-autumn {

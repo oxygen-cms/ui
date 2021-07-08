@@ -7,7 +7,7 @@
                 :loading="paginatedItems.items === null || paginatedItems.loading"
                 :checkable="checkable"
                 custom-row-key="id"
-                paginated
+                :paginated="paginatedItems.totalItems > paginatedItems.itemsPerPage"
                 backend-pagination
                 :total="paginatedItems.totalItems"
                 :per-page="paginatedItems.itemsPerPage"
@@ -16,7 +16,8 @@
                 aria-next-label="Next page"
                 aria-previous-label="Previous page"
                 aria-page-label="Page"
-                aria-current-label="Current page">
+                aria-current-label="Current page"
+                class="full-height-flex full-height-container">
             <b-table-column label="Title" v-slot="props">
                 {{ props.row.title }}
             </b-table-column>

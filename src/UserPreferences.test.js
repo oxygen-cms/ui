@@ -15,9 +15,11 @@ test('gets and sets preferences', async () => {
         }
     });
 
-    expect(await UserPreferences.get('foo')).toBe('bar');
-    expect(await UserPreferences.has('fob')).toBe(false);
-    expect(await UserPreferences.has('baz.qux')).toBe(true);
-    expect(await UserPreferences.get('bar.qux2', 'fallback')).toBe('fallback');
+    let prefs = await UserPreferences.load();
+
+    expect(prefs.get('foo')).toBe('bar');
+    expect(prefs.has('fob')).toBe(false);
+    expect(prefs.has('baz.qux')).toBe(true);
+    expect(prefs.get('bar.qux2', 'fallback')).toBe('fallback');
 
 });

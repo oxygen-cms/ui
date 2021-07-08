@@ -19,14 +19,14 @@ const UserProfileRoutes =  [
 
 const MediaRoutes = [
     {
-        path: '/media2/list/:currentPath(.*)?',
+        path: '/media/list/:currentPath(.*)?',
         name: 'media.list',
         props: true,
         component: MediaPage,
         meta: { title: 'Photos & File Uploads'}
     },
     {
-        path: '/media2/list',
+        path: '/media/list',
         props: {
             currentPath: ''
         },
@@ -34,7 +34,7 @@ const MediaRoutes = [
         meta: { title: 'Photos & File Uploads'}
     },
     {
-        path: '/media2/trash',
+        path: '/media/trash',
         name: 'media.trash',
         props: {
             inTrash: true,
@@ -44,14 +44,14 @@ const MediaRoutes = [
         meta: { title: 'Deleted Photos & File Uploads'}
     },
     {
-        path: '/media2/search/:searchQuery',
+        path: '/media/search/:searchQuery',
         name: 'media.search',
         props: true,
         component: MediaPage,
         meta: { title: 'Search Photos & File Uploads'}
     },
     {
-        path: '/media2/responsive-images',
+        path: '/media/responsive-images',
         name: 'media.responsiveImages',
         component: MediaResponsiveImages,
         meta: { title: 'Responsive Images'}

@@ -23,6 +23,7 @@
     "copy-webpack-plugin": "^5.1.1",
     "file-loader": "^6.1.1",
     "libphonenumber-js": "^1.9.11",
+    "lodash": "^4.17.21",
     "title-case": "^3.0.3",
     "ua-parser-js": "^0.7.24",
     "v-hotkey": "^0.8.0",
@@ -30,7 +31,8 @@
     "vue": "^2.6.11",
     "vue-loader": "^15.9.6",
     "vue-router": "^3.5.1",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "vue2-ace-editor": "^0.0.15"
   },
   "devDependencies": {
     "@babel/core": "^7.13.1",

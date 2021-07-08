@@ -1,7 +1,5 @@
 // this is a straight JavaScript port of the `Oxygen\Auth\Permissions\SimplePermissionsSystem` PHP class.
 
-import AuthApi from "./AuthApi";
-
 export default class UserPermissions {
 
     static setBuefy($buefy) {
@@ -39,34 +37,36 @@ export default class UserPermissions {
         return this.hasKey(keyParts[0], keyParts[1]);
     }
 
-    static async has(key) {
-        try {
-            let permissions = new UserPermissions((await (new AuthApi(this.$buefy)).userDetails()).user.permissions);
-            return permissions.has(key);
-        } catch(e) {
-            return false;
+    hasOneOf(keys) {
+        for(let key of keys) {
+            if(this.has(key)) {
+                return true;
+            }
         }
+        return false;
     }
 
     hasKey(contentType, key, depth = 0) {
         // check we're not looping
         if(depth > UserPermissions.MAX_INHERITANCE_DEPTH) {
-            console.warn('Max Depth Reached due to Inheritance Loop');
-            return false;
+            throw new Error('Max Depth Reached Due to Inheritance Loop');
         }
 
         // if the key is set then we will return the value of it
         if(contentType in this.permissions && key in this.permissions[contentType]) {
             return this.permissions[contentType][key];
-        } else if(contentType in this.permissions && UserPermissions.PARENT_KEY in this.permissions[contentType]) {
-            // look in the parent contentType
-            let parent = this.permissions[contentType][UserPermissions.PARENT_KEY];
-            return this.hasKey(parent, key, depth + 1);
-        } else if(UserPermissions.ROOT_CONTENT_TYPE in this.permissions && key in this.permissions[UserPermissions.ROOT_CONTENT_TYPE]) {
-            // return the root content type
-            return this.permissions[UserPermissions.ROOT_CONTENT_TYPE][key];
         } else {
-            return false;
+            // look in the parent contentType
+            let parent = (contentType in this.permissions && UserPermissions.PARENT_KEY in this.permissions[contentType]) ?
+                this.permissions[contentType][UserPermissions.PARENT_KEY]
+                : UserPermissions.ROOT_CONTENT_TYPE;
+
+            // have already reached the root - would only lead to infinite recursion
+            if(contentType === UserPermissions.ROOT_CONTENT_TYPE) {
+                return false;
+            }
+
+            return this.hasKey(parent, key, depth + 1);
         }
     }
 

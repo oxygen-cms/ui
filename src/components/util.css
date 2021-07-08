@@ -23,11 +23,25 @@
 }
 
 .scroll-container {
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .transition-element.is-loading {
     margin: 2rem auto;
     max-width: 100%;
     width: 30em;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.top-bar .title {
+    margin-bottom: 0;
+}
+
+.top-bar .title:not(:first-child) {
+    margin-left: 1rem;
 }

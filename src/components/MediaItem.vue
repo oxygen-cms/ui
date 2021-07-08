@@ -1,9 +1,7 @@
 <template>
     <div class="media-item card" :class="item.selected ? 'media-item-selected' : ''" >
-        <div class="card-image media-icon-container cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">
-            <img v-if="item.type === TYPE_IMAGE" :src="'/content/media/' + item.filename" :alt="item.caption ? item.caption : item.name">
-            <b-icon icon="file-pdf" size="is-large" class="media-icon" v-else-if="item.type === TYPE_DOCUMENT"></b-icon>
-            <b-icon icon="music" size="is-large" class="media-icon" v-else-if="item.type === TYPE_AUDIO"></b-icon>
+        <div class="card-image cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">
+            <MediaItemPreview :item="item" />
         </div>
         <div class="card-content">
             <p class="title is-4 cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">{{ item.name }}</p>
@@ -48,7 +46,7 @@
             </div>
         </b-modal>
 
-        <b-modal :active.sync="isEditModalActive" trap-focus has-modal-card width="80%">
+        <b-modal :active.sync="isEditModalActive" trap-focus has-modal-card width="80%" v-hotkey="keymap">
             <div class="modal-card" style="width: auto">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Edit Media Item - {{ name }}</p>
@@ -162,23 +160,17 @@ import MediaApi from "../MediaApi";
 import MediaChooseDirectory from "./MediaChooseDirectory.vue";
 import Internationalize from "../Internationalize";
 import {getDirectoryFullSlug, getDirectoryPathString} from "../MediaDirectoryApi";
-
-const TYPE_IMAGE = 0;
-const TYPE_DOCUMENT = 1;
-const TYPE_AUDIO = 2;
+import MediaItemPreview from "./MediaItemPreview.vue";
 
 export default {
     name: "MediaItem.vue",
-    components: {MediaChooseDirectory},
+    components: {MediaChooseDirectory, MediaItemPreview},
     props: {
         item: Object,
         displayFullPath: Boolean
     },
     data() {
         return {
-            TYPE_IMAGE: TYPE_IMAGE,
-            TYPE_AUDIO: TYPE_AUDIO,
-            TYPE_DOCUMENT: TYPE_DOCUMENT,
             isEditModalActive: false,
             isShareModalActive: false,
             name: null,
@@ -192,6 +184,14 @@ export default {
         }
     },
     computed: {
+        keymap() {
+            return {
+                'ctrl+s': (event) => {
+                    this.saveEdits();
+                    event.preventDefault();
+                }
+            }
+        },
         variants() {
             return this.item.variants.concat([
                 {
@@ -234,6 +234,7 @@ export default {
         async saveEdits() {
             let data = await this.mediaApi.update({
                 id: this.item.id,
+                parentDirectory: this.item.parentDirectory,
                 name: this.name,
                 author: this.author,
                 slug: this.slug,

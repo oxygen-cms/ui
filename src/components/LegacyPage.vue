@@ -1,29 +1,36 @@
 <template>
     <div class="full-height full-height-container legacy-container">
-        <iframe ref="legacyPage" class="stretch" />
-        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>
-        <b-modal :active.sync="isInsertMediaItemModalActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus width="80%" class="media-insert-modal">
-            <MediaInsertModal @close="closeInsertMediaItemModal" @select="onFilesSelected" />
-        </b-modal>
+        <transition name="slide-left" mode="out-in">
+            <iframe ref="iframe" class="iframe" v-show="!loading" />
+        </transition>
+<!--        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>-->
+
+        <MediaInsertModal :active.sync="isInsertMediaItemModalActive" @close="closeInsertMediaItemModal" @select="onFilesSelected" />
     </div>
 </template>
 
 <script>
 import MediaInsertModal from "./MediaInsertModal.vue";
 
-const onNavigated = (iframe, callback) => {
-    const unloadHandler = () => {
+import { morphToNotification } from "../api";
+import MediaApi from "../MediaApi";
+import UserPreferences from "../UserPreferences";
+
+// from https://gist.github.com/hdodov/a87c097216718655ead6cf2969b0dcfa
+const iframeURLChange = (iframe, callback, legacyPage) => {
+    var unloadHandler = function() {
+        console.log('[LegacyPage] Starting load');
+        legacyPage.loadingPath = 'unknown';
         // Timeout needed because the URL changes immediately after
         // the `unload` event is dispatched.
-        setTimeout(() => {
-            if(iframe.contentWindow === null) {
-                return;
+        setTimeout(function() {
+            if(iframe.contentWindow) {
+                callback(iframe.contentWindow.location.href);
             }
-            callback(iframe.contentWindow.location.href);
-        }, 1);
+        }, 0);
     };
 
-    const attachUnload = () => {
+    function attachUnload() {
         // Remove the unloadHandler in case it was already attached.
         // Otherwise, the change will be dispatched twice.
         iframe.contentWindow.removeEventListener("unload", unloadHandler);
@@ -32,10 +39,7 @@ const onNavigated = (iframe, callback) => {
 
     iframe.addEventListener("load", attachUnload);
     attachUnload();
-};
-
-import { morphToNotification } from "../api";
-import MediaApi from "../MediaApi";
+}
 
 // This component manages the tricky/hacky integration of two incompatible GUI systems.
 // Legacy pages are rendered inside an iframe, and legacy pages can transition between each other using SmoothState.js
@@ -44,41 +48,38 @@ import MediaApi from "../MediaApi";
 export default {
     name: "LegacyPage",
     props: {
-        routePrefix: String
+        legacyPrefix: String,
+        adminPrefix: String
     },
     data() {
         return {
             loadingPath: null,
             isInsertMediaItemModalActive: false,
             resolveInsertMediaItems: null,
-            rejectInsertMediaItems: null
+            rejectInsertMediaItems: null,
+            userPreferences: null
         }
     },
     components: { MediaInsertModal },
     computed: {
-        loading() { return this.loadingPath != null; }
+        loading() { return this.loadingPath !== null; }
     },
-    mounted() {
+    async mounted() {
+        this.loadingPath = 'prefs';
+        this.userPreferences = await UserPreferences.load();
+
         window.document.body.style.overflowY = 'hidden';
         window.document.documentElement.style.overflowY = 'hidden';
-        let elem = this.$refs.legacyPage;
-        console.log(elem);
+        let iframe = this.$refs.iframe;
+
+        iframeURLChange(iframe, this.onNavigated.bind(this), this);
+
         this.loadPath(this.$route.fullPath);
 
-        // SmoothState will call this callback when the path changes
-        onNavigated(elem, this.onNavigated.bind(this));
-
-        this.setupIframeIntegrations(elem);
-        elem.onload = (_event) => {
-            console.warn('Loaded OldPage contents from scratch for URL', elem.src);
-            this.setupIframeIntegrations(elem);
+        iframe.addEventListener('load', this.onLoaded.bind(this));
+        if(iframe.contentDocument.readyState === "complete") {
+            console.warn('[LegacyPage] mounted: page was already loaded - perhaps this page was cached?');
             this.onLoaded();
-        };
-    },
-    beforeRouteEnter(to, from, next) {
-        // prevent navigation to this root if we are in an iframe
-        if(window.location === window.parent.location) {
-            next();
         }
     },
     beforeRouteUpdate(to, from, next) {
@@ -92,8 +93,11 @@ export default {
         next();
     },
     methods: {
-        setupIframeIntegrations(elem) {
+        setupIframeIntegrations() {
+            console.log('[LegacyPage] Setting up iframe integrations for', this.$refs.iframe.contentWindow.location.href);
+            let elem = this.$refs.iframe;
             elem.contentWindow.Oxygen = elem.contentWindow.Oxygen || {};
+            elem.contentWindow.Oxygen.user = this.userPreferences.preferences;
             elem.contentWindow.Oxygen.onNavigationBegin = this.onNavigated.bind(this);
             elem.contentWindow.Oxygen.onNavigationEnd = this.onLoaded.bind(this);
             elem.contentWindow.Oxygen.notify = this.showInnerNotification.bind(this);
@@ -101,29 +105,40 @@ export default {
             elem.contentWindow.Oxygen.insertMediaItem = this.openInsertMediaItemModal.bind(this);
             elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
             elem.contentWindow.Oxygen.popState = this.popState.bind(this);
+
+            setTimeout(() => {
+                if(elem.contentWindow.Oxygen.onLoadedInsideIFrame) {
+                    elem.contentWindow.Oxygen.onLoadedInsideIFrame();
+                } else {
+                    console.warn('[LegacyPage] no onLoadedInsideIFrame callback set');
+                }
+            }, 1);
         },
         fullURLToVuePath(url) {
             let urlObj = new URL(url);
             let urlString = urlObj.toString();
-            if(urlObj.pathname.startsWith(this.routePrefix)) {
-                return { loadInsideIframe: true, fullPath: urlString.split(this.routePrefix)[1] };
+            if(urlObj.pathname.startsWith(this.legacyPrefix)) {
+                return { loadInside: 'iframe', location: this.adminPrefix + urlString.split(this.legacyPrefix)[1] };
+            } else if(urlObj.pathname.startsWith(this.adminPrefix)) {
+                return { loadInside: 'vue', location: urlString.split(this.adminPrefix)[1] };
             } else {
-                return { loadInsideIframe: false, url: urlString };
+                return { loadInside: false, location: urlString };
             }
         },
         vuePathToURL(path) {
-            return this.routePrefix + path;
+            return this.legacyPrefix + path;
         },
+        // We detect when the iframe url changes, and update our window accordingly...
         onNavigated(newURL) {
-            let { loadInsideIframe, fullPath, url } = this.fullURLToVuePath(newURL);
-            if(loadInsideIframe) {
-                console.log(this.$route.fullPath, "-->", fullPath);
-                if(this.$route.fullPath !== fullPath) {
-                    this.$router.push(fullPath);
-                }
+            console.log('[LegacyPage] Navigated to ' + newURL);
+            let { loadInside, location } = this.fullURLToVuePath(newURL);
+            if(loadInside === 'iframe') {
+                window.history.pushState({}, "");
+            } else if(loadInside === 'vue') {
+                this.$router.push(location);
             } else {
                 // load outside of iframe
-                window.location = url;
+                window.location = location;
             }
         },
         showInnerNotification(data) {
@@ -142,9 +157,11 @@ export default {
             this.$router.back();
         },
         onLoaded() {
-            console.log('Loaded');
-            let elem = this.$refs.legacyPage;
-            document.title = elem.contentDocument.title;
+            console.log('[LegacyPage] Loaded', this.$refs.iframe.contentWindow.location.href);
+
+            document.title = this.$refs.iframe.contentDocument.title;
+            this.setupIframeIntegrations();
+
             this.loadingPath = null;
         },
         loadPath(routePath) {
@@ -152,10 +169,16 @@ export default {
                 return;
             }
             let path = this.vuePathToURL(routePath);
-            console.log('Loading', path);
+            if(path === '/oxygen/view/auth/login') {
+                console.log('[LegacyPage] Need to login again, redirecting...');
+                window.location.replace('/oxygen/view/auth/login');
+            }
+
+            console.log('[LegacyPage] Loading', path);
+
             this.loadingPath = path;
 
-            let elem = this.$refs.legacyPage;
+            let elem = this.$refs.iframe;
             if(elem.contentWindow && typeof elem.contentWindow.smoothState !== 'undefined') {
                 elem.contentWindow.smoothState.load(path, true);
             } else if(elem.src !== path) {
@@ -175,7 +198,6 @@ export default {
             this.isInsertMediaItemModalActive = false;
         },
         onFilesSelected(files) {
-            console.log(files);
             let include = files.map(item => MediaApi.generateIncludeStatement(item)).join("\n") + "\n";
             let filenames = files.map(item => item.fullPath).join(",");
             this.resolveInsertMediaItems(include);
@@ -190,10 +212,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
     @import  './util.css';
+    @import '../styles/_variables.scss';
 
-    .stretch {
+    .iframe {
         flex: 1;
         width: 100%;
     }
@@ -211,13 +234,6 @@ export default {
 
     .legacy-container {
         position: relative;
-    }
-
-    .media-insert-modal ::v-deep .animation-content {
-        width: 80%;
-        height: 90%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        background-color: $grey-lightest;
     }
 </style>

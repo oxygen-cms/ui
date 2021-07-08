@@ -2,9 +2,9 @@
     <div class="full-height-container app-container" style="height: 100%;">
         <div class="left-navigation-container">
 
-            <router-link class="vendor-logo" to="/">
-                <slot name="navbar-vendor-logo"></slot>
-                <h1 class="subtitle has-text-centered has-text-white-ter" style="font-variant: small-caps;">Administration Panel</h1>
+            <router-link class="app-logo-title" to="/">
+                <img src="../../assets/oxygen-icon.png" alt="Oxygen CMS" class="app-logo">
+                <span class="app-title">Oxygen CMS</span>
             </router-link>
 
             <b-menu class="left-navigation">
@@ -13,31 +13,32 @@
 
             </b-menu>
 
-            <div class="user-info has-background-grey-darker">
+            <div :class="'user-info' + (impersonating ? ' has-background-warning' : '')">
                 <b-dropdown aria-role="list" position="is-top-left" expanded>
                     <template #trigger>
                         <div class="user-dropdown">
-                            <div class="user-dropdown-text has-text-light">
-                                <transition name="fade-out-in">
+                            <div class="user-dropdown-text">
+                                <strong v-if="impersonating">Temporarily logged-in as<br/></strong>
+                                <transition name="fade" mode="out-in">
                                     <span v-if="user">{{ user.fullName }}</span>
                                     <b-skeleton size="is-medium" width="10em" :animated="true" v-else></b-skeleton>
                                 </transition>
-                                <transition name="fade-out-in">
+                                <transition name="fade" mode="out-in">
                                     <p v-if="user" class="is-size-7">{{ user.email }}</p>
                                     <b-skeleton width="8em" :animated="true" v-else></b-skeleton>
                                 </transition>
                             </div>
                             <div class="is-flex-grow-1"></div>
-                            <div class="has-background-grey centered-icon" style="display: inline-block;">
+                            <div class="has-background-grey-light centered-icon" style="display: inline-block;">
                                 <b-icon icon="user" size="is-large" class="has-text-grey-lighter"></b-icon>
                             </div>
                         </div>
                     </template>
                     <b-dropdown-item aria-role="listitem" has-link><router-link to="/auth/profile"><b-icon icon="user"></b-icon>Profile</router-link></b-dropdown-item>
-                    <b-dropdown-item aria-role="listitem" has-link><router-link to="/preferences/user"><b-icon icon="cogs"></b-icon>Configure user preferences</router-link></b-dropdown-item>
                     <b-dropdown-item aria-role="listitem" has-link><router-link to="/auth/login-log"><b-icon icon="list"></b-icon>Login Log</router-link></b-dropdown-item>
                     <b-dropdown-item separator></b-dropdown-item>
                     <b-dropdown-item aria-role="listitem" @click="signOut"><b-icon icon="sign-out-alt"></b-icon>Sign Out</b-dropdown-item>
+                    <b-dropdown-item v-if="impersonating" aria-role="listitem" @click="stopImpersonating"><b-icon icon="times"></b-icon>Stop impersonating</b-dropdown-item>
                 </b-dropdown>
             </div>
         </div>
@@ -60,7 +61,11 @@
         name: "App",
         props: {
             appTitle: { type: String },
-            defaultRouteTitle: String
+            defaultRouteTitle: String,
+            impersonating: {
+                type: Boolean,
+                default: false
+            }
         },
         data() {
             return {
@@ -88,11 +93,13 @@
             async fetchUserDetails() {
                 this.user = (await this.authApi.userDetails()).user;
                 this.userPermissions = new UserPermissions(this.user.permissions);
-                console.log('permissions loaded');
             },
             signOut() {
                 console.log('user requested logout');
                 this.authApi.logout();
+            },
+            stopImpersonating() {
+                this.authApi.stopImpersonating();
             }
         }
     }
@@ -108,7 +115,24 @@
         flex-direction: column;
         flex: 1;
         max-width: 550px;
-        border-right: 1px solid $grey-darker;
+        border-right: 1px solid $grey-lighter;
+    }
+
+    .app-logo-title {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+    }
+
+    .app-logo {
+        width: 3rem;
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+
+    .app-title {
+        color: $text;
+        font-size: 1.1rem;
     }
 
     .app-container {
@@ -118,39 +142,23 @@
 
     .left-navigation {
         flex: 1;
-        padding: 1rem 1rem;
+        padding: 1rem 1rem 1rem 2rem;
         overflow-y: auto;
-        background-color: $grey-dark;
+        // background-color: $grey-dark;
     }
 
     .content-column {
         flex: 4;
     }
 
-    .is-pulled-right {
-        margin-left: auto;
-    }
-
     ::v-deep .router-link-exact-active {
-        background-color: $link-invert !important;
-        color: $text !important;
+        // background-color: $link-invert !important;
+        color: $black-bis !important;
+        font-weight: 700;
     }
 
-    .vendor-logo {
-        display: block;
-        padding: 1rem;
-        background-color: $grey-darker;
-        border-bottom: 1px solid $black-ter;
-    }
-
-    .vendor-logo ::v-deep img {
-        margin: 0 auto;
-        display: block;
-        max-width: 70%;
-    }
-
-    .user-info {
-        border-top: 1px solid $black-ter;
+    ::v-deep .menu-list .icon {
+        margin-right: 1rem;
     }
 
     .user-dropdown {
@@ -175,8 +183,8 @@
         background-color: $white-ter;
     }
 
-    .powered-by-oxygen {
-        padding: 1rem;
+    .dropdown-content .icon {
+        margin-right: 0.5rem;
     }
 </style>
 

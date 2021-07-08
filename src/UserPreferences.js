@@ -10,17 +10,21 @@ const isDefined = (o) => {
 
 class UserPreferences {
 
+    constructor(preferences) {
+        this.preferences = preferences;
+    }
+
     static setBuefy($buefy) {
         this.$buefy = $buefy;
         this.authApi = new AuthApi(this.$buefy);
     }
 
-    static async getPrefs() {
-        return (await this.authApi.userDetails()).user.preferences;
+    static async load() {
+        return new UserPreferences((await this.authApi.userDetails()).user.preferences);
     }
 
-    static async get(key, fallback = null) {
-        let o = await this.getPrefs();
+    get(key, fallback = null) {
+        let o = this.preferences;
 
         if(!isDefined(o)) {
             return fallback;
@@ -45,9 +49,8 @@ class UserPreferences {
         }
     }
 
-    static async has(key) {
-        let o = await this.getPrefs();
-
+    has(key) {
+        let o = this.preferences;
         if(!o) {
             return false;
         }

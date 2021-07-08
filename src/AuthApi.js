@@ -7,9 +7,21 @@ export default class AuthApi {
         this.$buefy = $buefy;
     }
 
+    request(method) {
+        return FetchBuilder.default(this.$buefy, method);
+    }
+
     async logout() {
-        let data = await FetchBuilder.default(this.$buefy, 'post')
+        let data = await this.request('post')
             .fetch(API_ROOT + 'auth/logout');
+        window.location = data.redirect;
+        return data;
+    }
+
+    async stopImpersonating() {
+        let data = await this.request('post')
+            .fetch('/oxygen/view/users/leaveImpersonate');
+        console.log(data);
         window.location = data.redirect;
         return data;
     }
@@ -24,7 +36,7 @@ export default class AuthApi {
         }
 
         AuthApi.currentlyFetchingUserDetails = true;
-        let response = await FetchBuilder.default(this.$buefy, 'get')
+        let response = await this.request('get')
             .fetch(API_ROOT + 'auth/user');
 
         AuthApi.currentUserDetails = response;
@@ -44,13 +56,21 @@ export default class AuthApi {
             passwordConfirmation: newPassAgain
         };
         console.log(params);
-        return FetchBuilder.default(this.$buefy, 'post')
+        return this.request('post')
             .withJson(params)
             .fetch(API_ROOT + 'auth/change-password');
     }
 
+    async updateFullName(name) {
+        return this.request('put')
+            .withJson({
+                fullName: name
+            })
+            .fetch(API_ROOT + 'auth/fullName');
+    }
+
     async terminateAccount() {
-        return FetchBuilder.default(this.$buefy, 'post')
+        return this.request('post')
             .withJson(params)
             .fetch(API_ROOT + 'auth/terminate-account');
     }
