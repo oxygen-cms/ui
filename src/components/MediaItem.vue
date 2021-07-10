@@ -4,8 +4,8 @@
             <MediaItemPreview :item="item" />
         </div>
         <div class="card-content">
-            <p class="title is-4 cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">{{ item.name }}</p>
-            <p class="subtitle is-6 cursor-pointer" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">
+            <p class="title is-4 cursor-pointer has-text-centered" @click.exact="select(true)" @click.shift.exact="select(false)">{{ item.name }}</p>
+            <p class="subtitle is-6 cursor-pointer has-text-centered" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">
                 inside '{{ directoryPath }}'
 <!--                <b-icon icon="file-image" v-if="item.type === TYPE_IMAGE"></b-icon>-->
 <!--                <b-icon icon="file" v-else-if="item.type === TYPE_DOCUMENT"></b-icon>-->

@@ -5,13 +5,15 @@
 }
 
 .media-icon {
-  font-size: 2rem;
-  width: 100%;
-  margin: 2rem;
+  font-size: 5rem;
+  width: 5rem;
+  height: 5rem;
+  margin-top: 2rem;
 }
 
 .media-item {
   width: 20rem;
+  overflow: visible;
 }
 
 .media-item .card-image,
@@ -45,4 +47,5 @@
 .media-icon-container {
   display: flex;
   align-items: center;
+  flex-direction: column;
 }

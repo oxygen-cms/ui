@@ -29,7 +29,7 @@
                             :disabled="isLoading"
                             v-model="searchQuery"
                             open-on-focus
-                            :data="directoriesList"
+                            :data="filteredDirectoriesList"
                             :custom-formatter="data => getDirectoryPathString(data)"
                             placeholder="Search for directories..."
                             clearable
@@ -50,30 +50,6 @@
                         @click="submit"/>
                 </footer>
             </div>
-
-<!--            <form action="">-->
-<!--                <div class="modal-card" style="width:300px;">-->
-<!--                    <section class="modal-card-body">-->
-<!--                        <b-field label="Email">-->
-<!--                            <b-input-->
-<!--                                type="email"-->
-<!--                                placeholder="Your email"-->
-<!--                                required>-->
-<!--                            </b-input>-->
-<!--                        </b-field>-->
-
-<!--                        <b-field label="Password">-->
-<!--                            <b-input-->
-<!--                                type="password"-->
-<!--                                password-reveal-->
-<!--                                placeholder="Your password"-->
-<!--                                required>-->
-<!--                            </b-input>-->
-<!--                        </b-field>-->
-
-<!--                        <b-checkbox>Remember me</b-checkbox>-->
-<!--                    </section>-->
-<!--            </form>-->
         </b-dropdown-item>
     </b-dropdown>
 </template>
@@ -102,6 +78,16 @@ export default {
     },
     created() {
         this.fetchData()
+    },
+    computed: {
+        filteredDirectoriesList() {
+            let query = this.searchQuery ? this.searchQuery.toLowerCase() : '';
+            if(!query) { return this.directoriesList; }
+            return this.directoriesList.filter((option) => {
+                return option.name.toLowerCase().indexOf(query) >= 0
+                    || option.fullPath.toLowerCase().indexOf(query) >= 0;
+            })
+        }
     },
     methods: {
         async fetchData() {

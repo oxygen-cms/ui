@@ -4,8 +4,8 @@
             <b-icon icon="folder" size="is-large" class="media-icon"></b-icon>
         </div>
         <div class="card-content">
-            <p class="title is-4 cursor-pointer" @click.exact="select(true)" @click.shift.exact="select(false)">{{ directory.name }}</p>
-            <p class="subtitle is-6 cursor-pointer" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">inside '{{ directoryPath }}'</p>
+            <p class="title is-4 cursor-pointer has-text-centered" @click.exact="select(true)" @click.shift.exact="select(false)">{{ directory.name }}</p>
+            <p class="subtitle is-6 cursor-pointer has-text-centered" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">inside '{{ directoryPath }}'</p>
             <div v-if="directory.selected" class="content media-item-toolbar">
                 <b-button v-if="directory.selected" icon-left="pencil-alt" size="is-small" rounded @click.stop="renameDirectory">Rename</b-button>
                 <MediaChooseDirectory v-if="directory.selected" @submit="moveToDirectory" button-text="Move">

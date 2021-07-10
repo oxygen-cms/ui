@@ -42,9 +42,7 @@ export const getDirectoryPathString = (dir) => {
 
     let path = '';
     while(dir !== null && typeof dir !== 'undefined') {
-        if(path !== '') {
-            path = '/' + path;
-        }
+        path = '/' + path;
         path = dir.name + path;
         dir = dir.parentDirectory;
     }

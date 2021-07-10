@@ -1,6 +1,6 @@
 <template>
     <div class="full-height full-height-container legacy-container">
-        <transition name="slide-left" mode="out-in">
+        <transition name="fade">
             <iframe ref="iframe" class="iframe" v-show="!loading" />
         </transition>
 <!--        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>-->
@@ -17,17 +17,20 @@ import MediaApi from "../MediaApi";
 import UserPreferences from "../UserPreferences";
 
 // from https://gist.github.com/hdodov/a87c097216718655ead6cf2969b0dcfa
+
 const iframeURLChange = (iframe, callback, legacyPage) => {
     var unloadHandler = function() {
         console.log('[LegacyPage] Starting load');
         legacyPage.loadingPath = 'unknown';
         // Timeout needed because the URL changes immediately after
         // the `unload` event is dispatched.
-        setTimeout(function() {
-            if(iframe.contentWindow) {
-                callback(iframe.contentWindow.location.href);
-            }
-        }, 0);
+        // TODO: this is rather brittle because I believe it relies upon timing
+        // setTimeout(function() {
+        //     console.log(iframe.contentWindow);
+        //     if(iframe.contentWindow) {
+        //         callback(iframe.contentWindow.location.href);
+        //     }
+        // }, 0);
     };
 
     function attachUnload() {
@@ -54,6 +57,7 @@ export default {
     data() {
         return {
             loadingPath: null,
+            currentPath: null,
             isInsertMediaItemModalActive: false,
             resolveInsertMediaItems: null,
             rejectInsertMediaItems: null,
@@ -105,14 +109,13 @@ export default {
             elem.contentWindow.Oxygen.insertMediaItem = this.openInsertMediaItemModal.bind(this);
             elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
             elem.contentWindow.Oxygen.popState = this.popState.bind(this);
+            elem.contentWindow.Oxygen.onToggleFullscreen = this.onToggleFullscreen.bind(this);
 
-            setTimeout(() => {
-                if(elem.contentWindow.Oxygen.onLoadedInsideIFrame) {
-                    elem.contentWindow.Oxygen.onLoadedInsideIFrame();
-                } else {
-                    console.warn('[LegacyPage] no onLoadedInsideIFrame callback set');
-                }
-            }, 1);
+            if(elem.contentWindow.Oxygen.onLoadedInsideIFrame) {
+                elem.contentWindow.Oxygen.onLoadedInsideIFrame();
+            } else {
+                console.warn('[LegacyPage] no onLoadedInsideIFrame callback set');
+            }
         },
         fullURLToVuePath(url) {
             let urlObj = new URL(url);
@@ -131,15 +134,7 @@ export default {
         // We detect when the iframe url changes, and update our window accordingly...
         onNavigated(newURL) {
             console.log('[LegacyPage] Navigated to ' + newURL);
-            let { loadInside, location } = this.fullURLToVuePath(newURL);
-            if(loadInside === 'iframe') {
-                window.history.pushState({}, "");
-            } else if(loadInside === 'vue') {
-                this.$router.push(location);
-            } else {
-                // load outside of iframe
-                window.location = location;
-            }
+
         },
         showInnerNotification(data) {
             this.$buefy.notification.open(morphToNotification(data));
@@ -157,7 +152,24 @@ export default {
             this.$router.back();
         },
         onLoaded() {
-            console.log('[LegacyPage] Loaded', this.$refs.iframe.contentWindow.location.href);
+            let path = this.$refs.iframe.contentWindow.location.href;
+            if(path === 'about:blank') { return; }
+            console.log('[LegacyPage] Loaded', path);
+
+            if(path !== this.currentPath) {
+                let { loadInside, location } = this.fullURLToVuePath(path);
+                console.log('[LegacyPage] ', loadInside, location);
+                if(loadInside === 'iframe') {
+                    window.history.pushState({}, "", location);
+                } else if(loadInside === 'vue') {
+                    this.$router.push(location);
+                } else {
+                    // load outside of iframe
+                    window.location = location;
+                }
+
+                this.currentPath = path;
+            }
 
             document.title = this.$refs.iframe.contentDocument.title;
             this.setupIframeIntegrations();
@@ -165,9 +177,6 @@ export default {
             this.loadingPath = null;
         },
         loadPath(routePath) {
-            if(this.loadingPath === routePath) {
-                return;
-            }
             let path = this.vuePathToURL(routePath);
             if(path === '/oxygen/view/auth/login') {
                 console.log('[LegacyPage] Need to login again, redirecting...');
@@ -207,6 +216,9 @@ export default {
                 type: 'is-info',
                 queue: false
             });
+        },
+        onToggleFullscreen(mode) {
+            this.$parent.$data.requestedCollapsed = mode;
         }
     }
 }

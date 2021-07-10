@@ -2,15 +2,13 @@ import {API_ROOT} from "./CrudApi";
 import {FetchBuilder} from "./api";
 
 export const canAccessPrefs = ($buefy, userPermissions, keys) => {
-    console.log(keys);
+    console.log('Checking permissions for', keys);
     for(let key of keys) {
         let permissionsKey = 'preferences.' + key.split('::')[0].replace('.', '_');
         if(userPermissions.has(permissionsKey)) {
-            console.log(true);
             return true;
         }
     }
-    console.log(false);
     return false;
 };
 
