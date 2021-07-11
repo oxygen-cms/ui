@@ -86,6 +86,9 @@ export default {
             this.onLoaded();
         }
     },
+    unmounted() {
+        this.$parent.$data.requestedCollapsed = false;
+    },
     beforeRouteUpdate(to, from, next) {
         // when the Vue route changes, load this path inside the iframe
         this.loadPath(to.fullPath);

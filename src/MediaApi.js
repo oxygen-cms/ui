@@ -38,7 +38,7 @@ export default class MediaApi extends CrudApi {
             .withQueryParams({
                 path: path,
                 q: (searchQuery !== null && searchQuery !== '' ) ? searchQuery : null,
-                page: page,
+                page: (searchQuery !== null && searchQuery !== '' ) ? null : page,
                 trash: (inTrash ? 'true' : 'false'),
             })
             .fetch(this.constructor.getResourceRoot());

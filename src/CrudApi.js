@@ -30,7 +30,7 @@ class CrudApi {
     async list(inTrash, page, searchQuery) {
         return this.request('get')
             .withQueryParams({
-                page: page,
+                page: (searchQuery !== null && searchQuery !== '' ) ? null : page,
                 trash: (inTrash ? 'true' : 'false'),
                 q: (searchQuery !== null && searchQuery !== '' ) ? searchQuery : null
             })
