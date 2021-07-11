@@ -97,6 +97,7 @@ export default {
     beforeRouteLeave(to, from, next) {
         window.document.body.style.overflowY = 'auto';
         window.document.documentElement.style.overflowY = 'auto';
+        this.$parent.$data.requestedCollapsed = false;
         next();
     },
     methods: {
