@@ -29,7 +29,7 @@
                 <b-field v-else :label="label" :type="fieldType" :message="validationMessage" label-position="inside" class="pref-field">
                     <b-input v-model="value" class="pref-field-input" :type="type"></b-input>
                     <p class="control">
-                        <b-button :loading="validating || updating" :type="(value !== serverValue && validationMessage === null && !validating) ? 'is-success' : ''" :disabled="value === serverValue || validationMessage !== null" @click="updateValue">Update</b-button>
+                        <b-button :loading="validating || updating" :type="(value !== serverValue && validationMessage === null && !validating) ? 'is-success' : ''" :disabled="value === serverValue || validationMessage !== null" @click="updateValue()">Update</b-button>
                     </p>
                 </b-field>
             </slot>

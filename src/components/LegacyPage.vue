@@ -110,6 +110,7 @@ export default {
             elem.contentWindow.Oxygen.onNavigationEnd = this.onLoaded.bind(this);
             elem.contentWindow.Oxygen.notify = this.showInnerNotification.bind(this);
             elem.contentWindow.Oxygen.openAlertDialog = this.openAlertDialog.bind(this);
+            elem.contentWindow.Oxygen.hardRedirect = this.hardRedirect.bind(this);
             elem.contentWindow.Oxygen.insertMediaItem = this.openInsertMediaItemModal.bind(this);
             elem.contentWindow.Oxygen.openConfirmDialog = this.openConfirmDialog.bind(this);
             elem.contentWindow.Oxygen.popState = this.popState.bind(this);
@@ -192,12 +193,13 @@ export default {
             this.loadingPath = path;
 
             let elem = this.$refs.iframe;
-            if(elem.contentWindow && typeof elem.contentWindow.smoothState !== 'undefined') {
-                elem.contentWindow.smoothState.load(path, true);
-            } else if(elem.src !== path) {
+            if(elem.src !== path) {
                 // load the page from scratch
                 elem.src = path;
             }
+        },
+        hardRedirect(loc) {
+            window.location.replace(loc);
         },
         openInsertMediaItemModal() {
             this.isInsertMediaItemModalActive = true;
