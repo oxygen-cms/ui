@@ -1,7 +1,7 @@
 <template>
     <ShowIfPermitted data-key="appearance.events">
         <h3 class="subtitle">Events</h3>
-        <PreferencesField data-key="appearance.events::contentView" label="Events Content View"></PreferencesField>
+        <PreferencesField data-key="appearance.events::contentView" label="Events Content View" :current-theme="currentTheme"></PreferencesField>
     </ShowIfPermitted>
 </template>
 
@@ -11,6 +11,12 @@ import ShowIfPermitted from "./ShowIfPermitted.vue";
 
 export default {
     name: "PreferencesEventsTemplates",
-    components: {ShowIfPermitted, PreferencesField }
+    components: {ShowIfPermitted, PreferencesField },
+    props: {
+        currentTheme: {
+            type: String,
+            default: null
+        }
+    }
 }
 </script>

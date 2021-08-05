@@ -4,25 +4,25 @@
         <PreferencesField data-key="appearance.themes::theme" label="">
             <template v-slot:default="slotProps">
                 <b-table
-                    :data="slotProps.options"
+                    :data="Object.values(slotProps.options)"
                     :striped="false">
+                    <b-table-column label="Key" v-slot="props">
+                        <img :src="props.row.image" class="theme-logo" />
+                    </b-table-column>
+
                     <b-table-column field="name" label="Name" v-slot="props">
-                        {{ props.row.display.name }}
+                        {{ props.row.name }}
                         <strong v-if="getSelectedOption(slotProps.options, slotProps.value) === props.row">(current theme)</strong>
                     </b-table-column>
 
-                    <b-table-column field="key" label="Key" v-slot="props">
-                        <code>{{ props.row.display.key }}</code>
-                    </b-table-column>
-
                     <b-table-column field="provides" label="Provides preferences" v-slot="props">
-                        <div v-for="(provideGroup, keyGroup) in props.row.display.provides">
-                            <span v-for="(value, key) in provideGroup">{{ keyGroup }}::{{ key}} <br></span>
+                        <div v-for="(provideGroup, keyGroup) in props.row.provides" class="is-size-7">
+                            <span v-for="(value, key) in provideGroup"><code>{{ keyGroup }}::{{ key}}</code><br></span>
                         </div>
                     </b-table-column>
 
                     <b-table-column label="" v-slot="props">
-                        <b-button v-if="getSelectedOption(slotProps.options, slotProps.value) !== props.row" @click="switchToTheme(props.row, slotProps.updateValue)" :loading="updating">Switch to this theme</b-button>
+                        <b-button v-if="getSelectedOption(slotProps.options, slotProps.value) !== props.row" @click="switchToTheme(props.row.key, slotProps.updateValue)" :loading="updating">Switch to this theme</b-button>
                         <b-button type="is-success" disabled v-else>Theme is already active</b-button>
                     </b-table-column>
                 </b-table>
@@ -47,21 +47,27 @@ export default {
             return theme.display.name;
         },
         getSelectedOption(options, value) {
-            let items = options.filter((option) => {
-                return option.display.key === value;
-            });
-            if(items.length > 0) {
-                return items[0];
-            } else {
-                return null;
-            }
+            return options[value];
         },
-        async switchToTheme(row, updateFn) {
-            console.log(row);
+        async switchToTheme(value, updateFn) {
+            console.log(value);
             this.updating = true;
-            await updateFn(row.value);
+            await updateFn(value);
             this.updating = false;
+            this.$emit('theme-changed', value);
         }
     }
 }
 </script>
+
+<style scoped lang="scss">
+    .theme-logo {
+        display: block;
+        max-width: 10rem;
+        margin: 0 auto;
+    }
+
+    .b-table ::v-deep .table td {
+        vertical-align: middle;
+    }
+</style>

@@ -1,8 +1,8 @@
 <template>
     <ShowIfPermitted data-key="appearance.pages">
         <h3 class="subtitle">Pages</h3>
-        <PreferencesField data-key="appearance.pages::theme" label="Page Template"></PreferencesField>
-        <PreferencesField data-key="appearance.pages::contentView" label="Page Preview Template"></PreferencesField>
+        <PreferencesField data-key="appearance.pages::theme" label="Page Template" :current-theme="currentTheme"></PreferencesField>
+        <PreferencesField data-key="appearance.pages::contentView" label="Page Preview Template" :current-theme="currentTheme"></PreferencesField>
     </ShowIfPermitted>
 </template>
 
@@ -12,6 +12,12 @@ import ShowIfPermitted from "./ShowIfPermitted.vue";
 
 export default {
     name: "PreferencesPageTemplates",
-    components: {ShowIfPermitted, PreferencesField }
+    components: {ShowIfPermitted, PreferencesField },
+    props: {
+        currentTheme: {
+            type: String,
+            default: null
+        }
+    }
 }
 </script>

@@ -2,36 +2,39 @@
     <div>
         <div v-if="loaded">
             <slot :value="value" :options="options" :update-value="updateValue">
-                <div v-if="type === 'switch'">
-                    <b-switch :value="value" @input="updateValue($event)">{{ label }}</b-switch>
-                    <br /><br />
-                </div>
-                <b-field :label="label" label-position="inside" v-else-if="type === 'select'" class="pref-field">
-                    <b-select v-if="grouped" placeholder="Select an value..." :value="value" @input="updateValue($event)">
-                        <optgroup v-for="(suboptions) in options" :label="suboptions.value">
+                <div class="horizontal-row">
+                    <b-switch :value="value" @input="updateValue($event)" :passive-type="isFallback ? 'is-dark' : ''" v-if="type === 'switch'">{{ label }}</b-switch>
+                    <b-field :label="label" label-position="inside"  v-else-if="type === 'select'"  class="pref-field">
+                        <b-select v-if="grouped" :placeholder="selectPlaceholder" :value="value" @input="updateValue($event)">
+                            <optgroup v-for="(suboptions, label) in options" :label="label">
+                                <option
+                                    v-for="(display, value) in suboptions"
+                                    :value="value"
+                                    :key="value">
+                                    {{ display }}
+                                </option>
+                            </optgroup>
+                        </b-select>
+                        <b-select v-else :placeholder="selectPlaceholder" :value="value" @input="updateValue($event)">
                             <option
-                                v-for="(display, value) in suboptions.display"
-                                :value="value"
-                                :key="value">
-                                {{ display }}
+                                v-for="(optionDisplay, optionValue) in options"
+                                :value="optionValue"
+                                :key="optionValue">
+                                {{ optionDisplay }}
                             </option>
-                        </optgroup>
-                    </b-select>
-                    <b-select v-else placeholder="Select an value..." :value="value" @input="updateValue($event)">
-                        <option
-                            v-for="option in options"
-                            :value="option.value"
-                            :key="option.value">
-                            {{ option.display }}
-                        </option>
-                    </b-select>
-                </b-field>
-                <b-field v-else :label="label" :type="fieldType" :message="validationMessage" label-position="inside" class="pref-field">
-                    <b-input v-model="value" class="pref-field-input" :type="type"></b-input>
-                    <p class="control">
-                        <b-button :loading="validating || updating" :type="(value !== serverValue && validationMessage === null && !validating) ? 'is-success' : ''" :disabled="value === serverValue || validationMessage !== null" @click="updateValue()">Update</b-button>
-                    </p>
-                </b-field>
+                        </b-select>
+                    </b-field>
+                    <b-field v-else :label="label" :type="fieldType" :message="validationMessage" label-position="inside">
+                        <b-input v-model="value" class="pref-field-input" :type="type" :placeholder="fallbackValue"></b-input>
+                        <p class="control">
+                            <b-button :loading="validating || updating" :type="(value !== serverValue && validationMessage === null && !validating) ? 'is-success' : ''" :disabled="value === serverValue || validationMessage !== null" @click="updateValue()">Update</b-button>
+                        </p>
+                    </b-field>
+                    <b-button v-if="hasFallback" :disabled="!hasFallback || isFallback" type="is-light" size="is-small" :loading="updating" @click="clearValue()">
+                        <span v-if="!isFallback">Use default from {{ defaultText }}</span>
+                        <span v-else>Inherited  from {{ defaultText }}</span>
+                    </b-button>
+                </div>
             </slot>
         </div>
         <div v-else class="pref-field-skeleton">
@@ -57,6 +60,14 @@ export default {
         grouped: {
             type: Boolean,
             default: false
+        },
+        currentTheme: {
+            type: String,
+            default: null
+        },
+        defaultText: {
+            type: String,
+            default: 'theme'
         }
     },
     data() {
@@ -64,6 +75,7 @@ export default {
             preferencesApi: new PreferencesApi(this.$buefy),
             loaded: false,
             hidden: false,
+            fallbackValue: null,
             serverValue: null,
             value: null,
             options: [],
@@ -74,13 +86,35 @@ export default {
     },
     computed: {
         fieldType() {
-            if(this.validationMessage !== null) { return 'is-danger'; }
+            if(this.isFallback) { return 'is-dark'; }
+            else if(this.validationMessage !== null) { return 'is-danger'; }
             else if(!this.validating && this.value !== this.serverValue) { return 'is-success'; }
             else { return ''; }
+        },
+        isFallback() {
+            return this.fallbackValue !== null && (this.value === null || this.value === '');
+        },
+        hasFallback() {
+            return this.fallbackValue !== null;
+        },
+        selectPlaceholder() {
+            if(this.fallbackValue !== null) {
+                if(this.grouped) {
+                    let entries = Object.entries(this.options).flatMap(args => { return Object.entries(args[1]); });
+                    console.log(entries);
+                    return entries.filter(args => args[0] === this.fallbackValue).map(args => args[1])[0];
+                } else {
+                    let entries = Object.entries(this.options);
+                    console.log(entries);
+                    return entries.filter(args => args[0] === this.fallbackValue).map(args => args[1])[0];
+                }
+            }
+            return 'Select a value...';
         }
     },
     watch: {
-        'value': 'tryValidate'
+        'value': 'tryValidate',
+        'currentTheme': 'fetchData'
     },
     mounted() {
         this.fetchData()
@@ -91,8 +125,9 @@ export default {
             if(serverData.permissions === false) {
                 return;
             }
-            this.serverValue = serverData.value;
+            this.serverValue = serverData.primaryValue;
             this.value = this.serverValue;
+            this.fallbackValue = serverData.fallbackValue;
             this.options = serverData.options;
             this.loaded = true;
         },
@@ -111,12 +146,6 @@ export default {
                 result
             );
             this.validationMessage = result.reason ? result.reason : null;
-            // this.paginatedItems.loading = true;
-            // let data = await this.personApi.list({ q: this.personSearchQuery, tags: [], page: this.paginatedItems.currentPage });
-            // this.paginatedItems.items = data.items;
-            // this.paginatedItems.totalItems = data.totalItems;
-            // this.paginatedItems.itemsPerPage = data.itemsPerPage;
-            // this.paginatedItems.loading = false;
         }, 250),
         async updateValue(value) {
             if(typeof value === 'undefined') {
@@ -124,10 +153,24 @@ export default {
             }
             this.updating = true;
             let result = await this.preferencesApi.setValue(this.dataKey, value);
+            this.handleUpdateResult(result);
+        },
+        handleUpdateResult(result) {
+            this.updating = false;
+            if(result.reason) {
+                this.validationMessage = result.reason ? result.reason : null;
+                return;
+            }
             this.updating = false;
             this.$buefy.toast.open(morphToNotification(result));
-            this.serverValue = result.value;
-            this.value = result.value;
+            this.serverValue = result.primaryValue;
+            this.value = result.primaryValue;
+            this.fallbackValue = result.fallbackValue;
+        },
+        async clearValue() {
+            this.updating = true;
+            let result = await this.preferencesApi.setValue(this.dataKey, null);
+            this.handleUpdateResult(result);
         }
     }
 }
@@ -151,5 +194,22 @@ export default {
 
     .pref-field-skeleton ::v-deep .b-skeleton-item {
         line-height: 2.5rem;
+    }
+
+    .horizontal-row {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .horizontal-row .field,
+    .horizontal-row .switch {
+        margin-bottom: 0;
+        flex: 1;
+        max-width: 35rem;
+    }
+
+    .horizontal-row > .button {
+        margin-left: 1rem;
     }
 </style>

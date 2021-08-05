@@ -78,7 +78,8 @@ class FetchBuilder {
             console.error('Response did not contain valid JSON: ', e);
             this.$buefy.notification.open({
                 message: 'Whoops, looks like something went wrong.',
-                type: 'is-warning'
+                type: 'is-warning',
+                queue: false
             });
 
             throw e;
@@ -89,7 +90,7 @@ class FetchBuilder {
         }
 
         handleAPIError(data, this.$buefy);
-        let e = new Error();
+        let e = new Error('Received an error response from API call');
         e.response = data;
         throw e;
     }
