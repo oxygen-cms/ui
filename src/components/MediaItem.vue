@@ -102,10 +102,16 @@
                         <b-input v-model="description" type="textarea"></b-input>
                     </b-field>
 
-                    <label class="label">Variants</label>
-                    <b-table striped :data="variants">
+                    <label class="label">
+                        Variants
+                        <b-tooltip multilined position="is-right" type="is-dark" label="Each uploaded media item will be automatically converted into different sizes/formats to serve optimized images to users.">
+                            <b-icon size="is-small" icon="question-circle"></b-icon>
+                        </b-tooltip>
+                    </label>
+                    <b-table striped :data="variants" :default-sort="['width']">
                         <b-table-column label="Filename" field="filename" v-slot="props"><a :href="'/content/media/' + props.row.filename">{{ props.row.filename }}</a></b-table-column>
-                        <b-table-column label="Width (px)" field="width" v-slot="props">{{ props.row.width }}</b-table-column>
+                        <b-table-column label="Width (px)" field="width" sortable v-slot="props">{{ props.row.width ? props.row.width : 'Full size' }}</b-table-column>
+                        <b-table-column label="Format" field="mime" sortable v-slot="props">{{ props.row.mime }}</b-table-column>
                     </b-table>
 
                     <label class="label">Versions</label>
@@ -193,12 +199,7 @@ export default {
             }
         },
         variants() {
-            return this.item.variants.concat([
-                {
-                    filename: this.item.filename,
-                    width: 'Full size'
-                }
-            ]);
+            return this.item.variants;
         },
         externalLink() {
             return window.location.origin + '/media/' + this.item.fullPath;
