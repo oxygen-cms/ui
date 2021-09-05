@@ -6,12 +6,12 @@
             <div class="content" style="max-width: 80rem;">
             <p><a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images">Responsive images</a> are images which work well on devices of differing screen sizes, resolutions etc...
                 Depending on the size/pixel density of the users' screen, we serve a different image to them. This optimization helps speed up load times dramatically.</p>
-            <b-button type="is-primary" @click="generate" :disabled="requestInFlight">Generate responsive versions for each image</b-button>
+            <b-button type="is-primary" :disabled="requestInFlight" @click="generate">Generate responsive versions for each image</b-button>
             </div>
             <b-progress v-if="requestInFlight" size="is-medium" show-value>Generating...</b-progress>
             <div v-if="hasServerLog" class="full-height-flex full-height-container" style="min-height: 0;">
                 <h4 class="subtitle">Server output log:</h4>
-                <pre v-html="serverLog" class="scroll-container full-height-flex" style="background-color: #000;"></pre>
+                <pre class="scroll-container full-height-flex" style="background-color: #000;" v-html="serverLog"></pre>
             </div>
         </div>
     </div>

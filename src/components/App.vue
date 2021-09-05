@@ -5,15 +5,15 @@
             <div class="app-logo-title">
                 <router-link to="/" class="app-logo-title-link">
                     <img src="../../assets/oxygen-icon.png" alt="Oxygen CMS" class="app-logo">
-                    <span to="/" class="app-title" v-if="!collapsed">Oxygen CMS</span>
+                    <span v-if="!collapsed" to="/" class="app-title">Oxygen CMS</span>
                 </router-link>
                 <span class="is-flex-grow-1"></span>
-                <b-button type="is-light" v-if="!requestedCollapsed" :icon-left="collapsed ? 'angle-right' : 'angle-left'" class="collapse-menu-button" @click="setCollapsed = !setCollapsed"></b-button>
+                <b-button v-if="!requestedCollapsed" type="is-light" :icon-left="collapsed ? 'angle-right' : 'angle-left'" class="collapse-menu-button" @click="setCollapsed = !setCollapsed"></b-button>
             </div>
 
             <b-menu class="left-navigation">
 
-                <slot name="main-navigation" v-bind:userPermissions="userPermissions" v-bind:collapsed="collapsed"></slot>
+                <slot name="main-navigation" :userPermissions="userPermissions" :collapsed="collapsed"></slot>
 
             </b-menu>
 
@@ -21,15 +21,15 @@
                 <b-dropdown aria-role="list" :position="collapsed ? 'is-top-right' : 'is-top-left'" expanded>
                     <template #trigger>
                         <div class="user-dropdown">
-                            <div class="user-dropdown-text" v-if="!collapsed">
+                            <div v-if="!collapsed" class="user-dropdown-text">
                                 <strong v-if="impersonating">Temporarily logged-in as<br/></strong>
                                 <transition name="fade" mode="out-in">
                                     <span v-if="user">{{ user.fullName }}</span>
-                                    <b-skeleton size="is-medium" width="10em" :animated="true" v-else></b-skeleton>
+                                    <b-skeleton v-else size="is-medium" width="10em" :animated="true"></b-skeleton>
                                 </transition>
                                 <transition name="fade" mode="out-in">
                                     <p v-if="user" class="is-size-7">{{ user.email }}</p>
-                                    <b-skeleton width="8em" :animated="true" v-else></b-skeleton>
+                                    <b-skeleton v-else width="8em" :animated="true"></b-skeleton>
                                 </transition>
                             </div>
                             <div class="is-flex-grow-1"></div>
@@ -86,6 +86,11 @@
                 return this.setCollapsed || this.requestedCollapsed;
             }
         },
+        watch: {
+            '$route' (to) {
+                this.setTitle(to.meta.title);
+            },
+        },
         created() {
             this.setTitle(this.$route.meta.title);
             this.$root.$on('update-route-title', (title) => {
@@ -93,11 +98,6 @@
             });
             this.fetchUserDetails();
             this.setGlobalFontSize()
-        },
-        watch: {
-            '$route' (to, from) {
-                this.setTitle(to.meta.title);
-            },
         },
         methods: {
             setTitle(title) {

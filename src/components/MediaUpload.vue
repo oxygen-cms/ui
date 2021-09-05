@@ -1,10 +1,10 @@
 <template>
     <div class="modal-card">
         <header class="modal-card-head">
-            <p class="modal-card-title" v-if="!isUploading">Upload files to '{{ currentPath }}'</p>
-            <p class="modal-card-title" v-else>Uploading {{ filesToUpload.length }} item(s)</p>
+            <p v-if="!isUploading" class="modal-card-title">Upload files to '{{ currentPath }}'</p>
+            <p v-else class="modal-card-title">Uploading {{ filesToUpload.length }} item(s)</p>
         </header>
-        <section class="modal-card-body" v-if="!isUploading">
+        <section v-if="!isUploading" class="modal-card-body">
             <b-upload v-model="filesToUpload"
                       multiple
                       drag-drop expanded>
@@ -37,7 +37,7 @@
         <footer class="modal-card-foot is-flex">
             <div class="is-flex-grow-1"></div>
             <b-button @click="closeModal">Close</b-button>
-            <b-button @click="doUpload" type="is-primary" :disabled="isUploading">Upload</b-button>
+            <b-button type="is-primary" :disabled="isUploading" @click="doUpload">Upload</b-button>
         </footer>
     </div>
 </template>
@@ -67,7 +67,7 @@ export default {
     asyncComputed: {
         async imagePreviews() {
             let promises = this.filesToUpload.map(file => {
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                     let reader = new FileReader();
                     reader.onload = function (e) {
                         resolve(e.target.result);

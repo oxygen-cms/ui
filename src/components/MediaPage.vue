@@ -1,5 +1,5 @@
 <template>
-    <MediaList @navigate="onNavigate" :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" @double-click-action="viewItem" />
+    <MediaList :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" @navigate="onNavigate" @double-click-action="viewItem" />
 </template>
 
 <script>

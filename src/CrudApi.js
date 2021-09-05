@@ -66,20 +66,20 @@ class CrudApi {
             .fetch(this.constructor.getResourceRoot() + '/search');
     }
 
-    async forceDelete(id, callback) {
+    async forceDelete(id) {
         return this.request('delete')
             .fetch(this.constructor.getResourceRoot() + '/' + id + '?force=true');
     }
 
     async confirmForceDelete(id) {
-        const promise = new Promise((resolve, reject) => {
+        const promise = new Promise((resolve) => {
             this.$buefy.dialog.confirm({
                 message: 'Are you sure you want to delete this record forever?',
                 onConfirm: resolve
             });
         });
 
-        let result = await promise;
+        await promise;
         let data = await this.forceDelete(id);
         this.$buefy.toast.open(morphToNotification(data));
         return data;

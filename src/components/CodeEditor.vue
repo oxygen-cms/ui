@@ -1,20 +1,18 @@
 <template>
     <div class="editor-container has-background-grey-darker" :style="'height: ' + height + ';'">
 
-        <b-loading :is-full-page="false" v-model="loading" class="load-screen"></b-loading>
+        <b-loading v-model="loading" :is-full-page="false" class="load-screen"></b-loading>
 
         <transition name="fade">
             <AceEditor
                 v-if="!loading"
                 key="editor"
                 :value="value"
-                @input="$emit('input', $event)"
-                @init="editorInit"
+                ref="ace"
                 :lang="lang"
                 :theme="theme"
                 width="100%"
                 height="100%"
-                ref="ace"
                 :options="{
                     enableBasicAutocompletion: true,
                     enableLiveAutocompletion: true,
@@ -28,6 +26,8 @@
                     showInvisibles: showInvisibles,
                     showGutter: true,
             }"
+                @input="$emit('input', $event)"
+                @init="editorInit"
             />
         </transition>
 
@@ -74,13 +74,13 @@ export default {
         this.userPreferences = await UserPreferences.load();
         this.loading = false;
     },
-    components: { AceEditor: require('vue2-ace-editor') },
+    components: { AceEditor: import('vue2-ace-editor') },
     methods: {
         editorInit() {
-            require('brace/ext/language_tools') //language extension prerequsite...
-            require('brace/mode/' + this.lang);
-            require('brace/theme/' + this.theme);
-            require('brace/snippets/' + this.lang);
+            import('brace/ext/language_tools') //language extension prerequsite...
+            import(`brace/mode/${this.lang}`);
+            import(`brace/theme/${this.lang}`);
+            import(`brace/snippets/${this.lang}`);
 
             // ignore first missing DOCTYPE warning
             let session = this.$refs.ace.editor.getSession();

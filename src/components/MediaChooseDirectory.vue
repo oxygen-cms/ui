@@ -1,10 +1,10 @@
 <template>
     <b-dropdown
+        ref="dropdown"
         position="is-top-left"
         append-to-body
         aria-role="menu"
         trap-focus
-        ref="dropdown"
         class="choose-directory-dropdown"
     >
         <template #trigger>
@@ -26,8 +26,8 @@
                 <section class="modal-card-body" style="overflow: visible;">
                     <b-field>
                         <b-autocomplete
-                            :disabled="isLoading"
                             v-model="searchQuery"
+                            :disabled="isLoading"
                             open-on-focus
                             :data="filteredDirectoriesList"
                             :custom-formatter="data => getDirectoryPathString(data)"
@@ -59,6 +59,12 @@ import MediaDirectoryApi, {getDirectoryPathString} from "../MediaDirectoryApi";
 
 export default {
     name: "MediaChooseDirectory",
+    props: {
+        buttonText: {
+            type: String,
+            default: "Move to directory"
+        }
+    },
     data() {
         return {
             mediaDirectoryApi: new MediaDirectoryApi(this.$buefy),
@@ -70,15 +76,6 @@ export default {
             getDirectoryPathString: getDirectoryPathString
         }
     },
-    props: {
-        buttonText: {
-            type: String,
-            default: "Move to directory"
-        }
-    },
-    created() {
-        this.fetchData()
-    },
     computed: {
         filteredDirectoriesList() {
             let query = this.searchQuery ? this.searchQuery.toLowerCase() : '';
@@ -88,6 +85,9 @@ export default {
                     || option.fullPath.toLowerCase().indexOf(query) >= 0;
             })
         }
+    },
+    created() {
+        this.fetchData()
     },
     methods: {
         async fetchData() {

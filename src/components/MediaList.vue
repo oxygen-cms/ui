@@ -2,22 +2,22 @@
 
     <div class="full-height full-height-container media-container">
         <div class="top-bar">
-            <div class="breadcrumb" v-if="!paginatedItems.loading && !inTrash && !searchQuery">
+            <div v-if="!paginatedItems.loading && !inTrash && !searchQuery" class="breadcrumb">
                 <ul>
                     <li v-for="item in getDirectoryBreadcrumbItems(paginatedItems.currentDirectory)" :class="item.separator ? 'separator' : ''">
                         <b-icon v-if="item.home && paginatedItems.currentDirectory === null" class="subtitle" icon="home"></b-icon>
-                        <b-button v-else-if="item.home" type="is-text" @click="navigateTo({ currentPath: '' })" class="subtitle" icon-left="home"></b-button>
-                        <b-button v-else-if="item.link !== null" type="is-text" @click="navigateTo({ currentPath: item.link })" class="subtitle">{{ item.text }}</b-button>
+                        <b-button v-else-if="item.home" type="is-text" class="subtitle" icon-left="home" @click="navigateTo({ currentPath: '' })"></b-button>
+                        <b-button v-else-if="item.link !== null" type="is-text" class="subtitle" @click="navigateTo({ currentPath: item.link })">{{ item.text }}</b-button>
                         <span v-else class="subtitle is-active">{{ item.text }}</span>
                     </li>
                 </ul>
             </div>
             <div v-else-if="inTrash" class="is-flex">
-                <b-button @click="navigateTo({ currentPath: '' })" outlined rounded icon-left="arrow-left" class="action-bar-pad">All Items</b-button>
+                <b-button outlined rounded icon-left="arrow-left" class="action-bar-pad" @click="navigateTo({ currentPath: '' })">All Items</b-button>
                 <div class="title action-bar-pad">Deleted Photos & Files</div>
             </div>
             <div v-else-if="searchQuery" class="is-flex">
-                <b-button @click="navigateTo({ currentPath: '' })" outlined rounded icon-left="arrow-left" class="action-bar-pad">All Items</b-button>
+                <b-button outlined rounded icon-left="arrow-left" class="action-bar-pad" @click="navigateTo({ currentPath: '' })">All Items</b-button>
                 <div class="title action-bar-pad">Search results for "{{ searchQuery }}"</div>
             </div>
             <ul v-else>
@@ -28,26 +28,26 @@
 
             <b-field class="action-bar-pad">
                 <p class="control">
-                    <b-button disabled v-if="numberOfItemsSelected > 0" type="is-primary">{{ numberOfItemsSelected }} item(s) selected</b-button>
+                    <b-button v-if="numberOfItemsSelected > 0" disabled type="is-primary">{{ numberOfItemsSelected }} item(s) selected</b-button>
                 </p>
                 <p class="control">
-                    <b-button v-if="numberOfItemsSelected > 0" @click="resetSelection" icon-left="times" type="is-primary"></b-button>
+                    <b-button v-if="numberOfItemsSelected > 0" icon-left="times" type="is-primary" @click="resetSelection"></b-button>
                 </p>
             </b-field>
 
-            <b-button v-if="!inTrash && !searchQuery" icon-left="folder-plus" @click="isCreateDirectoryModalActive = true" class="action-bar-pad">New Directory</b-button>
-            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" @click="isUploadModalActive = true" type="is-success" class="action-bar-pad">Upload Files</b-button>
-            <b-input rounded placeholder="Search photos and files..." icon="search" icon-pack="fas"
-                     :value="searchQuery" @input="value => navigateTo({searchQuery: value})" class="action-bar-pad" v-if="!inTrash"></b-input>
-            <b-button v-if="!inTrash" icon-left="trash" @click="navigateTo({inTrash: true})" type="is-danger" outlined class="action-bar-pad">Deleted Items</b-button>
+            <b-button v-if="!inTrash && !searchQuery" icon-left="folder-plus" class="action-bar-pad" @click="isCreateDirectoryModalActive = true">New Directory</b-button>
+            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" type="is-success" class="action-bar-pad" @click="isUploadModalActive = true">Upload Files</b-button>
+            <b-input v-if="!inTrash" rounded placeholder="Search photos and files..." icon="search"
+                     icon-pack="fas" :value="searchQuery" class="action-bar-pad" @input="value => navigateTo({searchQuery: value})"></b-input>
+            <b-button v-if="!inTrash" icon-left="trash" type="is-danger" outlined class="action-bar-pad" @click="navigateTo({inTrash: true})">Deleted Items</b-button>
         </div>
 
 
         <div class="media-items full-height-flex scroll-container">
 
-            <b-loading :is-full-page="false" v-model="paginatedItems.loading" :can-cancel="false"></b-loading>
+            <b-loading v-model="paginatedItems.loading" :is-full-page="false" :can-cancel="false"></b-loading>
 
-            <h2 class="subtitle media-items-empty" v-if="!paginatedItems.loading && paginatedItems.directories.length === 0 && paginatedItems.files.length === 0">
+            <h2 v-if="!paginatedItems.loading && paginatedItems.directories.length === 0 && paginatedItems.files.length === 0" class="subtitle media-items-empty">
                 No items found.
             </h2>
 
@@ -72,10 +72,10 @@
 
         </div>
 
-        <div class="pagination-container" v-if="paginatedItems.totalFiles > paginatedItems.filesPerPage">
+        <div v-if="paginatedItems.totalFiles > paginatedItems.filesPerPage" class="pagination-container">
             <b-pagination
-                :total="paginatedItems.totalFiles"
                 v-model="paginatedItems.currentPage"
+                :total="paginatedItems.totalFiles"
                 :per-page="paginatedItems.filesPerPage"
                 aria-next-label="Next page"
                 aria-previous-label="Previous page"
@@ -97,7 +97,7 @@
                 <footer class="modal-card-foot is-flex">
                     <div class="is-flex-grow-1"></div>
                     <b-button @click="isCreateDirectoryModalActive = false">Close</b-button>
-                    <b-button @click="doCreateDirectory" type="is-primary">Create</b-button>
+                    <b-button type="is-primary" @click="doCreateDirectory">Create</b-button>
                 </footer>
             </div>
         </b-modal>
@@ -120,22 +120,19 @@ import MediaUpload from "./MediaUpload.vue";
 
 export default {
     name: "MediaList",
+    components: { MediaDirectory, MediaItem, MediaUpload },
     props: {
         currentPath: {
-            type: String
+            type: String,
+            required: true
         },
         inTrash: {
             type: Boolean
         },
         searchQuery: {
-            type: String
+            type: String,
+            default: null
         }
-    },
-    watch: {
-        'searchQuery': 'debounceFetchData',
-        'inTrash': 'fetchData',
-        'paginatedItems.currentPage': 'fetchData',
-        'currentPath': 'fetchData'
     },
     data() {
         return {
@@ -149,10 +146,6 @@ export default {
             getDirectoryBreadcrumbItems: getDirectoryBreadcrumbItems
         }
     },
-    components: { MediaDirectory, MediaItem, MediaUpload },
-    created() {
-        this.fetchData()
-    },
     computed: {
         displayPath() {
             return getDirectoryPathString(this.paginatedItems.currentDirectory);
@@ -160,6 +153,15 @@ export default {
         numberOfItemsSelected() {
             return this.paginatedItems.files.concat(this.paginatedItems.directories).filter(item => item.selected).length;
         }
+    },
+    watch: {
+        'searchQuery': 'debounceFetchData',
+        'inTrash': 'fetchData',
+        'paginatedItems.currentPage': 'fetchData',
+        'currentPath': 'fetchData'
+    },
+    created() {
+        this.fetchData()
     },
     methods: {
         async fetchData() {

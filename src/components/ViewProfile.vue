@@ -8,21 +8,21 @@
                     </div>
                     <div class="media-content">
                         <transition name="fade" mode="out-in">
-                            <p class="title is-4" v-if="user && editingFullName === null">{{ user.fullName }} <b-button rounded size="is-small" type="is-light" icon-left="pencil-alt" @click="editFullName"></b-button></p>
+                            <p v-if="user && editingFullName === null" class="title is-4">{{ user.fullName }} <b-button rounded size="is-small" type="is-light" icon-left="pencil-alt" @click="editFullName"></b-button></p>
                             <b-field v-else-if="user" label="Full Name" label-position="inside" class="not-full-width">
                                 <b-input v-model="editingFullName"></b-input>
                                 <p class="control">
                                     <b-button type="is-primary" :loading="updatingFullName" @click="submitFullName">Change</b-button>
                                 </p>
                             </b-field>
-                            <b-skeleton size="is-medium" width="40%" :animated="true" v-else></b-skeleton>
+                            <b-skeleton v-else size="is-medium" width="40%" :animated="true"></b-skeleton>
                         </transition>
                         <transition name="fade" mode="out-in">
-                            <p class="subtitle is-6" v-if="user">
+                            <p v-if="user" class="subtitle is-6">
                                 {{ user.email }}
                                 <b-tooltip label="To change email addresses, please contact your administrator." position="is-right" multilined><b-icon icon="info-circle"></b-icon></b-tooltip>
                             </p>
-                            <b-skeleton width="30%" :animated="true" v-else></b-skeleton>
+                            <b-skeleton v-else width="30%" :animated="true"></b-skeleton>
                         </transition>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                             <span v-if="user">{{ user.username }}
                                 <b-tooltip label="To change username, please contact your administrator." position="is-right" multilined><b-icon icon="info-circle"></b-icon></b-tooltip>
                             </span>
-                            <b-skeleton width="20%" :animated="true" v-else />
+                            <b-skeleton v-else width="20%" :animated="true" />
                         </transition>
                     </div>
                     <div class="level level-left"><strong class="mr-2">Group: </strong>
@@ -42,13 +42,13 @@
                     <span v-if="user">{{ user.group.name }}
                         <b-tooltip :label="user.group.description" position="is-right" multilined><b-icon icon="info-circle"></b-icon></b-tooltip>
                     </span>
-                    <b-skeleton width="20%" :animated="true" v-else />
+                    <b-skeleton v-else width="20%" :animated="true" />
                     </transition>
                     </div>
                     <div class="level level-left"><strong class="mr-2">Joined: </strong>
                         <transition name="fade" mode="out-in">
                             <span v-if="user">{{ joined }}, on {{ joinedAbs }}</span>
-                            <b-skeleton width="20%" :animated="true" v-else />
+                            <b-skeleton v-else width="20%" :animated="true" />
                         </transition>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                         Try to use as many different characters, numbers and symbols as you possibly can, and make sure you don't use the password anywhere else.
                     </p>
                     <br>
-                    <b-button @click="isChangePasswordModalActive = true" type="is-info is-link">Change your password now.</b-button>
+                    <b-button type="is-info is-link" @click="isChangePasswordModalActive = true">Change your password now.</b-button>
                 </b-notification>
 
                 <b-notification :closable="false">
@@ -98,7 +98,7 @@
             :destroy-on-hide="false"
             aria-role="dialog"
             aria-modal>
-            <template #default="props">
+            <template #default>
                 <div class="modal-card" style="width: 30em;">
                     <header class="modal-card-head">
                         <p class="modal-card-title">Change Password</p>
@@ -106,8 +106,8 @@
                     <section class="modal-card-body">
                         <b-field label="Old password" label-position="inside">
                             <b-input
-                                type="password"
                                 v-model="oldPassword"
+                                type="password"
                                 password-reveal
                                 placeholder="Old password"
                                 required>
@@ -115,8 +115,8 @@
                         </b-field>
                         <b-field label="New password" label-position="inside">
                             <b-input
-                                type="password"
                                 v-model="newPassword"
+                                type="password"
                                 password-reveal
                                 placeholder="New password"
                                 required>
@@ -125,8 +125,8 @@
 
                         <b-field label="New password again" label-position="inside">
                             <b-input
-                                type="password"
                                 v-model="newPasswordAgain"
+                                type="password"
                                 password-reveal
                                 placeholder="New password again"
                                 required>
@@ -135,7 +135,7 @@
                     </section>
                     <footer class="modal-card-foot" style="justify-content: flex-end;">
                         <b-button @click="isChangePasswordModalActive = false;">Close</b-button>
-                        <b-button tag="input" native-type="submit" class="button is-primary" @click="changePassword" value="Change Password" />
+                        <b-button tag="input" native-type="submit" class="button is-primary" value="Change Password" @click="changePassword" />
                     </footer>
                 </div>
             </template>
@@ -166,9 +166,6 @@ export default {
             authApi: new AuthApi(this.$buefy)
         }
     },
-    created() {
-        this.fetchUserDetails()
-    },
     computed: {
         joined() {
             const rtf1 = new Intl.RelativeTimeFormat('en', { style: 'narrow' });
@@ -180,6 +177,9 @@ export default {
         joinedAbs() {
             return Internationalize.formatDate(this.user.createdAt);
         }
+    },
+    created() {
+        this.fetchUserDetails()
     },
     methods: {
         async fetchUserDetails() {
@@ -214,7 +214,7 @@ export default {
                 type: 'is-danger',
                 hasIcon: true,
                 onConfirm: async () => {
-                    let response = await this.authApi.terminateAccount();
+                    await this.authApi.terminateAccount();
                     window.location = '/';
                 }
             })

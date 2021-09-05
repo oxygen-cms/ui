@@ -3,7 +3,6 @@
         <b-table
                 :data="paginatedItems === null || paginatedItems.items === null ? [] : paginatedItems.items"
                 :checked-rows="checkedRows"
-                v-on:update:checkedRows="$emit('update:checkedRows', $event)"
                 :loading="paginatedItems.items === null || paginatedItems.loading"
                 :checkable="checkable"
                 custom-row-key="id"
@@ -12,23 +11,24 @@
                 :total="paginatedItems.totalItems"
                 :per-page="paginatedItems.itemsPerPage"
                 :current-page="paginatedItems.currentPage"
-                @page-change="onPageChange"
                 aria-next-label="Next page"
+                @update:checkedRows="$emit('update:checkedRows', $event)"
                 aria-previous-label="Previous page"
                 aria-page-label="Page"
                 aria-current-label="Current page"
-                class="full-height-flex full-height-container">
-            <b-table-column label="Title" v-slot="props">
+                class="full-height-flex full-height-container"
+                @page-change="onPageChange">
+            <b-table-column v-slot="props" label="Title">
                 {{ props.row.title }}
             </b-table-column>
 
-            <b-table-column label="Display on website" v-slot="props">
+            <b-table-column v-slot="props" label="Display on website">
                 <em v-if="!props.row.active">No</em>
                 <span v-else>{{ props.row.startDate ? new Date(props.row.startDate).toDateString() : '?'}} - {{ props.row.endDate ? new Date(props.row.endDate).toDateString() : '?'}}</span>
             </b-table-column>
 
             <b-table-column v-slot="props">
-                <slot name="actions" v-bind:row="props.row"></slot>
+                <slot name="actions" :row="props.row"></slot>
             </b-table-column>
 
             <template slot="empty">

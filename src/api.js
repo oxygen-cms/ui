@@ -53,7 +53,7 @@ class FetchBuilder {
         if(this.queryParams) {
             url = new URL(url, window.location);
             for(let name in this.queryParams) {
-                if(this.queryParams.hasOwnProperty(name) && this.queryParams[name] !== null) {
+                if(Object.prototype.hasOwnProperty.call(this.queryParams, name) && this.queryParams[name] !== null) {
                     url.searchParams.append(name, this.queryParams[name]);
                 }
             }

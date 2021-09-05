@@ -30,7 +30,7 @@ export default class AuthApi {
         if(AuthApi.currentUserDetails) {
             return AuthApi.currentUserDetails;
         } else if(AuthApi.currentlyFetchingUserDetails === true) {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 AuthApi.userDetailsResolvedHooks.push(resolve);
             });
         }
@@ -71,7 +71,7 @@ export default class AuthApi {
 
     async terminateAccount() {
         return this.request('post')
-            .withJson(params)
+            .withJson({})
             .fetch(API_ROOT + 'auth/terminate-account');
     }
 }

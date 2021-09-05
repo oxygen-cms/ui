@@ -11,11 +11,11 @@
                      :total="paginatedItems.totalItems"
                      :row-class="(row) => row.type === 1 ? 'is-danger' : ''"
                      @page-change="paginatedItems.currentPage = $event">
-                <b-table-column label="IP Address" v-slot="props">
+                <b-table-column v-slot="props" label="IP Address">
                     {{ props.row.ipAddress }}
                 </b-table-column>
 
-                <b-table-column label="Location" v-slot="props">
+                <b-table-column v-slot="props" label="Location">
                     <div v-if="props.row.geolocationInfo !== null">
                         {{ props.row.geolocationInfo }}
                     </div>
@@ -23,16 +23,16 @@
 
                 </b-table-column>
 
-                <b-table-column label="Browser / Device" v-slot="props">
+                <b-table-column v-slot="props" label="Browser / Device">
                     <b-tooltip :label="props.row.userAgent" animated>{{ parseUserAgent(props.row.userAgent) }}</b-tooltip>
 
                 </b-table-column>
 
-                <b-table-column label="Time" v-slot="props">
+                <b-table-column v-slot="props" label="Time">
                     {{ Internationalize.formatDateTime(props.row.timestamp) }}
                 </b-table-column>
 
-                <b-table-column label="Type" v-slot="props">
+                <b-table-column v-slot="props" label="Type">
                     {{ getInfo(props.row) }}
                 </b-table-column>
             </b-table>

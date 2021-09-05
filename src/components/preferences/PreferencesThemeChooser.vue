@@ -2,28 +2,28 @@
     <ShowIfPermitted data-key="appearance.themes">
         <h3 class="subtitle">Website Themes</h3>
         <PreferencesField data-key="appearance.themes::theme" label="">
-            <template v-slot:default="slotProps">
+            <template #default="slotProps">
                 <b-table
                     :data="Object.values(slotProps.options)"
                     :striped="false">
-                    <b-table-column label="Key" v-slot="props">
+                    <b-table-column v-slot="props" label="Key">
                         <img :src="props.row.image" class="theme-logo" />
                     </b-table-column>
 
-                    <b-table-column field="name" label="Name" v-slot="props">
+                    <b-table-column v-slot="props" field="name" label="Name">
                         {{ props.row.name }}
                         <strong v-if="getSelectedOption(slotProps.options, slotProps.value) === props.row">(current theme)</strong>
                     </b-table-column>
 
-                    <b-table-column field="provides" label="Provides preferences" v-slot="props">
-                        <div v-for="(provideGroup, keyGroup) in props.row.provides" class="is-size-7">
-                            <span v-for="(value, key) in provideGroup"><code>{{ keyGroup }}::{{ key}}</code><br></span>
+                    <b-table-column v-slot="props" field="provides" label="Provides preferences">
+                        <div v-for="(provideGroup, keyGroup) in props.row.provides" :key="keyGroup" class="is-size-7">
+                            <span v-for="(value, key) in provideGroup" :key="key"><code>{{ keyGroup }}::{{ key}}</code><br></span>
                         </div>
                     </b-table-column>
 
-                    <b-table-column label="" v-slot="props">
-                        <b-button v-if="getSelectedOption(slotProps.options, slotProps.value) !== props.row" @click="switchToTheme(props.row.key, slotProps.updateValue)" :loading="updating">Switch to this theme</b-button>
-                        <b-button type="is-success" disabled v-else>Theme is already active</b-button>
+                    <b-table-column v-slot="props" label="">
+                        <b-button v-if="getSelectedOption(slotProps.options, slotProps.value) !== props.row" :loading="updating" @click="switchToTheme(props.row.key, slotProps.updateValue)">Switch to this theme</b-button>
+                        <b-button v-else type="is-success" disabled>Theme is already active</b-button>
                     </b-table-column>
                 </b-table>
             </template>

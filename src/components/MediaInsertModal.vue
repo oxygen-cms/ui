@@ -5,12 +5,12 @@
                 <slot name="title"><p class="modal-card-title">Choose an item to insert</p></slot>
             </header>
             <section class="modal-card-body">
-                <MediaList @navigate="onNavigate" @double-click-action="doInsert" @select-files="items => selectedFiles = items" :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" />
+                <MediaList :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" @navigate="onNavigate" @double-click-action="doInsert" @select-files="items => selectedFiles = items" />
             </section>
             <footer class="modal-card-foot is-flex">
                 <div class="is-flex-grow-1"></div>
                 <b-button @click="emitClose">Close</b-button>
-                <b-button @click="doInsert" :disabled="selectedFiles.length === 0 || (!multiselectAllowed && selectedFiles.length > 1)" type="is-primary">
+                <b-button :disabled="selectedFiles.length === 0 || (!multiselectAllowed && selectedFiles.length > 1)" type="is-primary" @click="doInsert">
                     <span v-if="selectedFiles.length === 0">{{ actionVerb }}</span>
                     <span v-else-if="selectedFiles.length === 1">{{actionVerb }} item</span>
                     <span v-else-if="multiselectAllowed">{{ actionVerb }} {{ selectedFiles }} items</span>

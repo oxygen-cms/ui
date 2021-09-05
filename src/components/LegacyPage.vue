@@ -1,7 +1,7 @@
 <template>
     <div class="full-height full-height-container legacy-container">
         <transition name="fade">
-            <iframe ref="iframe" class="iframe" v-show="!loading" />
+            <iframe v-show="!loading" ref="iframe" class="iframe" />
         </transition>
 <!--        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>-->
 
@@ -50,6 +50,18 @@ const iframeURLChange = (iframe, callback, legacyPage) => {
 
 export default {
     name: "LegacyPage",
+    components: { MediaInsertModal },
+    beforeRouteUpdate(to, from, next) {
+        // when the Vue route changes, load this path inside the iframe
+        this.loadPath(to.fullPath);
+        next();
+    },
+    beforeRouteLeave(to, from, next) {
+        window.document.body.style.overflowY = 'auto';
+        window.document.documentElement.style.overflowY = 'auto';
+        this.$parent.$data.requestedCollapsed = false;
+        next();
+    },
     props: {
         legacyPrefix: String,
         adminPrefix: String
@@ -64,7 +76,6 @@ export default {
             userPreferences: null
         }
     },
-    components: { MediaInsertModal },
     computed: {
         loading() { return this.loadingPath !== null; }
     },
@@ -88,17 +99,6 @@ export default {
     },
     unmounted() {
         this.$parent.$data.requestedCollapsed = false;
-    },
-    beforeRouteUpdate(to, from, next) {
-        // when the Vue route changes, load this path inside the iframe
-        this.loadPath(to.fullPath);
-        next();
-    },
-    beforeRouteLeave(to, from, next) {
-        window.document.body.style.overflowY = 'auto';
-        window.document.documentElement.style.overflowY = 'auto';
-        this.$parent.$data.requestedCollapsed = false;
-        next();
     },
     methods: {
         setupIframeIntegrations() {

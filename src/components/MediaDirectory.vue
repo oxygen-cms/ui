@@ -5,10 +5,10 @@
         </div>
         <div class="card-content">
             <p class="title is-4 cursor-pointer has-text-centered" @click.exact="select(true)" @click.shift.exact="select(false)">{{ directory.name }}</p>
-            <p class="subtitle is-6 cursor-pointer has-text-centered" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">inside '{{ directoryPath }}'</p>
+            <p v-if="displayFullPath" class="subtitle is-6 cursor-pointer has-text-centered" @click.exact="select(true)" @click.shift.exact="select(false)">inside '{{ directoryPath }}'</p>
             <div v-if="directory.selected" class="content media-item-toolbar">
                 <b-button v-if="directory.selected" icon-left="pencil-alt" size="is-small" rounded @click.stop="renameDirectory">Rename</b-button>
-                <MediaChooseDirectory v-if="directory.selected" @submit="moveToDirectory" button-text="Move">
+                <MediaChooseDirectory v-if="directory.selected" button-text="Move" @submit="moveToDirectory">
                 </MediaChooseDirectory>
                 <b-button v-if="directory.selected" icon-left="trash" size="is-small" type="is-danger" rounded outlined @click.stop="confirmDeleteDirectory">Delete</b-button>
             </div>
@@ -30,7 +30,7 @@
                 <footer class="modal-card-foot is-flex">
                     <div class="is-flex-grow-1"></div>
                     <b-button @click="isEditModalActive = false">Cancel</b-button>
-                    <b-button @click="doRenameDirectory" type="is-primary">Rename</b-button>
+                    <b-button type="is-primary" @click="doRenameDirectory">Rename</b-button>
                 </footer>
             </div>
         </b-modal>
@@ -47,6 +47,7 @@ import MediaChooseDirectory from "./MediaChooseDirectory.vue";
 
 export default {
     name: "MediaDirectory.vue",
+    components: { MediaChooseDirectory },
     props: {
         directory: Object,
         displayFullPath: Boolean
@@ -64,7 +65,6 @@ export default {
             return getDirectoryPathString(this.directory.parentDirectory);
         }
     },
-    components: { MediaChooseDirectory },
     methods: {
         select(toggle) {
             // if already selected, then navigate into a directory

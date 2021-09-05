@@ -3,14 +3,14 @@
         <div v-if="loaded">
             <slot :value="value" :options="options" :update-value="updateValue">
                 <div class="horizontal-row">
-                    <b-switch :value="value" @input="updateValue($event)" :passive-type="isFallback ? 'is-dark' : ''" v-if="type === 'switch'">{{ label }}</b-switch>
-                    <b-field :label="label" label-position="inside"  v-else-if="type === 'select'"  class="pref-field">
+                    <b-switch v-if="type === 'switch'" :value="value" :passive-type="isFallback ? 'is-dark' : ''" @input="updateValue($event)">{{ label }}</b-switch>
+                    <b-field v-else-if="type === 'select'" :label="label"  label-position="inside"  class="pref-field">
                         <b-select v-if="grouped" :placeholder="selectPlaceholder" :value="value" @input="updateValue($event)">
-                            <optgroup v-for="(suboptions, label) in options" :label="label">
+                            <optgroup v-for="(suboptions, label) in options" :key="label" :label="label">
                                 <option
                                     v-for="(display, value) in suboptions"
-                                    :value="value"
-                                    :key="value">
+                                    :key="value"
+                                    :value="value">
                                     {{ display }}
                                 </option>
                             </optgroup>
@@ -18,8 +18,8 @@
                         <b-select v-else :placeholder="selectPlaceholder" :value="value" @input="updateValue($event)">
                             <option
                                 v-for="(optionDisplay, optionValue) in options"
-                                :value="optionValue"
-                                :key="optionValue">
+                                :key="optionValue"
+                                :value="optionValue">
                                 {{ optionDisplay }}
                             </option>
                         </b-select>

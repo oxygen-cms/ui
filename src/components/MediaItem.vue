@@ -5,7 +5,7 @@
         </div>
         <div class="card-content">
             <p class="title is-4 cursor-pointer has-text-centered" @click.exact="select(true)" @click.shift.exact="select(false)">{{ item.name }}</p>
-            <p class="subtitle is-6 cursor-pointer has-text-centered" v-if="displayFullPath" @click.exact="select(true)" @click.shift.exact="select(false)">
+            <p v-if="displayFullPath" class="subtitle is-6 cursor-pointer has-text-centered" @click.exact="select(true)" @click.shift.exact="select(false)">
                 inside '{{ directoryPath }}'
 <!--                <b-icon icon="file-image" v-if="item.type === TYPE_IMAGE"></b-icon>-->
 <!--                <b-icon icon="file" v-else-if="item.type === TYPE_DOCUMENT"></b-icon>-->
@@ -46,7 +46,7 @@
             </div>
         </b-modal>
 
-        <b-modal :active.sync="isEditModalActive" trap-focus has-modal-card width="80%" v-hotkey="keymap">
+        <b-modal v-hotkey="keymap" :active.sync="isEditModalActive" trap-focus has-modal-card width="80%">
             <div class="modal-card" style="width: auto">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Edit Media Item - {{ name }}</p>
@@ -109,9 +109,9 @@
                         </b-tooltip>
                     </label>
                     <b-table striped :data="variants" :default-sort="['width']">
-                        <b-table-column label="Filename" field="filename" v-slot="props"><a :href="'/content/media/' + props.row.filename">{{ props.row.filename }}</a></b-table-column>
-                        <b-table-column label="Width (px)" field="width" sortable v-slot="props">{{ props.row.width ? props.row.width : 'Full size' }}</b-table-column>
-                        <b-table-column label="Format" field="mime" sortable v-slot="props">{{ props.row.mime }}</b-table-column>
+                        <b-table-column v-slot="props" label="Filename" field="filename"><a :href="'/content/media/' + props.row.filename">{{ props.row.filename }}</a></b-table-column>
+                        <b-table-column v-slot="props" label="Width (px)" field="width" sortable>{{ props.row.width ? props.row.width : 'Full size' }}</b-table-column>
+                        <b-table-column v-slot="props" label="Format" field="mime" sortable>{{ props.row.mime }}</b-table-column>
                     </b-table>
 
                     <label class="label">Versions</label>
@@ -121,13 +121,13 @@
                              custom-row-key="id"
                              detailed
                              detail-key="id">
-                        <b-table-column label="Name" field="name" v-slot="props">{{ props.row.name }}</b-table-column>
-                        <b-table-column label="Path" field="fullPath" v-slot="props">{{ props.row.fullPath }}</b-table-column>
-                        <b-table-column label="Last Updated" field="updatedAt" v-slot="props">
+                        <b-table-column v-slot="props" label="Name" field="name">{{ props.row.name }}</b-table-column>
+                        <b-table-column v-slot="props" label="Path" field="fullPath">{{ props.row.fullPath }}</b-table-column>
+                        <b-table-column v-slot="props" label="Last Updated" field="updatedAt">
                             <div class="is-size-7">{{ Internationalize.formatLastUpdated(props.row.updatedAt) }}</div>
                         </b-table-column>
 
-                        <b-table-column label="" v-slot="slotProps">
+                        <b-table-column v-slot="slotProps" label="">
                             <b-button rounded :disabled="slotProps.row.headVersion === null" @click="restoreVersion(slotProps.row.id)">
                                 <span v-if="slotProps.row.headVersion === null">Already current</span>
                                 <span v-else>Restore version</span>
@@ -152,7 +152,7 @@
                 <footer class="modal-card-foot is-flex">
                     <div class="is-flex-grow-1"></div>
                     <b-button @click="isEditModalActive = false">Close</b-button>
-                    <b-button @click="saveEdits" type="is-primary">Save</b-button>
+                    <b-button type="is-primary" @click="saveEdits">Save</b-button>
                 </footer>
             </div>
         </b-modal>

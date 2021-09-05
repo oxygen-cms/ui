@@ -1,14 +1,14 @@
 <template>
     <div class="media-icon-container">
         <img v-if="item.type === TYPE_IMAGE && !loadingError" :src="'/content/media/' + item.filename" :alt="item.caption ? item.caption : item.name" @error="loadingFailed">
-        <b-tooltip :label="missingMessage" type="is-dark" position="is-bottom" multilined v-else-if="item.type === TYPE_IMAGE">
+        <b-tooltip v-else-if="item.type === TYPE_IMAGE" :label="missingMessage" type="is-dark" position="is-bottom" multilined>
             <b-icon type="is-danger" icon="file-image" size="is-large" class="media-icon"></b-icon>
         </b-tooltip>
         <img v-if="item.type === TYPE_DOCUMENT && !loadingError" :src="'/oxygen/api/media/' + item.id + '/preview'" alt="PDF preview" @error="loadingFailed">
-        <b-tooltip :label="missingMessage" type="is-dark" position="is-bottom" multilined v-else-if="item.type === TYPE_DOCUMENT">
+        <b-tooltip v-else-if="item.type === TYPE_DOCUMENT" :label="missingMessage" type="is-dark" position="is-bottom" multilined>
             <b-icon type="is-danger" icon="file-pdf" size="is-large" class="media-icon"></b-icon>
         </b-tooltip>
-        <b-icon icon="music" size="is-large" class="media-icon" v-else-if="item.type === TYPE_AUDIO"></b-icon>
+        <b-icon v-else-if="item.type === TYPE_AUDIO" icon="music" size="is-large" class="media-icon"></b-icon>
     </div>
 </template>
 

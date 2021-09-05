@@ -1,8 +1,6 @@
 import UserPreferences from './UserPreferences';
-import AuthApi from "./AuthApi";
 
 jest.mock('./AuthApi');
-
 
 test('gets and sets preferences', async () => {
     UserPreferences.setBuefy({});
