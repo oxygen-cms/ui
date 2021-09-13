@@ -161,18 +161,18 @@
 
 <script>
 
-import {morphToNotification} from "../api";
-import MediaApi from "../MediaApi";
+import {morphToNotification} from "../../api";
+import MediaApi from "../../MediaApi";
 import MediaChooseDirectory from "./MediaChooseDirectory.vue";
-import Internationalize from "../Internationalize";
-import {getDirectoryFullSlug, getDirectoryPathString} from "../MediaDirectoryApi";
+import Internationalize from "../../Internationalize";
+import {getDirectoryFullSlug, getDirectoryPathString} from "../../MediaDirectoryApi";
 import MediaItemPreview from "./MediaItemPreview.vue";
 
 export default {
-    name: "MediaItem.vue",
+    name: "MediaItem",
     components: {MediaChooseDirectory, MediaItemPreview},
     props: {
-        item: Object,
+        item: { type: Object, required: true },
         displayFullPath: Boolean
     },
     data() {

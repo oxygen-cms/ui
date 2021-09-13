@@ -13,12 +13,12 @@
 </template>
 
 <script>
-import MediaApi from "../MediaApi";
+import MediaApi from "../../MediaApi";
 
 export default {
     name: "MediaItemPreview",
     props: {
-        item: Object,
+        item: { type: Object, required: true },
         missingMessage: {
             type: String,
             default: 'There was an error trying to load this media item. The file may be corrupt or missing'

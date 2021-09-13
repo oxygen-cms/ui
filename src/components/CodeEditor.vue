@@ -1,14 +1,11 @@
 <template>
     <div class="editor-container has-background-grey-darker" :style="'height: ' + height + ';'">
 
-        <b-loading v-model="loading" :is-full-page="false" class="load-screen"></b-loading>
-
         <transition name="fade">
             <AceEditor
-                v-if="!loading"
                 key="editor"
-                :value="value"
                 ref="ace"
+                :value="value"
                 :lang="lang"
                 :theme="theme"
                 width="100%"
@@ -35,46 +32,38 @@
 </template>
 
 <script>
-import UserPreferences from "../UserPreferences";
-
 export default {
     name: "CodeEditor",
+    components: { AceEditor: import('vue2-ace-editor') },
     props: {
-        value: String,
-        height: String,
-        lang: String
+        value: { type: String, default: null },
+        height: { type: String, required: true },
+        lang: { type: String, required:  true }
     },
     data() {
         return {
-            loading: true,
-            userPreferences: {}
         }
     },
     computed: {
         wrapMode() {
-            return this.userPreferences.get('editor.ace.wordWrap');
+            return this.$store.getters.userPreferences.get('editor.ace.wordWrap');
         },
         highlightActiveLine() {
-            return this.userPreferences.get('editor.ace.highlightActiveLine');
+            return this.$store.getters.userPreferences.get('editor.ace.highlightActiveLine');
         },
         showPrintMargin() {
-            return this.userPreferences.get('editor.ace.showPrintMargin');
+            return this.$store.getters.userPreferences.get('editor.ace.showPrintMargin');
         },
         showInvisibles() {
-            return this.userPreferences.get('editor.ace.showInvisibles');
+            return this.$store.getters.userPreferences.get('editor.ace.showInvisibles');
         },
         theme() {
-            return this.userPreferences.get('editor.ace.theme').replace('ace/theme/', '');
+            return this.$store.getters.userPreferences.get('editor.ace.theme').replace('ace/theme/', '');
         },
         fontSize() {
-            return this.userPreferences.get('editor.ace.fontSize');
+            return this.$store.getters.userPreferences.get('editor.ace.fontSize');
         }
     },
-    async mounted() {
-        this.userPreferences = await UserPreferences.load();
-        this.loading = false;
-    },
-    components: { AceEditor: import('vue2-ace-editor') },
     methods: {
         editorInit() {
             import('brace/ext/language_tools') //language extension prerequsite...
@@ -98,9 +87,5 @@ export default {
     .editor-container {
         width: 100%;
         position: relative;
-    }
-
-    .load-screen ::v-deep .loading-background {
-        background-color: transparent;
     }
 </style>

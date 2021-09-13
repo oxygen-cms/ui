@@ -43,14 +43,14 @@
 </template>
 
 <script>
-import {morphToNotification} from "../api";
-import MediaApi from "../MediaApi";
-import {getDirectoryPathString} from "../MediaDirectoryApi";
+import {morphToNotification} from "../../api";
+import MediaApi from "../../MediaApi";
+import {getDirectoryPathString} from "../../MediaDirectoryApi";
 
 export default {
-    name: "MediaUpload.vue",
+    name: "MediaUpload",
     props: {
-        currentDirectory: Object
+        currentDirectory: { type: Object, default: null }
     },
     data() {
         return {

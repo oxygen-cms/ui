@@ -12,11 +12,11 @@
                 :per-page="paginatedItems.itemsPerPage"
                 :current-page="paginatedItems.currentPage"
                 aria-next-label="Next page"
-                @update:checkedRows="$emit('update:checkedRows', $event)"
                 aria-previous-label="Previous page"
                 aria-page-label="Page"
                 aria-current-label="Current page"
                 class="full-height-flex full-height-container"
+                @update:checkedRows="$emit('update:checkedRows', $event)"
                 @page-change="onPageChange">
             <b-table-column v-slot="props" label="Title">
                 {{ props.row.title }}
@@ -50,8 +50,14 @@
     export default {
         name: "EventsTable",
         props: {
-            paginatedItems: Object,
-            onPageChange: Function,
+            paginatedItems: {
+                type: Object,
+                required: true
+            },
+            onPageChange: {
+                type: Function,
+                required: true
+            },
             checkedRows: {
                 type: Array,
                 default: () => { return []; }

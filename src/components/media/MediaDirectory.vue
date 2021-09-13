@@ -41,15 +41,15 @@
 </template>
 
 <script>
-import MediaDirectoryApi, {getDirectoryPathString} from "../MediaDirectoryApi";
-import {morphToNotification} from "../api";
+import MediaDirectoryApi, {getDirectoryPathString} from "../../MediaDirectoryApi";
+import {morphToNotification} from "../../api";
 import MediaChooseDirectory from "./MediaChooseDirectory.vue";
 
 export default {
-    name: "MediaDirectory.vue",
+    name: "MediaDirectory",
     components: { MediaChooseDirectory },
     props: {
-        directory: Object,
+        directory: { type: Object, required: true },
         displayFullPath: Boolean
     },
     data() {

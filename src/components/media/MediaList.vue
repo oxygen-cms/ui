@@ -111,11 +111,11 @@
 </template>
 
 <script>
-import MediaApi from "../MediaApi";
+import MediaApi from "../../MediaApi";
 import MediaDirectory from "./MediaDirectory.vue";
 import MediaItem from "./MediaItem.vue";
-import MediaDirectoryApi, {getDirectoryBreadcrumbItems, getDirectoryPathString} from "../MediaDirectoryApi";
-import {morphToNotification} from "../api";
+import MediaDirectoryApi, {getDirectoryBreadcrumbItems, getDirectoryPathString} from "../../MediaDirectoryApi";
+import {morphToNotification} from "../../api";
 import MediaUpload from "./MediaUpload.vue";
 
 export default {
@@ -228,8 +228,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    @import '../styles/_variables.scss';
-    @import './util.css';
+    @import '../../styles/variables';
+    @import '../util.css';
 
     .box {
         display: flex;

@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import {API_ROOT} from "../CrudApi";
-import {FetchBuilder, morphToNotification} from "../api";
+import {API_ROOT} from "../../CrudApi";
+import {FetchBuilder, morphToNotification} from "../../api";
 
 export default {
     name: "MediaResponsiveImages",
@@ -47,5 +47,5 @@ export default {
 </script>
 
 <style scoped>
-    @import './util.css';
+    @import '../util.css';
 </style>

@@ -10,7 +10,7 @@
                         <transition name="fade" mode="out-in">
                             <p v-if="user && editingFullName === null" class="title is-4">{{ user.fullName }} <b-button rounded size="is-small" type="is-light" icon-left="pencil-alt" @click="editFullName"></b-button></p>
                             <b-field v-else-if="user" label="Full Name" label-position="inside" class="not-full-width">
-                                <b-input v-model="editingFullName"></b-input>
+                                <b-input v-model="editingFullName" @keyup.enter.native="submitFullName"></b-input>
                                 <p class="control">
                                     <b-button type="is-primary" :loading="updatingFullName" @click="submitFullName">Change</b-button>
                                 </p>
@@ -129,7 +129,8 @@
                                 type="password"
                                 password-reveal
                                 placeholder="New password again"
-                                required>
+                                required
+                                @keyup.enter.native="changePassword">
                             </b-input>
                         </b-field>
                     </section>
@@ -155,7 +156,6 @@ export default {
     components: {ShowIfPermitted, UserPreferences},
     data() {
         return {
-            user: null,
             editingFullName: null,
             updatingFullName: false,
             oldPassword: '',
@@ -172,19 +172,14 @@ export default {
             return rtf1.format(
                 Math.floor((new Date(this.user.createdAt) - new Date()) / (1000 * 24 * 60 * 60)),
                 'day'
-        );
+            );
         },
         joinedAbs() {
             return Internationalize.formatDate(this.user.createdAt);
-        }
-    },
-    created() {
-        this.fetchUserDetails()
+        },
+        user() { return this.$store.state.user; }
     },
     methods: {
-        async fetchUserDetails() {
-            this.user = (await this.authApi.userDetails()).user;
-        },
         editFullName() {
             this.editingFullName = this.user.fullName;
         },
@@ -193,7 +188,7 @@ export default {
             let response = await this.authApi.updateFullName(this.editingFullName);
             this.updatingFullName = false;
             this.$buefy.toast.open(morphToNotification(response));
-            this.user = response.item;
+            this.$store.commit('setUser', response.item);
             this.editingFullName = null;
         },
         async changePassword() {

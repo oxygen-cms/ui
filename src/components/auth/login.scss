@@ -1,0 +1,22 @@
+.login-title {
+   padding: 1rem 0;
+   margin-bottom: 2rem;
+}
+
+.login-justify-content {
+   display: flex;
+   flex-direction: row-reverse;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.login-fullscreen .container {
+   flex-grow: 0;
+   margin: 2rem auto;
+   width: 25em;
+}
+
+.login-fullscreen .container.is-wider {
+   width: 90%;
+   max-width: 55em;
+}

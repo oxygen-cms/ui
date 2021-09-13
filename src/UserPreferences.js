@@ -19,10 +19,6 @@ class UserPreferences {
         this.authApi = new AuthApi(this.$buefy);
     }
 
-    static async load() {
-        return new UserPreferences((await this.authApi.userDetails()).user.preferences);
-    }
-
     get(key, fallback = null) {
         let o = this.preferences;
 

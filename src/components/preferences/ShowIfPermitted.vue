@@ -21,18 +21,15 @@ export default {
             default: null
         }
     },
-    data() {
-        return {
-            permitted: false
-        }
-    },
-    async mounted() {
-        let keys = this.keys;
-        if(keys === null) {
-            keys = [this.dataKey];
-        }
-        let userPermissions = new UserPermissions((await new AuthApi(this.$buefy).userDetails()).user.permissions);
-        this.permitted = await canAccessPrefs(this.$buefy, userPermissions, keys);
+    computed: {
+        keysArray() {
+            if(this.keys === null) {
+                return [this.dataKey];
+            } else {
+                return this.keys;
+            }
+        },
+        permitted() { return canAccessPrefs(this.$buefy, this.$store.getters.userPermissions, this.keysArray); }
     }
 }
 </script>

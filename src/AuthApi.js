@@ -11,11 +11,40 @@ export default class AuthApi {
         return FetchBuilder.default(this.$buefy, method);
     }
 
+    async login(username, password, code) {
+        return await this.request('post')
+            .withJson({
+                username,
+                password,
+                '2fa_code': code
+            })
+            .fetch(API_ROOT + 'auth/login');
+    }
+
+    async setupTwoFactorAuth() {
+        return await this.request('post')
+            .fetch(API_ROOT + 'auth/two-factor-setup');
+    }
+
+    async confirmTwoFactorAuth(code) {
+        return await this.request('post')
+            .withJson({
+                '2fa_code': code
+            })
+            .fetch(API_ROOT + 'auth/two-factor-confirm');
+    }
+
+    async sendReminderEmail(email) {
+        return await this.request('post')
+            .withJson({
+                'email': email
+            })
+            .fetch(API_ROOT + 'auth/send-reminder-email');
+    }
+
     async logout() {
-        let data = await this.request('post')
+        return await this.request('post')
             .fetch(API_ROOT + 'auth/logout');
-        window.location = data.redirect;
-        return data;
     }
 
     async stopImpersonating() {
@@ -24,29 +53,6 @@ export default class AuthApi {
         console.log(data);
         window.location = data.redirect;
         return data;
-    }
-
-    async userDetails() {
-        if(AuthApi.currentUserDetails) {
-            return AuthApi.currentUserDetails;
-        } else if(AuthApi.currentlyFetchingUserDetails === true) {
-            return new Promise((resolve) => {
-                AuthApi.userDetailsResolvedHooks.push(resolve);
-            });
-        }
-
-        AuthApi.currentlyFetchingUserDetails = true;
-        let response = await this.request('get')
-            .fetch(API_ROOT + 'auth/user');
-
-        AuthApi.currentUserDetails = response;
-        AuthApi.currentlyFetchingUserDetails = false;
-        for(let hook of AuthApi.userDetailsResolvedHooks) {
-            hook(response);
-        }
-        AuthApi.userDetailsResolvedHooks = [];
-
-        return response;
     }
 
     async changePassword(oldPass, newPass, newPassAgain) {
@@ -75,7 +81,3 @@ export default class AuthApi {
             .fetch(API_ROOT + 'auth/terminate-account');
     }
 }
-
-AuthApi.currentlyFetchingUserDetails = false;
-AuthApi.currentUserDetails = null;
-AuthApi.userDetailsResolvedHooks = [];

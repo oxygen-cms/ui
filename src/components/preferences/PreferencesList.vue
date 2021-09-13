@@ -6,18 +6,13 @@
         </div>
 
         <div class="box full-height-flex scroll-container">
-
-            <transition name="fade">
-                <div v-if="user">
-                    <b-tabs class="block">
-                        <slot :can-access-prefs="canAccessPrefs"></slot>
-                        <!-- If there were no tabs which are accessible, then display this tab as a fallback -->
-                        <b-tab-item v-if="!hasAtLeastOneAccess" label="General">
-                            <em>No preferences found</em>
-                        </b-tab-item>
-                    </b-tabs>
-                </div>
-            </transition>
+            <b-tabs class="block">
+                <slot :can-access-prefs="canAccessPrefs"></slot>
+                <!-- If there were no tabs which are accessible, then display this tab as a fallback -->
+                <b-tab-item v-if="!hasAtLeastOneAccess" label="General">
+                    <em>No preferences found</em>
+                </b-tab-item>
+            </b-tabs>
         </div>
     </div>
 </template>
@@ -29,20 +24,20 @@ import UserPermissions from "../../UserPermissions";
 import AuthApi from "../../AuthApi";
 
 export default {
-    name: "PreferencesView",
+    name: "PreferencesList",
     data() {
         return {
-            user: null,
             hasAtLeastOneAccess: false
         }
     },
-    async mounted() {
-        this.user = (await new AuthApi(this.$buefy).userDetails()).user;
+    computed: {
+        userPermissions() {
+            return this.$store.getters.userPermissions;
+        }
     },
     methods: {
         canAccessPrefs(keys) {
-            let userPermissions = new UserPermissions(this.user.permissions);
-            let result = canAccessPrefs(this.$buefy, userPermissions, keys);
+            let result = canAccessPrefs(this.$buefy, this.userPermissions, keys);
             if(result) {
                 this.hasAtLeastOneAccess = true;
             }

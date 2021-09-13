@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import MediaInsertModal from "./MediaInsertModal.vue";
+import MediaInsertModal from "./media/MediaInsertModal.vue";
 
 import { morphToNotification } from "../api";
 import MediaApi from "../MediaApi";
@@ -63,8 +63,8 @@ export default {
         next();
     },
     props: {
-        legacyPrefix: String,
-        adminPrefix: String
+        legacyPrefix: { type: String, required: true },
+        adminPrefix: { type: String, required: true }
     },
     data() {
         return {
@@ -72,16 +72,15 @@ export default {
             currentPath: null,
             isInsertMediaItemModalActive: false,
             resolveInsertMediaItems: null,
-            rejectInsertMediaItems: null,
-            userPreferences: null
+            rejectInsertMediaItems: null
         }
     },
     computed: {
-        loading() { return this.loadingPath !== null; }
+        loading() { return this.loadingPath !== null; },
+        userPreferences() { return this.$store.getters.userPreferences; }
     },
     async mounted() {
         this.loadingPath = 'prefs';
-        this.userPreferences = await UserPreferences.load();
 
         window.document.body.style.overflowY = 'hidden';
         window.document.documentElement.style.overflowY = 'hidden';

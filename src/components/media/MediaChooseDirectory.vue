@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import MediaDirectoryApi, {getDirectoryPathString} from "../MediaDirectoryApi";
+import MediaDirectoryApi, {getDirectoryPathString} from "../../MediaDirectoryApi";
 
 export default {
     name: "MediaChooseDirectory",

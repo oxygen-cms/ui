@@ -6,11 +6,11 @@
                     <b-switch v-if="type === 'switch'" :value="value" :passive-type="isFallback ? 'is-dark' : ''" @input="updateValue($event)">{{ label }}</b-switch>
                     <b-field v-else-if="type === 'select'" :label="label"  label-position="inside"  class="pref-field">
                         <b-select v-if="grouped" :placeholder="selectPlaceholder" :value="value" @input="updateValue($event)">
-                            <optgroup v-for="(suboptions, label) in options" :key="label" :label="label">
+                            <optgroup v-for="(suboptions, groupLabel) in options" :key="groupLabel" :label="groupLabel">
                                 <option
-                                    v-for="(display, value) in suboptions"
-                                    :key="value"
-                                    :value="value">
+                                    v-for="(display, optionValue) in suboptions"
+                                    :key="optionValue"
+                                    :value="optionValue">
                                     {{ display }}
                                 </option>
                             </optgroup>
@@ -51,8 +51,8 @@ import {morphToNotification} from "../../api";
 export default {
     name: "PreferencesField",
     props: {
-        dataKey: String,
-        label: String,
+        dataKey: { type: String, required: true },
+        label: { type: String, required: true },
         type: {
             type: String,
             default: null

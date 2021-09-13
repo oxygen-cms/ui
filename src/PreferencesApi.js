@@ -6,9 +6,11 @@ export const canAccessPrefs = ($buefy, userPermissions, keys) => {
     for(let key of keys) {
         let permissionsKey = 'preferences.' + key.split('::')[0].replace('.', '_');
         if(userPermissions.has(permissionsKey)) {
+            console.log('Granted');
             return true;
         }
     }
+    console.log('Denied');
     return false;
 };
 
