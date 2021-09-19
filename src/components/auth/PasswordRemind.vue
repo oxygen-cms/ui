@@ -1,17 +1,18 @@
 <template>
     <div class="box container">
         <LoginLogo />
-        <div class="login-title">
-            <h1 class="subtitle has-text-centered">
-                <span v-if="success">
-                    Password reset link sent!
-                </span>
-                <span v-else>Forgot Password</span>
-            </h1>
-        </div>
+
+        <h1 class="subtitle has-text-centered">
+            <span v-if="success">
+                Password reset link sent!
+            </span>
+            <span v-else>Forgot Password</span>
+        </h1>
 
         <transition name="fade" mode="out-in">
             <div v-if="!success">
+                <p>Enter the email address associated with your account, and we'll send you a link to reset your password.</p>
+                <br />
                 <b-field label="Email Address" label-position="inside">
                     <b-input name="email" type="email" v-model="accountEmail" required @keyup.enter.native="submitForm"></b-input>
                 </b-field>

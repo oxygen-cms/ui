@@ -104,7 +104,7 @@ export class FetchBuilder {
             return data;
         }
 
-        handleAPIError(data, this.$buefy, response);
+        handleAPIError(data, this.$buefy, FetchBuilder.router, response);
         let e = new Error('Received an error response from API call');
         e.response = data;
         throw e;
@@ -114,6 +114,10 @@ export class FetchBuilder {
         return (new FetchBuilder($buefy, method))
             .cookies()
             .wantJson();
+    }
+
+    static setRouter(router) {
+        FetchBuilder.router = router;
     }
 }
 
@@ -135,14 +139,32 @@ export function morphToNotification(data) {
     };
 }
 
-const handleAPIError = function(content, $buefy, response) {
+const handleAPIError = function(content, $buefy, $router, response) {
     console.error('API error: ', content);
-    if(content.authenticated === false) {
+    if(response.status === 401 && content.code === 'unauthenticated') {
         // server is telling us to login again
-        window.location.replace('/oxygen/auth/login?intended=' + window.location);
+        initCsrfCookie()
+            .then(() => {
+                $router.push({path: '/auth/login', query: {redirect: $router.currentRoute.fullPath}});
+            });
+        return;
+    } else if(response.status === 403 && content.code === 'two_factor_setup_required') {
+        $router.push({ path: '/auth/2fa-setup' });
+        return;
+    } else if(response.status === 403 && content.code === 'email_unverified') {
+        $router.push({ path: '/auth/needs-verified-email', query: {redirect: $router.currentRoute.fullPath } });
+        return;
+    } else if(response.status === 429) {
+        $buefy.notification.open({
+            message: 'Too many requests within a short timeframe. Please wait.',
+            type: 'is-warning',
+            duration: 10000,
+            queue: false
+        });
         return;
     }
 
+    // handle generic validation errors
     if(typeof content.errors === 'object') {
         for(const [ field, errors ] of Object.entries(content.errors)) {
             for(let error of errors) {
@@ -179,3 +201,9 @@ const handleAPIError = function(content, $buefy, response) {
         });
     }
 };
+
+export function getXsrfToken() {
+    return xsrfToken;
+}
+
+FetchBuilder.router = null;

@@ -4,11 +4,9 @@
 
         <transition name="fade" mode="out-in">
             <div v-if="twoFactorQRCode">
-                <div class="login-title">
-                    <h1 class="subtitle has-text-centered">
-                        You need to set up two-factor authentication for this account.
-                    </h1>
-                </div>
+                <h1 class="subtitle has-text-centered">
+                    You need to set up two-factor authentication for this account.
+                </h1>
 
                 <div class="content">
                 <p>Two-factor authentication uses once-off codes from another device (e.g.: your phone) for additional security. To use two-factor authentication with Oxygen CMS, you need to download an authenticator app onto your phone.</p>
@@ -47,9 +45,10 @@
                     </div>
                 </div>
             </div>
-            <b-loading :active="!twoFactorQRCode" :is-full-page="false"></b-loading>
+            <div v-else style="height=20rem;"></div>
         </transition>
 
+        <b-loading :active="!twoFactorQRCode" :is-full-page="false"></b-loading>
 
     </div>
 </template>
@@ -101,6 +100,7 @@ export default {
 
 <style scoped lang="scss">
     @import './login.scss';
+
     .qr-code {
         padding: 1rem 0;
     }
@@ -111,6 +111,5 @@ export default {
 
     .two-factor-setup {
         position: relative;
-        min-height: 20rem;
     }
 </style>

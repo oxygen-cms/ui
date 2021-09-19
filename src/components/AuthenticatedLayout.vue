@@ -36,8 +36,8 @@
                             </div>
                         </div>
                     </template>
-                    <b-dropdown-item aria-role="listitem" has-link><router-link to="/auth/profile"><b-icon icon="user"></b-icon>Profile</router-link></b-dropdown-item>
-                    <b-dropdown-item aria-role="listitem" has-link><router-link to="/auth/login-log"><b-icon icon="list"></b-icon>Login Log</router-link></b-dropdown-item>
+                    <b-dropdown-item aria-role="listitem" has-link><router-link to="/user/profile"><b-icon icon="user-edit"></b-icon>Profile</router-link></b-dropdown-item>
+                    <b-dropdown-item aria-role="listitem" has-link><router-link to="/user/login-log"><b-icon icon="lock"></b-icon>Account Security</router-link></b-dropdown-item>
                     <b-dropdown-item separator></b-dropdown-item>
                     <b-dropdown-item aria-role="listitem" @click="$emit('logout')"><b-icon icon="sign-out-alt"></b-icon>Sign Out</b-dropdown-item>
                     <b-dropdown-item v-if="impersonating" aria-role="listitem" @click="stopImpersonating"><b-icon icon="times"></b-icon>Stop impersonating</b-dropdown-item>
@@ -56,17 +56,22 @@
 </template>
 
 <script>
+import UsersApi from "../UsersApi";
+import {morphToNotification} from "../api";
+import {isNavigationFailure, NavigationFailureType} from "vue-router/src/util/errors";
+
 export default {
     name: "AuthenticatedLayout",
     emits: ["logout"],
     data() {
         return {
+            usersApi: new UsersApi(this.$buefy),
             setCollapsed: false,
             requestedCollapsed: false
         }
     },
     computed: {
-        impersonating() { return false; },
+        impersonating() { return this.$store.state.impersonating; },
         user() { return this.$store.state.user; },
         collapsed() {
             return this.setCollapsed || this.requestedCollapsed;
@@ -75,6 +80,19 @@ export default {
     mounted() {
         console.log('mounted', this.$store);
     },
+    methods: {
+        async stopImpersonating() {
+            let response = await this.usersApi.stopImpersonating();
+            this.$buefy.notification.open(morphToNotification(response));
+            this.$store.commit('stopImpersonating', response.user);
+            // ignore duplicated navigation failure
+            await this.$router.push({ path: '/' }).catch(failure => {
+                if(!isNavigationFailure(failure, NavigationFailureType.duplicated)) {
+                    throw failure;
+                }
+            });
+        }
+    }
 }
 </script>
 
@@ -152,10 +170,7 @@ export default {
     }
 
     .columns {
-        margin-left: 0;
-        margin-right: 0;
-        margin-top: 0;
-        margin-bottom: 0;
+        margin: 0;
     }
 
     .no-pad {

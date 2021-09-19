@@ -1,27 +1,50 @@
 <template>
     <!--    {{ Preferencesimport Vuex from 'vuex';::get('appearance.auth::theme', 'autumn') }}-->
-    <div class="login-fullscreen login-theme-autumn">
-        <transition name="slide-left" mode="out-in">
-            <router-view></router-view>
+    <div class="login-fullscreen">
+        <b-loading :active="theme === null"></b-loading>
+        <transition name="fade">
+            <div :class="'login-background login-theme-' + theme" v-if="theme !== null">
+                <transition name="slide-left" mode="out-in">
+                    <router-view></router-view>
+                </transition>
+            </div>
         </transition>
+
+
     </div>
 </template>
 
 <script>
+import AuthApi from "../../AuthApi";
+
 export default {
-    name: "WelcomeFloat"
+    name: "WelcomeFloat",
+    data() {
+        return {
+            theme: null,
+            authApi: new AuthApi(this.$buefy)
+        }
+    },
+    async created() {
+        let preferences = await this.authApi.getLoginPreferences();
+        this.theme = preferences.theme;
+    }
 }
 </script>
 
 <style scoped>
-
     .login-fullscreen {
-        height: 100vh;
+        height: 100%;
+        overflow: auto;
+    }
+
+    .login-background {
+        min-height: 100%;
+        background-attachment: fixed;
+        background-size: cover;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        background-attachment: fixed;
-        background-size: cover;
         overflow-y: auto;
     }
 
@@ -55,6 +78,10 @@ export default {
 
     .login-theme-yosemite {
         background-image: url('/vendor/oxygen/ui-theme/img/bg/yosemite-falls-min.jpg');
+    }
+
+    .login-theme-white {
+        background-color: white;
     }
 
 </style>

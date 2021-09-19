@@ -1,10 +1,8 @@
 <template>
     <div class="box container">
-        <div class="login-title">
-            <h1 class="subtitle has-text-centered">
-                You've been logged out
-            </h1>
-        </div>
+        <h1 class="subtitle has-text-centered">
+            You've been logged out
+        </h1>
 
         <div class="login-justify-content">
             <b-button tag="a" href="/" type="is-text">

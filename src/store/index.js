@@ -10,12 +10,23 @@ export default (vue) => {
     return new Vuex.Store({
         state: {
             user: null,
-            loginStatus: null
+            loginStatus: null,
+            impersonating: false
         },
         mutations: {
             setUser(state, user) {
                 state.user = user;
                 state.loginStatus = user !== null;
+            },
+            setImpersonating(state, user) {
+                state.user = user;
+                state.loginStatus = user !== null;
+                state.impersonating = true;
+            },
+            stopImpersonating(state, user) {
+                state.user = user;
+                state.loginStatus = user !== null;
+                state.impersonating = false;
             }
         },
         getters: {
@@ -37,14 +48,21 @@ export default (vue) => {
         actions: {
             determineLoginStatus({ commit, state }) {
                 return new Promise((resolve, reject) => {
-                    if(state.loginStatus !== null) {
+                    if(state.loginStatus != null) {
                         resolve(state.loginStatus);
+                        return;
                     }
+
+                    console.log('Determining login status');
 
                     let authApi = new AuthApi(null);
                     authApi.login(null, null, null).then((response) => {
                         console.log(response);
-                        commit('setUser', response.user);
+                        if(response.impersonating === true) {
+                            commit('setImpersonating', response.user);
+                        } else {
+                            commit('setUser', response.user);
+                        }
                         resolve(true);
                     }).catch(e => {
                         commit('setUser', null);

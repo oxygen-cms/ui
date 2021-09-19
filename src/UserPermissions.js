@@ -1,4 +1,4 @@
-// this is a straight JavaScript port of the `Oxygen\Auth\Permissions\SimplePermissionsSystem` PHP class.
+// this is a straight JavaScript port of the `Oxygen\Auth\Permissions\TreePermissionsSystem` PHP class.
 
 export default class UserPermissions {
 
@@ -7,7 +7,6 @@ export default class UserPermissions {
     }
 
     static get ROOT_CONTENT_TYPE() { return '_root'; }
-    static get ACCESS_KEY() { return '_access'; }
     static get PARENT_KEY() { return '_parent'; }
     static get MAX_INHERITANCE_DEPTH() { return 10; }
 
@@ -24,13 +23,7 @@ export default class UserPermissions {
         let keyParts = key.split('.');
 
         if(keyParts.length !== 2) {
-            throw new Error('SimplePermissionsSystem Requires a Dot-Seperated Permissions Key');
-        }
-
-        // check for the access key
-        if(!this.hasKey(keyParts[0], UserPermissions.ACCESS_KEY)) {
-            console.warn('no access');
-            return false;
+            throw new Error('TreePermissionsSystem Requires a Dot-Seperated Permissions Key');
         }
 
         // check for the specific key

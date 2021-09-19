@@ -87,10 +87,27 @@ export default {
                 this.submitting = false;
                 this.hasFailedLogin = false;
                 this.$store.commit('setUser', response.user);
-                this.$router.push(this.$route.query.redirect ?? { path: '/auth' });
+                if(this.$route.query.location) {
+                  window.location = this.$route.query.location;
+                }
+                this.$buefy.notification.open({
+                  message: "You're now logged in.",
+                  type: 'is-info',
+                  queue: false
+                });
+                await this.$router.push(this.$route.query.redirect ?? { path: '/' });
             } catch(e) {
                 this.submitting = false;
-                if(e.response && e.response.code === 'incorrect_username_password') {
+                if(e.response && e.response.code === 'account_deactivated') {
+                    this.hasFailedLogin = true;
+                    this.$buefy.notification.open({
+                        message: 'Your account is deactivated. Please contact the site administrator for help on how to regain access to your account.',
+                        type: 'is-warning',
+                        queue: false,
+                        duration: 10000
+                    });
+                }
+                if(e.response && ['incorrect_username_password', 'no_username'].includes(e.response.code)) {
                     this.password = '';
                     this.hasFailedLogin = true;
                 } else if(e.response && e.response.code === 'two_factor_auth_failed') {

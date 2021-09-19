@@ -62,17 +62,9 @@
             //     }
             // },
             async signOut() {
-                console.log('user requested logout');
                 await this.authApi.logout();
-                this.$buefy.notification.open({
-                    message: 'You have been logged out',
-                    type: 'is-info',
-                    duration: 4000,
-                    queue: false
-                });
-                await initCsrfCookie();
                 this.$store.commit('setUser', null);
-                this.$router.push('/auth/logout');
+                await this.$router.push('/auth/logout');
             },
             stopImpersonating() {
                 this.authApi.stopImpersonating();

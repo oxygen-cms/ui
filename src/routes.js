@@ -11,19 +11,27 @@ import WelcomeFloat from "./components/auth/WelcomeFloat.vue";
 import TwoFactorSetup from "./components/auth/TwoFactorSetup.vue";
 import PasswordRemind from "./components/auth/PasswordRemind.vue";
 import PasswordReset from "./components/auth/PasswordReset.vue";
+import Auth404 from "./components/auth/Auth404.vue";
+import UserManagement from "./components/UserManagement.vue";
+import VerifyEmail from "./components/auth/VerifyEmail.vue";
 
 const UserProfileRoutes =  [
     {
-        path: 'auth/profile',
+        path: 'user/profile',
         name: 'auth.viewProfile',
         component: ViewProfile,
         meta: { title: 'View Profile' }
     },
     {
-        path: 'auth/login-log',
+        path: 'user/login-log',
         component: AuthenticationLog,
         meta: { title: 'Logins & Login Attempts' }
     },
+    {
+        path: 'users',
+        component: UserManagement,
+        meta: { title: 'Manage Users'}
+    }
 ];
 
 const MediaRoutes = [
@@ -127,6 +135,22 @@ const AuthRoutes = [
                     title: 'Reset Password',
                     allowUnauthenticated: true
                 }
+            },
+            {
+                name: 'needs-verified-email',
+                path: 'needs-verified-email',
+                component: VerifyEmail,
+                meta: {
+                    title: 'Verify your email address'
+                }
+            },
+            {
+                path: '',
+                component: Auth404
+            },
+            {
+                path: '*',
+                component: Auth404
             }
         ]
     }

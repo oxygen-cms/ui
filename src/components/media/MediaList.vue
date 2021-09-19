@@ -36,7 +36,7 @@
             </b-field>
 
             <b-button v-if="!inTrash && !searchQuery" icon-left="folder-plus" class="action-bar-pad" @click="isCreateDirectoryModalActive = true">New Directory</b-button>
-            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" type="is-success" class="action-bar-pad" @click="isUploadModalActive = true">Upload Files</b-button>
+            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" type="is-success" class="action-bar-pad" @click="$router.push({ query: { upload: true }})">Upload Files</b-button>
             <b-input v-if="!inTrash" rounded placeholder="Search photos and files..." icon="search"
                      icon-pack="fas" :value="searchQuery" class="action-bar-pad" @input="value => navigateTo({searchQuery: value})"></b-input>
             <b-button v-if="!inTrash" icon-left="trash" type="is-danger" outlined class="action-bar-pad" @click="navigateTo({inTrash: true})">Deleted Items</b-button>
@@ -103,7 +103,7 @@
         </b-modal>
 
         <b-modal :active.sync="isUploadModalActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus>
-            <MediaUpload :current-directory="paginatedItems.currentDirectory" @close="isUploadModalActive = false" @uploaded="fetchData"></MediaUpload>
+            <MediaUpload :current-directory="paginatedItems.currentDirectory" @close="$router.push({ query: { }})" @uploaded="fetchData"></MediaUpload>
         </b-modal>
 
     </div>
@@ -137,7 +137,6 @@ export default {
     data() {
         return {
             paginatedItems: {files: [], directories: [], currentDirectory: null, totalFiles: null, filesPerPage: null, loading: false, currentPage: 1},
-            isUploadModalActive: false,
             isCreateDirectoryModalActive: false,
             newDirectoryName: '',
             searchDebounce: null,
@@ -147,6 +146,9 @@ export default {
         }
     },
     computed: {
+        isUploadModalActive() {
+            return this.$route.query.upload === 'true';
+        },
         displayPath() {
             return getDirectoryPathString(this.paginatedItems.currentDirectory);
         },
