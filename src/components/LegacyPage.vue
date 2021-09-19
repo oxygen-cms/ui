@@ -65,6 +65,9 @@ export default {
         legacyPrefix: { type: String, required: true },
         adminPrefix: { type: String, required: true }
     },
+    'watch': {
+        '$route': 'onRouteChanged'
+    },
     data() {
         return {
             loadingPath: null,
@@ -99,6 +102,10 @@ export default {
         this.$parent.$data.requestedCollapsed = false;
     },
     methods: {
+        onRouteChanged(newRoute) {
+            console.log('Route changed', newRoute);
+            this.loadPath(newRoute.fullPath);
+        },
         setupIframeIntegrations() {
             console.log('[LegacyPage] Setting up iframe integrations for', this.$refs.iframe.contentWindow.location.href);
             let elem = this.$refs.iframe;
@@ -137,7 +144,6 @@ export default {
         // We detect when the iframe url changes, and update our window accordingly...
         onNavigated(newURL) {
             console.log('[LegacyPage] Navigated to ' + newURL);
-
         },
         showInnerNotification(data) {
             this.$buefy.notification.open(morphToNotification(data));

@@ -30,6 +30,7 @@
     "v-hotkey": "^0.8.0",
     "vex-js": "~4.1.0",
     "vue": "^2.6.11",
+    "vue-async-computed": "^3.9.0",
     "vue-loader": "^15.9.6",
     "vue-router": "^3.5.1",
     "vue-template-compiler": "^2.6.11",

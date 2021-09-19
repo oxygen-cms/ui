@@ -3,7 +3,7 @@ import  { CrudApi } from './CrudApi';
 export default class MediaDirectoryApi extends CrudApi {
 
     static getResourceName() {
-        return 'mediaDirectory';
+        return 'media-directory';
     }
 
     static prepareModelForAPI(data) {

@@ -38,12 +38,6 @@ export default (vue) => {
                 if(!state.user) { return null; }
                 return new UserPreferences(state.user.preferences);
             }
-            // isLoggedIn: state => {
-            //     if(!state.attemptedSessionLogin) {
-            //         return 'unknown';
-            //     }
-            //     return state.user !== null;
-            // }
         },
         actions: {
             determineLoginStatus({ commit, state }) {

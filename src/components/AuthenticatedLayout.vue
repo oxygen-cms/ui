@@ -84,7 +84,7 @@ export default {
     },
     methods: {
         setGlobalFontSize() {
-            let fontSize = this.userPreferences.get.get('fontSize', '100%');
+            let fontSize = this.userPreferences.get('fontSize', '100%');
             console.log('Setting global font size to ', fontSize);
             if(fontSize !== '100%') {
                 window.document.documentElement.style.fontSize = fontSize;

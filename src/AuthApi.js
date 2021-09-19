@@ -1,5 +1,6 @@
 import {API_ROOT} from "./CrudApi";
 import {FetchBuilder, initCsrfCookie} from "./api";
+import UserPermissions from "./UserPermissions";
 
 export default class AuthApi {
 
@@ -92,3 +93,24 @@ export default class AuthApi {
             .fetch(API_ROOT + 'auth/sessions/' + id)
     }
 }
+
+export const checkAuthenticated = (store) => {
+    return (to, from, next) => {
+        store.dispatch('determineLoginStatus').then((isLoggedIn) => {
+            if(!to.path.startsWith('/auth/login') && !isLoggedIn && to.meta.allowUnauthenticated !== true) {
+                UserPermissions.$buefy.notification.open({
+                    message: 'You need to be logged in to view that page',
+                    type: 'is-info',
+                    queue: false,
+                    duration: 7000
+                });
+                next({
+                    path: '/auth/login',
+                    query: { redirect: to.fullPath }
+                });
+            } else {
+                next();
+            }
+        })
+    }
+};

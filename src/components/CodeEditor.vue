@@ -1,6 +1,5 @@
 <template>
     <div class="editor-container has-background-grey-darker" :style="'height: ' + height + ';'">
-
         <transition name="fade">
             <AceEditor
                 key="editor"
@@ -27,14 +26,14 @@
                 @init="editorInit"
             />
         </transition>
-
     </div>
 </template>
 
 <script>
+
 export default {
     name: "CodeEditor",
-    components: { AceEditor: import('vue2-ace-editor') },
+    components: { AceEditor: require('vue2-ace-editor') },
     props: {
         value: { type: String, default: null },
         height: { type: String, required: true },
@@ -66,10 +65,10 @@ export default {
     },
     methods: {
         editorInit() {
-            import('brace/ext/language_tools') //language extension prerequsite...
-            import(`brace/mode/${this.lang}`);
-            import(`brace/theme/${this.lang}`);
-            import(`brace/snippets/${this.lang}`);
+            require('brace/ext/language_tools') //language extension prerequsite...
+            require(`brace/mode/${this.lang}`);
+            require(`brace/theme/${this.theme}`);
+            require(`brace/snippets/${this.lang}`);
 
             // ignore first missing DOCTYPE warning
             let session = this.$refs.ace.editor.getSession();
