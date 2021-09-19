@@ -37,11 +37,11 @@
                 <div class="level">
                     <div class="level-left">
                         <b-field label="2FA Code" label-position="inside" :type="failedValidation ? 'is-danger' : ''">
-                            <b-input name="2fa_code" type="number" v-model="totpCode" autofocus minlength="6" required placeholder="enter code here" @keyup.enter.native="confirm2FA"></b-input>
+                            <b-input v-model="totpCode" name="2fa_code" type="number" autofocus minlength="6" required placeholder="enter code here" @keyup.enter.native="confirm2FA"></b-input>
                         </b-field>
                     </div>
                     <div class="level-right">
-                        <b-button type="is-primary" @click="confirm2FA" :loading="submitting">Confirm</b-button>
+                        <b-button type="is-primary" :loading="submitting" @click="confirm2FA">Confirm</b-button>
                     </div>
                 </div>
             </div>

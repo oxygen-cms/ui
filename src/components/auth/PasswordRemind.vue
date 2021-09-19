@@ -14,11 +14,11 @@
                 <p>Enter the email address associated with your account, and we'll send you a link to reset your password.</p>
                 <br />
                 <b-field label="Email Address" label-position="inside">
-                    <b-input name="email" type="email" v-model="accountEmail" required @keyup.enter.native="submitForm"></b-input>
+                    <b-input v-model="accountEmail" name="email" type="email" required @keyup.enter.native="submitForm"></b-input>
                 </b-field>
 
                 <div class="login-justify-content">
-                    <b-button type="is-primary" @click="submitForm" :loading="submitting">Send Reminder Email</b-button>
+                    <b-button type="is-primary" :loading="submitting" @click="submitForm">Send Reminder Email</b-button>
                     <router-link to="/auth/login">
                         Back to Login
                     </router-link>
@@ -40,7 +40,7 @@ import AuthApi from "../../AuthApi";
 import {morphToNotification} from "../../api";
 
 export default {
-    name: "PasswordRemind.vue",
+    name: "PasswordRemind",
     components: { LoginLogo },
     data() {
         return {
@@ -57,7 +57,9 @@ export default {
                 let response = await this.authApi.sendReminderEmail(this.accountEmail);
                 this.$buefy.notification.open(morphToNotification(response));
                 this.success = true;
-            } catch(e) {}
+            } catch(e) {
+                // let the user try again
+            }
             this.submitting = false;
         }
     }

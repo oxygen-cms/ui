@@ -14,10 +14,9 @@
 </template>
 
 <script>
-    import LoginLogo from "./auth/LoginLogo.vue";
     export default {
         name: "Error404",
-        components: {LoginLogo}
+        components: {}
     }
 </script>
 

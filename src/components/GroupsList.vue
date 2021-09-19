@@ -9,36 +9,36 @@
         </div>
 
         <b-table :data="paginatedItems.items === null ? [] : paginatedItems.items" :loading="paginatedItems.loading">
-            <b-table-column label="" v-slot="props">
-                <GenericEditableField :api="groupsApi" :data="props.row" @update:data="updateGroup" field-name="icon">
+            <b-table-column v-slot="props" label="">
+                <GenericEditableField :api="groupsApi" :data="props.row" field-name="icon" @update:data="updateGroup">
                     <template #display="{ value, edit }">
                         <b-icon :icon="value" size="is-small"></b-icon>
                         <EditButtonOnRowHover :edit="edit" />
                     </template>
                 </GenericEditableField>
             </b-table-column>
-            <b-table-column label="Name" v-slot="props">
-                <GenericEditableField :api="groupsApi" :data="props.row" @update:data="updateGroup" field-name="name" />
+            <b-table-column v-slot="props" label="Name">
+                <GenericEditableField :api="groupsApi" :data="props.row" field-name="name" @update:data="updateGroup" />
             </b-table-column>
-            <b-table-column label="Description" v-slot="props">
-                <GenericEditableField :api="groupsApi" :data="props.row" @update:data="updateGroup" field-name="description" />
+            <b-table-column v-slot="props" label="Description">
+                <GenericEditableField :api="groupsApi" :data="props.row" field-name="description" @update:data="updateGroup" />
             </b-table-column>
-            <b-table-column label="Nickname" v-slot="props">
-                <GenericEditableField :api="groupsApi" :data="props.row" @update:data="updateGroup" field-name="nickname">
+            <b-table-column v-slot="props" label="Nickname">
+                <GenericEditableField :api="groupsApi" :data="props.row" field-name="nickname" @update:data="updateGroup">
                     <template #display="{ value, edit }">
                         <code>{{ value }}</code>
                         <EditButtonOnRowHover :edit="edit" />
                     </template>
                 </GenericEditableField>
             </b-table-column>
-            <b-table-column label="Created" v-slot="props">
+            <b-table-column v-slot="props" label="Created">
                 <UserJoined :user="props.row"></UserJoined>
             </b-table-column>
-            <b-table-column label="" v-slot="props" width="25em">
+            <b-table-column v-slot="props" label="" width="25em">
                 <div class="buttons">
-                    <b-button rounded outlined icon-left="recycle" v-if="props.row.deletedAt" @click="restoreItem(props.row.id)" size="is-small">Restore</b-button>
-                    <b-button rounded type="is-danger" outlined icon-left="trash" v-if="props.row.deletedAt" @click="forceDeleteItem(props.row.id)" size="is-small">Delete Forever</b-button>
-                    <b-button rounded icon-left="trash" v-if="!props.row.deletedAt"  @click="deleteItem(props.row.id)" size="is-small">Delete</b-button>
+                    <b-button v-if="props.row.deletedAt" rounded outlined icon-left="recycle" size="is-small" @click="restoreItem(props.row.id)">Restore</b-button>
+                    <b-button v-if="props.row.deletedAt" rounded type="is-danger" outlined icon-left="trash" size="is-small" @click="forceDeleteItem(props.row.id)">Delete Forever</b-button>
+                    <b-button v-if="!props.row.deletedAt" rounded icon-left="trash"  size="is-small" @click="deleteItem(props.row.id)">Delete</b-button>
                 </div>
             </b-table-column>
         </b-table>
@@ -76,7 +76,6 @@ artisan permissions admin --inherit pages:_content</code></pre>
 </template>
 
 <script>
-import UsersApi from "../UsersApi";
 import GroupsApi from "../GroupsApi";
 import UserJoined from "./UserJoined.vue";
 import GenericEditableField from "./GenericEditableField.vue";
@@ -84,13 +83,13 @@ import EditButtonOnRowHover from "./EditButtonOnRowHover.vue";
 
 export default {
     name: "GroupsList",
+    components: { UserJoined, GenericEditableField, EditButtonOnRowHover },
     data() {
         return {
             groupsApi: new GroupsApi(this.$buefy),
             paginatedItems: {items: null, totalItems: null, itemsPerPage: null, loading: false, currentPage: 1},
         }
     },
-    components: { UserJoined, GenericEditableField, EditButtonOnRowHover },
     async mounted() {
         this.fetchData()
     },

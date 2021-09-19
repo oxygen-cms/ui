@@ -3,7 +3,7 @@
     <div class="login-fullscreen">
         <b-loading :active="theme === null"></b-loading>
         <transition name="fade">
-            <div :class="'login-background login-theme-' + theme" v-if="theme !== null">
+            <div v-if="theme !== null" :class="'login-background login-theme-' + theme">
                 <transition name="slide-left" mode="out-in">
                     <router-view></router-view>
                 </transition>

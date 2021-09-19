@@ -10,14 +10,11 @@
 
 <script>
 import AuthApi from "../AuthApi";
-import UserPreferences from "./preferences/UserPreferences.vue";
-import ShowIfPermitted from "./preferences/ShowIfPermitted.vue";
-import UserJoined from "./UserJoined.vue";
 import UserProfileForm from "./UserProfileForm.vue";
 
 export default {
     name: "ViewProfile",
-    components: {UserProfileForm, UserJoined, ShowIfPermitted, UserPreferences},
+    components: {UserProfileForm},
     data() {
         return {
             authApi: new AuthApi(this.$buefy)

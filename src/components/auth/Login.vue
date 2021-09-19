@@ -8,18 +8,18 @@
             </b-notification>
 
             <b-field label="Username" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''">
-                <b-input name="username" v-model="username" required validation-message="Username is required"></b-input>
+                <b-input v-model="username" name="username" required validation-message="Username is required"></b-input>
             </b-field>
 
             <b-field label="Password" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''">
-                <b-input name="password" v-model="password" type="password" required validation-message="Password is required" @keyup.enter.native="submitLogin"></b-input>
+                <b-input v-model="password" name="password" type="password" required validation-message="Password is required" @keyup.enter.native="submitLogin"></b-input>
             </b-field>
 
             <br>
 
 <!--                {{ URL::route(Blueprint::get('Password')->getRouteName('getRemind')) }} -->
             <div class="login-justify-content">
-                <b-button type="is-primary" tag="input" value="Login" @click="submitLogin" :loading="submitting"></b-button>
+                <b-button type="is-primary" tag="input" value="Login" :loading="submitting" @click="submitLogin"></b-button>
                 <router-link to="/auth/forgot-password">Forgot Password</router-link>
             </div>
         </div>
@@ -31,14 +31,14 @@
             <br>
 
             <b-field key="totpCode" label="2FA Code" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''" :message="!submitting && hasFailedLogin ? 'Incorrect code. Try again.' : ''">
-                <b-input name="totpCode" v-model="totpCode" type="number" placeholder="e.g.: 123456" minlength="6" required autofocus @keyup.enter.native="submitLogin">
+                <b-input v-model="totpCode" name="totpCode" type="number" placeholder="e.g.: 123456" minlength="6" required autofocus @keyup.enter.native="submitLogin">
                 </b-input>
             </b-field>
 
             <br>
 
             <div class="login-justify-content">
-                <b-button type="is-primary" @click="submitLogin" :disabled="confirmCodeDisabled" :loading="submitting">Confirm code</b-button>
+                <b-button type="is-primary" :disabled="confirmCodeDisabled" :loading="submitting" @click="submitLogin">Confirm code</b-button>
             </div>
         </div>
 

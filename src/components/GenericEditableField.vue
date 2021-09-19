@@ -1,16 +1,16 @@
 <template>
     <transition name="fade" mode="out-in">
         <div v-if="updatedValue === null">
-            <slot name="display" v-bind:edit="edit" v-bind:value="data[fieldName]">
+            <slot name="display" :edit="edit" :value="data[fieldName]">
                 <p>
                     {{ data[fieldName] }}
                     <EditButtonOnRowHover :edit="edit" />
                 </p>
             </slot>
         </div>
-        <slot name="edit" v-else v-bind:submit="submitValue" v-bind:initial-value="data[fieldName]" v-bind:updating="updating">
+        <slot v-else name="edit" :submit="submitValue" :initial-value="data[fieldName]" :updating="updating">
             <b-field :label="label" :label-position="label ? 'inside' : null">
-                <b-input v-model="updatedValue" :type="type" @keyup.enter.native="submit" :disabled="updating" class="not-full-width"></b-input>
+                <b-input v-model="updatedValue" :type="type" :disabled="updating" class="not-full-width" @keyup.enter.native="submit"></b-input>
                 <p class="control">
                     <b-button type="is-primary" :loading="updating" @click="submit">Change</b-button>
                 </p>
@@ -21,7 +21,6 @@
 
 <script>
 import {morphToNotification} from "../api";
-import UsersApi from "../UsersApi";
 import EditButtonOnRowHover from "./EditButtonOnRowHover.vue";
 
 export default {

@@ -5,7 +5,7 @@
                 <b-icon icon="user" size="is-large" class="has-text-grey-lighter"></b-icon>
             </div>
             <div class="media-content">
-                <GenericEditableField :api="usersApi" :data="user" @update:data="user => $emit('update:user', user)" label="Full Name" field-name="fullName">
+                <GenericEditableField :api="usersApi" :data="user" label="Full Name" field-name="fullName" @update:data="user => $emit('update:user', user)">
                     <template #display="{ value, edit }">
                         <p class="title is-4">
                             {{ value }} <b-button rounded size="is-small" type="is-light" icon-left="pencil-alt" @click="edit"></b-button>
@@ -55,7 +55,7 @@
 
         <b-button v-if="admin" @click="isUserPreferencesModalActive = true">Open User Preferences...</b-button>
 
-        <ShowIfPermitted :keys="['user.general', 'user.editor']" v-if="!admin">
+        <ShowIfPermitted v-if="!admin" :keys="['user.general', 'user.editor']">
             <b-notification :closable="false" class="bottom-margin">
                 <h2 class="subtitle">User Preferences</h2>
                 <p>You can modify and personalize certain aspects of this administration interface to suit your own preferences.</p>
@@ -145,6 +145,7 @@ import GenericEditableField from "./GenericEditableField.vue";
 
 export default {
     name: "UserProfileForm",
+    components: {GenericEditableField, ShowIfPermitted, UserJoined, UserPreferences },
     props: {
         user: {
             type: Object,
@@ -156,7 +157,6 @@ export default {
         }
     },
     emits: 'update:user',
-    components: {GenericEditableField, ShowIfPermitted, UserJoined, UserPreferences },
     data() {
         return {
             oldPassword: '',

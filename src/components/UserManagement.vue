@@ -12,8 +12,8 @@
             </div>
 
             <b-table :data="paginatedItems.items === null ? [] : paginatedItems.items" :loading="paginatedItems.loading">
-                <b-table-column label="Full Name" v-slot="props">
-                    <GenericEditableField :api="usersApi" :data="props.row" @update:data="updateUser" field-name="fullName">
+                <b-table-column v-slot="props" label="Full Name">
+                    <GenericEditableField :api="usersApi" :data="props.row" field-name="fullName" @update:data="updateUser">
                         <template #display="{ value, edit }">
                             <p>
                                 {{ value }}
@@ -22,8 +22,8 @@
                         </template>
                     </GenericEditableField>
                 </b-table-column>
-                <b-table-column label="Email" v-slot="props">
-                    <GenericEditableField :api="usersApi" :data="props.row" @update:data="updateUser" field-name="email" type="email">
+                <b-table-column v-slot="props" label="Email">
+                    <GenericEditableField :api="usersApi" :data="props.row" field-name="email" type="email" @update:data="updateUser">
                         <template #display="{ value, edit }">
                             <p>
                                 <a :href="'mailto:' + value" target="_blank" class="is-size-7">{{ value }}</a>
@@ -32,8 +32,8 @@
                         </template>
                     </GenericEditableField>
                 </b-table-column>
-                <b-table-column label="Group" v-slot="props">
-                    <GenericEditableField :api="usersApi" :data="props.row" @update:data="updateUser" field-name="group">
+                <b-table-column v-slot="props" label="Group">
+                    <GenericEditableField :api="usersApi" :data="props.row" field-name="group" @update:data="updateUser">
                         <template #display="{ value, edit }">
                             <p>
                                 {{ value.name }}
@@ -41,12 +41,12 @@
                             </p>
                         </template>
                         <template #edit="{ initialValue, submit, updating }">
-                            <GroupsChooser :value="initialValue" @select="submit" :updating="updating" />
+                            <GroupsChooser :value="initialValue" :updating="updating" @select="submit" />
                         </template>
                     </GenericEditableField>
                 </b-table-column>
-                <b-table-column label="Username" v-slot="props">
-                    <GenericEditableField :api="usersApi" :data="props.row" @update:data="updateUser" field-name="username">
+                <b-table-column v-slot="props" label="Username">
+                    <GenericEditableField :api="usersApi" :data="props.row" field-name="username" @update:data="updateUser">
                         <template #display="{ value, edit }">
                             <p>
                                 {{ value }}
@@ -55,21 +55,21 @@
                         </template>
                     </GenericEditableField>
                 </b-table-column>
-                <b-table-column label="Email Verified" v-slot="props">
+                <b-table-column v-slot="props" label="Email Verified">
                     {{ props.row.emailVerified ? 'Yes' : 'No' }}
                 </b-table-column>
-                <b-table-column label="Two-Factor Auth" v-slot="props">
+                <b-table-column v-slot="props" label="Two-Factor Auth">
                     {{ props.row.twoFactorAuthEnabled ? 'Yes' : 'No' }}
                 </b-table-column>
-                <b-table-column label="Joined" v-slot="props">
+                <b-table-column v-slot="props" label="Joined">
                     <UserJoined :user="props.row"></UserJoined>
                 </b-table-column>
-                <b-table-column label="" v-slot="props" width="25em">
+                <b-table-column v-slot="props" label="" width="25em">
                     <div class="buttons">
                         <b-button rounded icon-left="sign-in-alt" size="is-small" type="is-info" @click="impersonate(props.row.id)">Login as this user</b-button>
-                        <b-button rounded v-if="props.row.deletedAt" icon-left="trash" size="is-small" type="is-danger" @click="forceDelete(props.row.id)">Delete Forever</b-button>
-                        <b-button rounded v-if="!props.row.deletedAt" icon-left="minus-circle" size="is-small" @click="deactivate(props.row.id)">Deactivate</b-button>
-                        <b-button rounded v-else icon-left="plus" size="is-small" type="is-success" @click="activate(props.row.id)">Activate</b-button>
+                        <b-button v-if="props.row.deletedAt" rounded icon-left="trash" size="is-small" type="is-danger" @click="forceDelete(props.row.id)">Delete Forever</b-button>
+                        <b-button v-if="!props.row.deletedAt" rounded icon-left="minus-circle" size="is-small" @click="deactivate(props.row.id)">Deactivate</b-button>
+                        <b-button v-else rounded icon-left="plus" size="is-small" type="is-success" @click="activate(props.row.id)">Activate</b-button>
                     </div>
                 </b-table-column>
             </b-table>
@@ -86,7 +86,6 @@ import UsersApi from "../UsersApi";
 import UserJoined from "./UserJoined.vue";
 import {morphToNotification} from "../api";
 import {isNavigationFailure, NavigationFailureType} from "vue-router/src/util/errors";
-import UserProfileForm from "./UserProfileForm.vue";
 import GenericEditableField from "./GenericEditableField.vue";
 import GroupsChooser from "./GroupsChooser.vue";
 import GroupsList from "./GroupsList.vue";
@@ -97,7 +96,7 @@ export default {
     name: "UserManagement",
     components: {
         CreateUserModal,
-        EditButtonOnRowHover, GroupsChooser, GenericEditableField, UserProfileForm, UserJoined, GroupsList},
+        EditButtonOnRowHover, GroupsChooser, GenericEditableField, UserJoined, GroupsList},
     data() {
         return {
             usersApi: new UsersApi(this.$buefy),

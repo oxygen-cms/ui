@@ -25,7 +25,7 @@ import GroupsApi from "../GroupsApi";
 export default {
     name: "GroupsChooser",
     props: {
-        value: { required: true },
+        value: { required: false, type: Object, default: null },
         updating: { type: Boolean, default: false }
     },
     data() {

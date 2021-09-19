@@ -1,5 +1,5 @@
 <template>
-    <b-modal :closable="false" :active="active" @update:active="a => $emit('update:active', a)" has-modal-card trap-focus aria-role="dialog" aria-modal>
+    <b-modal :closable="false" :active="active" has-modal-card trap-focus aria-role="dialog" aria-modal @update:active="a => $emit('update:active', a)">
         <div class="modal-card" style="overflow: visible">
             <header class="modal-card-head">
                 <p class="modal-card-title">
@@ -18,7 +18,7 @@
                     <b-input v-model="fullName" placeholder="e.g.: John Doe"></b-input>
                 </b-field>
                 <b-field label="Group">
-                    <GroupsChooser @select="g => group = g" :value="group" />
+                    <GroupsChooser :value="group" @select="g => group = g" />
                 </b-field>
             </section>
             <footer class="modal-card-foot is-flex">
@@ -59,7 +59,9 @@ export default {
                 this.$buefy.notification.open(morphToNotification(response));
                 this.$emit('update:active', false);
                 this.$emit('update:users');
-            } catch(e) {}
+            } catch(e) {
+                // let the user try again
+            }
             this.submitting = false;
         }
     }

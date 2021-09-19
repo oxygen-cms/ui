@@ -14,7 +14,6 @@ import MediaInsertModal from "./media/MediaInsertModal.vue";
 
 import { morphToNotification } from "../api";
 import MediaApi from "../MediaApi";
-import UserPreferences from "../UserPreferences";
 
 // from https://gist.github.com/hdodov/a87c097216718655ead6cf2969b0dcfa
 

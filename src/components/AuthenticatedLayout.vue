@@ -73,14 +73,23 @@ export default {
     computed: {
         impersonating() { return this.$store.state.impersonating; },
         user() { return this.$store.state.user; },
+        userPreferences() { return this.$store.getters.userPreferences; },
         collapsed() {
             return this.setCollapsed || this.requestedCollapsed;
         }
     },
     mounted() {
         console.log('mounted', this.$store);
+        this.setGlobalFontSize()
     },
     methods: {
+        setGlobalFontSize() {
+            let fontSize = this.userPreferences.get.get('fontSize', '100%');
+            console.log('Setting global font size to ', fontSize);
+            if(fontSize !== '100%') {
+                window.document.documentElement.style.fontSize = fontSize;
+            }
+        },
         async stopImpersonating() {
             let response = await this.usersApi.stopImpersonating();
             this.$buefy.notification.open(morphToNotification(response));

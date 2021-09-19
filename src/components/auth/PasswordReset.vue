@@ -32,7 +32,7 @@
             </b-field>
 
             <div class="login-justify-content">
-                <b-button type="is-primary" @click="submit" :disabled="!passwordsMatch" :loading="submitting">Reset</b-button>
+                <b-button type="is-primary" :disabled="!passwordsMatch" :loading="submitting" @click="submit">Reset</b-button>
                 <router-link to="/auth/login">
                     Back to Login
                 </router-link>
@@ -84,6 +84,7 @@ export default {
                 this.$buefy.notification.open(morphToNotification(data));
                 this.successfullyReset = true;
             } catch(e) {
+                // let the user try again
             }
             this.submitting = false;
         }

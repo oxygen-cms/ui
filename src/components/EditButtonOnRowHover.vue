@@ -1,5 +1,5 @@
 <template>
-    <b-button size="is-small" type="is-text" icon-right="pencil-alt" @click="edit" class="show-on-hover" />
+    <b-button size="is-small" type="is-text" icon-right="pencil-alt" class="show-on-hover" @click="edit" />
 </template>
 
 <script>

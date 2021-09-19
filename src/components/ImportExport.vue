@@ -5,7 +5,7 @@
         Create a backup of all the content and settings of the website.<br>
         It is recommended to make regular backups to ensure the safety of your content.
       </p>
-      <b-button type="is-primary" size="is-medium" @click="processDownload" :loading="exporting">Download data as `.zip`</b-button>
+      <b-button type="is-primary" size="is-medium" :loading="exporting" @click="processDownload">Download data as `.zip`</b-button>
 
       <h3>Import Data</h3>
       <p>To restore the contents and settings of this site from a backup, use the Artisan Console.</p>

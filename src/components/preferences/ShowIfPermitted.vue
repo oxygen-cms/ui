@@ -6,8 +6,6 @@
 
 <script>
 import {canAccessPrefs} from "../../PreferencesApi";
-import UserPermissions from "../../UserPermissions";
-import AuthApi from "../../AuthApi";
 
 export default {
     name: "ShowIfPermitted",

@@ -1,7 +1,7 @@
 <template>
     <div class="full-height scroll-container pad">
         <div class="box">
-          <h1 class="title">Active Sessions <b-button icon-left="redo-alt" @click="fetchSessions" rounded></b-button>
+          <h1 class="title">Active Sessions <b-button icon-left="redo-alt" rounded @click="fetchSessions"></b-button>
           </h1>
 
 
@@ -28,13 +28,13 @@
 
             <b-table-column v-slot="props" label="">
               <b-tag v-if="props.row.current" type="is-success" style="text-transform: uppercase">Current Session</b-tag>
-              <b-button v-else @click="deleteSession(props.row.id)" size="is-small" type="is-warning" icon-left="sign-out-alt">Remove session</b-button>
+              <b-button v-else size="is-small" type="is-warning" icon-left="sign-out-alt" @click="deleteSession(props.row.id)">Remove session</b-button>
             </b-table-column>
           </b-table>
         </div>
 
         <div class="box">
-            <h1 class="title">Logins, Logouts &amp; Login Attempts <b-button icon-left="redo-alt" @click="paginatedItems.currentPage = 1; fetchLogins" rounded></b-button></h1>
+            <h1 class="title">Logins, Logouts &amp; Login Attempts <b-button icon-left="redo-alt" rounded @click="paginatedItems.currentPage = 1; fetchLogins"></b-button></h1>
 
             <b-table :data="paginatedItems.items === null ? [] : paginatedItems.items"
                      :loading="paginatedItems.loading"

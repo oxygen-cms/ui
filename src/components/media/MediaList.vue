@@ -4,7 +4,7 @@
         <div class="top-bar">
             <div v-if="!paginatedItems.loading && !inTrash && !searchQuery" class="breadcrumb">
                 <ul>
-                    <li v-for="item in getDirectoryBreadcrumbItems(paginatedItems.currentDirectory)" :class="item.separator ? 'separator' : ''">
+                    <li v-for="item in getDirectoryBreadcrumbItems(paginatedItems.currentDirectory)" :key="JSON.stringify(item)" :class="item.separator ? 'separator' : ''">
                         <b-icon v-if="item.home && paginatedItems.currentDirectory === null" class="subtitle" icon="home"></b-icon>
                         <b-button v-else-if="item.home" type="is-text" class="subtitle" icon-left="home" @click="navigateTo({ currentPath: '' })"></b-button>
                         <b-button v-else-if="item.link !== null" type="is-text" class="subtitle" @click="navigateTo({ currentPath: item.link })">{{ item.text }}</b-button>
