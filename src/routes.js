@@ -3,7 +3,6 @@ import AuthenticationLog from "./components/AuthenticationLog.vue";
 import MediaPage from "./components/media/MediaPage.vue";
 import MediaResponsiveImages from "./components/media/MediaResponsiveImages.vue";
 import Error404 from './components/Error404.vue';
-import LegacyPage from './components/LegacyPage.vue';
 import AuthenticatedLayout from "./components/AuthenticatedLayout.vue";
 import Login from "./components/auth/Login.vue";
 import Logout from "./components/auth/Logout.vue";

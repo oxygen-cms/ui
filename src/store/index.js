@@ -47,7 +47,7 @@ export default (vue) => {
         },
         actions: {
             determineLoginStatus({ commit, state }) {
-                return new Promise((resolve, reject) => {
+                return new Promise((resolve) => {
                     if(state.loginStatus != null) {
                         resolve(state.loginStatus);
                         return;
@@ -64,7 +64,7 @@ export default (vue) => {
                             commit('setUser', response.user);
                         }
                         resolve(true);
-                    }).catch(e => {
+                    }).catch(() => {
                         commit('setUser', null);
                         resolve(false);
                     })

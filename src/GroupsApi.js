@@ -1,4 +1,4 @@
-import {API_ROOT, CrudApi} from './CrudApi';
+import {CrudApi} from './CrudApi';
 
 export default class GroupsApi extends CrudApi {
 

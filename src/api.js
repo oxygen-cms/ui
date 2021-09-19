@@ -1,7 +1,7 @@
 var xsrfToken = null;
 
 export const initCsrfCookie = async () => {
-    let response = await window.fetch(
+    await window.fetch(
         '/sanctum/csrf-cookie',
         {
             credentials: 'same-origin'
@@ -166,7 +166,7 @@ const handleAPIError = function(content, $buefy, $router, response) {
 
     // handle generic validation errors
     if(typeof content.errors === 'object') {
-        for(const [ field, errors ] of Object.entries(content.errors)) {
+        for(const [, errors ] of Object.entries(content.errors)) {
             for(let error of errors) {
                 $buefy.notification.open({
                     message: error,
