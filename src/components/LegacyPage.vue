@@ -3,7 +3,6 @@
         <transition name="fade">
             <iframe v-show="!loading" ref="iframe" class="iframe" />
         </transition>
-<!--        <b-loading :is-full-page="false" v-model="loading" :can-cancel="false"></b-loading>-->
 
         <MediaInsertModal :active.sync="isInsertMediaItemModalActive" @close="closeInsertMediaItemModal" @select="onFilesSelected" />
     </div>
@@ -50,11 +49,6 @@ const iframeURLChange = (iframe, callback, legacyPage) => {
 export default {
     name: "LegacyPage",
     components: { MediaInsertModal },
-    beforeRouteUpdate(to, from, next) {
-        // when the Vue route changes, load this path inside the iframe
-        this.loadPath(to.fullPath);
-        next();
-    },
     beforeRouteLeave(to, from, next) {
         window.document.body.style.overflowY = 'auto';
         window.document.documentElement.style.overflowY = 'auto';
@@ -62,11 +56,12 @@ export default {
         next();
     },
     props: {
+        fullPath: { type: String, required: true },
         legacyPrefix: { type: String, required: true },
         adminPrefix: { type: String, required: true }
     },
     'watch': {
-        '$route': 'onRouteChanged'
+        'fullPath': 'onFullPathChanged'
     },
     data() {
         return {
@@ -102,9 +97,9 @@ export default {
         this.$parent.$data.requestedCollapsed = false;
     },
     methods: {
-        onRouteChanged(newRoute) {
-            console.log('Route changed', newRoute);
-            this.loadPath(newRoute.fullPath);
+        onFullPathChanged(newFullPath) {
+            console.log('Route changed', );
+            this.loadPath(newFullPath);
         },
         setupIframeIntegrations() {
             console.log('[LegacyPage] Setting up iframe integrations for', this.$refs.iframe.contentWindow.location.href);

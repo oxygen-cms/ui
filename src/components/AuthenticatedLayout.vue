@@ -5,7 +5,7 @@
             <div class="app-logo-title">
                 <router-link to="/" class="app-logo-title-link">
                     <img src="../../assets/oxygen-icon.png" alt="Oxygen CMS" class="app-logo">
-                    <span v-if="!collapsed" to="/" class="app-title">Oxygen CMS</span>
+                    <router-link v-if="!collapsed" to="/" class="app-title">Oxygen CMS</router-link>
                 </router-link>
                 <span class="is-flex-grow-1"></span>
                 <b-button v-if="!requestedCollapsed" type="is-light" :icon-left="collapsed ? 'angle-right' : 'angle-left'" class="collapse-menu-button" @click="setCollapsed = !setCollapsed"></b-button>

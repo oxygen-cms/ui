@@ -6,9 +6,12 @@ export default function(ui) {
             // will match everything, try to render a legacy Oxygen page...
             path: '(pages|partials|upcoming-events)/:subpath*',
             component: LegacyPage,
-            props: {
-                legacyPrefix: '/oxygen/view',
-                adminPrefix: '/oxygen'
+            props: (route) => {
+                return {
+                    fullPath: route.fullPath,
+                    legacyPrefix: '/oxygen/view',
+                    adminPrefix: '/oxygen'
+                }
             }
         }
     ]);

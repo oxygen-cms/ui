@@ -8,11 +8,11 @@
             </b-notification>
 
             <b-field label="Username" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''">
-                <b-input v-model="username" name="username" required validation-message="Username is required"></b-input>
+                <b-input v-model="username" name="username" ref="username"></b-input>
             </b-field>
 
             <b-field label="Password" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''">
-                <b-input v-model="password" name="password" type="password" required validation-message="Password is required" @keyup.enter.native="submitLogin"></b-input>
+                <b-input v-model="password" name="password" type="password" @keyup.enter.native="submitLogin"></b-input>
             </b-field>
 
             <br>
@@ -31,8 +31,7 @@
             <br>
 
             <b-field key="totpCode" label="2FA Code" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''" :message="!submitting && hasFailedLogin ? 'Incorrect code. Try again.' : ''">
-                <b-input v-model="totpCode" name="totpCode" type="number" placeholder="e.g.: 123456" minlength="6" required autofocus @keyup.enter.native="submitLogin">
-                </b-input>
+                <b-input v-model="totpCode" name="totpCode" type="number" placeholder="e.g.: 123456" minlength="6" required @keyup.enter.native="submitLogin" ref="totpCode" />
             </b-field>
 
             <br>
@@ -79,6 +78,9 @@ export default {
             this.$router.push({ path: '/' });
         }
     },
+    mounted() {
+        this.$refs.username.focus();
+    },
     methods: {
         async submitLogin() {
             try {
@@ -114,6 +116,9 @@ export default {
                     // if we are trying to enter a 2FA code again, then count the previous attempt as "failed"
                     this.hasFailedLogin = this.wantsTotpCode;
                     this.wantsTotpCode = true;
+                    this.$nextTick(() => {
+                        this.$refs.totpCode.focus();
+                    });
                 }
             }
         }

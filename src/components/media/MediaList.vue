@@ -91,7 +91,7 @@
                 </header>
                 <section class="modal-card-body">
                     <b-field label-position="inside" label="Name">
-                        <b-input v-model="newDirectoryName"></b-input>
+                        <b-input v-model="newDirectoryName" @keyup.native.enter="doCreateDirectory"></b-input>
                     </b-field>
                 </section>
                 <footer class="modal-card-foot is-flex">
