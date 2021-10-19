@@ -132,8 +132,7 @@ export default {
           }
         },
         async fetchData() {
-            this.fetchSessions();
-            this.fetchLogins();
+            await Promise.all([this.fetchSessions(), this.fetchLogins()]);
         },
         geoIP(ip) {
             if(this.ipInfo.has(ip)) {
@@ -154,12 +153,12 @@ export default {
         },
         updateInfoForIp(ip) {
             let geolocationInfo = this.ipInfo.has(ip) ? this.getGeolocationInfo(this.ipInfo.get(ip)) : '';
-            for(let item of this.paginatedItems.items) {
+            for(let item of (this.paginatedItems.items || [])) {
                 if(item.ipAddress === ip) {
                     item.geolocationInfo = geolocationInfo;
                 }
             }
-            for(let item of this.sessions.items) {
+            for(let item of (this.sessions.items || [])) {
               if(item.ipAddress === ip) {
                 item.geolocationInfo = geolocationInfo;
               }
@@ -169,7 +168,6 @@ export default {
             let ua = new UAParser(userAgent);
             let browser = ua.getBrowser();
             let device = ua.getDevice();
-            // console.log(device);
             return browser.name + ' ' + browser.version + ' on ' + ua.getOS().name + ', ' + (device.vendor ? device.vendor : '(unknown device)');
         },
         getGeolocationInfo(data) {
