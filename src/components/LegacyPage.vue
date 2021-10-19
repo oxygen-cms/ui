@@ -60,9 +60,6 @@ export default {
         legacyPrefix: { type: String, required: true },
         adminPrefix: { type: String, required: true }
     },
-    'watch': {
-        'fullPath': 'onFullPathChanged'
-    },
     data() {
         return {
             loadingPath: null,
@@ -75,6 +72,9 @@ export default {
     computed: {
         loading() { return this.loadingPath !== null; },
         userPreferences() { return this.$store.getters.userPreferences; }
+    },
+    'watch': {
+        'fullPath': 'onFullPathChanged'
     },
     async mounted() {
         this.loadingPath = 'prefs';

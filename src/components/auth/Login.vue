@@ -8,7 +8,7 @@
             </b-notification>
 
             <b-field label="Username" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''">
-                <b-input v-model="username" name="username" ref="username"></b-input>
+                <b-input ref="username" v-model="username" name="username"></b-input>
             </b-field>
 
             <b-field label="Password" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''">
@@ -31,7 +31,7 @@
             <br>
 
             <b-field key="totpCode" label="2FA Code" label-position="inside" :type="!submitting && hasFailedLogin ? 'is-danger' : ''" :message="!submitting && hasFailedLogin ? 'Incorrect code. Try again.' : ''">
-                <b-input v-model="totpCode" name="totpCode" type="number" placeholder="e.g.: 123456" minlength="6" required @keyup.enter.native="submitLogin" ref="totpCode" />
+                <b-input ref="totpCode" v-model="totpCode" name="totpCode" type="number" placeholder="e.g.: 123456" minlength="6" required @keyup.enter.native="submitLogin" />
             </b-field>
 
             <br>

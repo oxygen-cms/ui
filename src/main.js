@@ -21,9 +21,8 @@ import Error404 from "./components/Error404.vue";
  * @param beforeMount
  */
 export default class OxygenUI {
-    app;
-
     constructor(Vue) {
+        this.app = null;
         this.Vue = Vue;
         this.authenticatedRoutes = []
         this.unauthenticatedRoutes = []
