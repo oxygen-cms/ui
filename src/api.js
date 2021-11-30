@@ -57,7 +57,7 @@ export class FetchBuilder {
         this.headers.set('X-XSRF-TOKEN', xsrfToken);
     }
 
-    async fetch(url) {
+    async fetchRaw(url) {
         await this.setXsrfTokenHeader()
 
         let v = { ... this};
@@ -72,7 +72,11 @@ export class FetchBuilder {
             }
         }
 
-        let response = await window.fetch(url.toString(), this);
+        return await window.fetch(url.toString(), this);
+    }
+
+    async fetch(url) {
+        let response = await this.fetchRaw(url);
 
         let data = {};
         try {

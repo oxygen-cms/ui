@@ -15,6 +15,7 @@
 <script>
 import {FetchBuilder} from "../api";
 import {API_ROOT} from "../CrudApi";
+import download from "downloadjs";
 
 export default {
     name: "ImportExport",
@@ -26,15 +27,13 @@ export default {
     methods: {
         async processDownload() {
             this.exporting = true;
-            let builder = (new FetchBuilder(this.$buefy, 'post'))
-                .cookies();
-            await builder.setXsrfTokenHeader();
-            let response = await window.fetch(API_ROOT + "import-export/export", { ... builder });
+            let response = await (new FetchBuilder(this.$buefy, 'post'))
+                .cookies()
+                .fetchRaw(API_ROOT + "import-export/export");
             this.$buefy.notification.open({ message: 'Export successful', type: 'is-success', queue: false });
             let blob = await response.blob();
-            let file = window.URL.createObjectURL(blob);
+            download(blob, 'database ' + (new Date()).toLocaleString() + '.zip');
             this.exporting = false;
-            window.location.assign(file);
         }
     }
 }
