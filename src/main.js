@@ -12,6 +12,7 @@ import { AuthRoutes, makeAuthenticatedRoute } from "./routes";
 import createStore from "./store/index";
 import { checkAuthenticated } from "./AuthApi";
 import Error404 from "./components/Error404.vue";
+import MainMenu from "./components/MainMenu.vue";
 
 /**
  * Creates the Vue.js Oxygen application, allowing for a few points of customization (i.e.: adding modules)
@@ -26,7 +27,8 @@ export default class OxygenUI {
         this.Vue = Vue;
         this.authenticatedRoutes = []
         this.unauthenticatedRoutes = []
-        this.rootComponents = { App }
+        this.mainMenuItems = {}
+        this.rootComponents = { App, MainMenu }
         this.beforeMountHooks = []
     }
 
@@ -38,6 +40,17 @@ export default class OxygenUI {
 
     addRoute(route) {
         this.authenticatedRoutes.push(route);
+    }
+
+    addMainMenuGroup(category, group) {
+        if(!this.mainMenuItems[category]) {
+            this.mainMenuItems[category] = {};
+        }
+        if(!group.items) {
+            group.items = {};
+        }
+        this.mainMenuItems[category][group.name] = group;
+        return group;
     }
 
     addUnauthenticatedRoutes(routes) {
@@ -91,6 +104,9 @@ export default class OxygenUI {
 
         this.app = new this.Vue({
             router: router,
+            data: {
+                mainMenuItems: this.mainMenuItems
+            },
             components: this.rootComponents,
             store
         });
@@ -108,4 +124,6 @@ export default class OxygenUI {
         this.app.$mount(selector);
     }
 }
+
+export const WEB_CONTENT = 'Web Content';
 

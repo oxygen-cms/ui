@@ -1,6 +1,40 @@
 import LegacyPage from "../components/LegacyPage.vue";
+import { WEB_CONTENT } from "../main.js";
 
 export default function(ui) {
+    ui.addMainMenuGroup(WEB_CONTENT, {
+        name: 'Pages',
+        icon: 'file-alt',
+        listAction: '/pages',
+        listPermission: 'pages.getList',
+        addIcon: 'plus',
+        addPermission: 'pages.postCreate',
+        addAction: '/pages/create',
+        items: {
+        }
+    });
+    ui.addMainMenuGroup(WEB_CONTENT, {
+        name: 'Partials',
+        icon: 'puzzle-piece',
+        listAction: '/partials',
+        listPermission: 'partials.getList',
+        addIcon: 'plus',
+        addPermission: 'partials.postCreate',
+        addAction: '/partials/create',
+        items: {
+        }
+    });
+    ui.addMainMenuGroup(WEB_CONTENT, {
+        name: 'Events',
+        icon: 'calendar-alt',
+        listAction: '/upcoming-events',
+        listPermission: 'upcomingEvents.getList',
+        addIcon: 'calendar-plus',
+        addPermission: 'upcomingEvents.postCreate',
+        addAction: '/upcoming-events/create',
+        items: {
+        }
+    });
     ui.addAuthenticatedRoutes([
         {
             // will match everything, try to render a legacy Oxygen page...

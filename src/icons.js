@@ -73,7 +73,8 @@ import {
     faLandmark,
     faFolderOpen,
     faImages,
-    faMinusCircle
+    faMinusCircle,
+    faCalendarPlus, faPaperPlane
 } from "@fortawesome/free-solid-svg-icons";
 
 export const addIconsToLibrary = () => {
@@ -86,5 +87,5 @@ export const addIconsToLibrary = () => {
         faFileExcel, faFileCsv, faChevronCircleDown, faChevronCircleUp, faTrash,
         faEye, faEyeSlash, faCaretDown, faCaretUp, faUpload, faUser, faFolder, faHome, faFilePdf, faSignOutAlt, faTag,
         faFolderPlus, faTimes, faQuestionCircle, faFileUpload, faLandmark,
-        faFolderOpen, faFile, faFileAudio, faFileImage, faShare, faImages);
+        faFolderOpen, faFile, faFileAudio, faFileImage, faShare, faImages, faCalendarPlus, faPaperPlane);
 };
