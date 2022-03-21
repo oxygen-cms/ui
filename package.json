@@ -48,7 +48,7 @@
     "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-vue": "^7.17.0",
     "jest": "^26.6.3",
-    "node-sass": "^4.13.1",
+    "sass-embedded": "^1.49.9",
     "postcss-loader": "^3.0.0",
     "regenerator-runtime": "^0.13.7",
     "sass-loader": "^8.0.2",
