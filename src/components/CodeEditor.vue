@@ -31,9 +31,16 @@
 
 <script>
 
+import AceEditor from 'vue2-ace-editor';
+import 'brace/ext/language_tools'; //language extension prerequsite...
+import 'brace/mode/html';
+import 'brace/mode/twig';
+import 'brace/theme/tomorrow_night_eighties';
+import 'brace/theme/tomorrow_night';
+
 export default {
     name: "CodeEditor",
-    components: { AceEditor: require('vue2-ace-editor') },
+    components: { AceEditor },
     props: {
         value: { type: String, default: null },
         height: { type: String, required: true },
@@ -65,11 +72,6 @@ export default {
     },
     methods: {
         editorInit() {
-            require('brace/ext/language_tools') //language extension prerequsite...
-            require(`brace/mode/${this.lang}`);
-            require(`brace/theme/${this.theme}`);
-            require(`brace/snippets/${this.lang}`);
-
             // ignore first missing DOCTYPE warning
             let session = this.$refs.ace.editor.getSession();
             session.on("changeAnnotation", () => {

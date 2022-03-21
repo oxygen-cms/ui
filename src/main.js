@@ -87,12 +87,18 @@ export default class OxygenUI {
                 makeAuthenticatedRoute(this.authenticatedRoutes)
             ])
             .concat(this.unauthenticatedRoutes)
-            .concat([{
-                path: '*',
-                name: 'error404',
-                component: Error404,
-                meta: {title: 'Not found'}
-            }]);
+            .concat([
+                {
+                    path: '/not-found',
+                    name: 'error404',
+                    component: Error404,
+                    meta: {title: 'Not found'}
+                },
+                {
+                    path: '/*',
+                    redirect: { name: 'error404' }
+                }
+            ]);
 
         const router = new Router({
             routes: routes,
@@ -105,6 +111,7 @@ export default class OxygenUI {
         this.app = new this.Vue({
             router: router,
             data: {
+                existingAppTitle: document.title,
                 mainMenuItems: this.mainMenuItems
             },
             components: this.rootComponents,

@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {API_ROOT} from "../../CrudApi";
+import {getApiRoot} from "../../CrudApi";
 import {FetchBuilder, morphToNotification} from "../../api";
 
 export default {
@@ -35,7 +35,7 @@ export default {
             this.requestInFlight = true;
             this.hasServerLog = false;
             this.serverLog = '[generating...]';
-            let result = await (FetchBuilder.default(this.$buefy, 'post')).fetch(API_ROOT + 'media/make-responsive');
+            let result = await (FetchBuilder.default(this.$buefy, 'post')).fetch(getApiRoot() + 'media/make-responsive');
             this.$buefy.toast.open(morphToNotification(result));
             this.requestInFlight = false;
             this.serverLog = result.log;
