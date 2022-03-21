@@ -28,7 +28,6 @@ export default class OxygenUI {
         this.authenticatedRoutes = []
         this.unauthenticatedRoutes = []
         this.mainMenuItems = {}
-        this.rootComponents = { App, MainMenu }
         this.beforeMountHooks = []
     }
 
@@ -110,11 +109,13 @@ export default class OxygenUI {
 
         this.app = new this.Vue({
             router: router,
-            data: {
-                existingAppTitle: document.title,
-                mainMenuItems: this.mainMenuItems
-            },
-            components: this.rootComponents,
+            render: (h) => h(App, {
+                props: {
+                    appTitle: document.title,
+                    defaultRouteTitle: 'Administration Panel',
+                    mainMenuItems: this.mainMenuItems
+                }
+            }),
             store
         });
 

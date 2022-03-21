@@ -134,7 +134,7 @@ export default {
             }
         },
         vuePathToURL(path) {
-            return getApiHost() + this.legacyPrefix + path;
+            return getApiHost() + this.legacyPrefix.replace(/^\//, '') + path;
         },
         // We detect when the iframe url changes, and update our window accordingly...
         onNavigated(newURL) {

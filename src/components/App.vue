@@ -1,22 +1,23 @@
 <template>
     <div style="height: 100%;">
-<!--        <transition name="slide-left" mode="out-in">-->
             <router-view @logout="signOut">
                 <template #main-navigation>
-                    <slot name="app-navigation"></slot>
+                    <MainMenu :items="mainMenuItems" />
                 </template>
             </router-view>
-<!--        </transition>-->
     </div>
 </template>
 
 <script>
     import AuthApi from "../AuthApi";
+    import MainMenu from "./MainMenu.vue";
     export default {
         name: "App",
+        components: {MainMenu},
         props: {
             appTitle: { type: String, required: true },
             defaultRouteTitle: { type: String, required: true },
+            mainMenuItems: { type: Object, required: true },
             impersonating: {
                 type: Boolean,
                 default: false
