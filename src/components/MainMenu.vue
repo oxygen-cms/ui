@@ -1,11 +1,10 @@
 <template>
-    <div>
+    <div v-if="userPermissions">
         <b-menu-list>
             <b-menu-item icon="home" tag="router-link" to="/dashboard" label="Dashboard"></b-menu-item>
         </b-menu-list>
 
-        <b-menu-list v-for="(category, label) in items"
-                     v-if="userPermissions && userPermissions.hasOneOf(Object.values(category).flatMap((group) => getPermissionsForGroup(group)))"
+        <b-menu-list v-for="(category, label) in categoriesWithPermission(items)"
                      :key="label"
                      :label="label">
             <b-menu-item v-for="(group, groupLabel) in groupsWithPermission(category)"
@@ -48,6 +47,9 @@ export default {
         userPermissions() { return this.$store.getters.userPermissions; }
     },
     methods: {
+        categoriesWithPermission(categories) {
+            return Object.fromEntries(Object.entries(categories).filter(([,category]) => this.userPermissions.hasOneOf(Object.values(category).flatMap((group) => this.getPermissionsForGroup(group))) ));
+        },
         getPermissionsForGroup(group) {
             let values = Object.values(group.items).map(s => s.permission);
             if(group.addPermission) { values.push(group.addPermission); }
