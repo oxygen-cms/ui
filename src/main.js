@@ -12,7 +12,6 @@ import { AuthRoutes, makeAuthenticatedRoute } from "./routes";
 import createStore from "./store/index";
 import { checkAuthenticated } from "./AuthApi";
 import Error404 from "./components/Error404.vue";
-import MainMenu from "./components/MainMenu.vue";
 
 /**
  * Creates the Vue.js Oxygen application, allowing for a few points of customization (i.e.: adding modules)
