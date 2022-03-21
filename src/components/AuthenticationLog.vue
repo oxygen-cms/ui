@@ -84,7 +84,7 @@
 <script>
 import {FetchBuilder} from "../api";
 import Internationalize from "../Internationalize";
-import UAParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 import AuthApi from "../AuthApi";
 import {getApiRoot} from "../CrudApi";
 
