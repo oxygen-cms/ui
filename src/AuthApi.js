@@ -1,4 +1,4 @@
-import {API_ROOT} from "./CrudApi";
+import {getApiRoot} from "./CrudApi";
 import {FetchBuilder, initCsrfCookie} from "./api";
 import UserPermissions from "./UserPermissions";
 
@@ -19,16 +19,16 @@ export default class AuthApi {
                 password,
                 '2fa_code': code
             })
-            .fetch(API_ROOT + 'auth/login');
+            .fetch(getApiRoot() + 'auth/login');
     }
 
     async getLoginPreferences() {
-        return await this.request('get').fetch(API_ROOT + 'auth/preferences');
+        return await this.request('get').fetch(getApiRoot() + 'auth/preferences');
     }
 
     async setupTwoFactorAuth() {
         return await this.request('post')
-            .fetch(API_ROOT + 'auth/two-factor-setup');
+            .fetch(getApiRoot() + 'auth/two-factor-setup');
     }
 
     async confirmTwoFactorAuth(code) {
@@ -36,7 +36,7 @@ export default class AuthApi {
             .withJson({
                 '2fa_code': code
             })
-            .fetch(API_ROOT + 'auth/two-factor-confirm');
+            .fetch(getApiRoot() + 'auth/two-factor-confirm');
     }
 
     async sendReminderEmail(email) {
@@ -44,23 +44,23 @@ export default class AuthApi {
             .withJson({
                 'email': email
             })
-            .fetch(API_ROOT + 'auth/send-reminder-email');
+            .fetch(getApiRoot() + 'auth/send-reminder-email');
     }
 
     async sendEmailVerification() {
         return await this.request('post')
-            .fetch(API_ROOT + 'auth/verify-email');
+            .fetch(getApiRoot() + 'auth/verify-email');
     }
 
     async resetPassword(params) {
         return await this.request('post')
             .withJson(params)
-            .fetch(API_ROOT + 'auth/reset-password');
+            .fetch(getApiRoot() + 'auth/reset-password');
     }
 
     async logout() {
         let response = await this.request('post')
-            .fetch(API_ROOT + 'auth/logout');
+            .fetch(getApiRoot() + 'auth/logout');
         this.$buefy.notification.open({
             message: 'You have been logged out',
             type: 'is-info',
@@ -80,17 +80,17 @@ export default class AuthApi {
         console.log(params);
         return this.request('post')
             .withJson(params)
-            .fetch(API_ROOT + 'auth/change-password');
+            .fetch(getApiRoot() + 'auth/change-password');
     }
 
     async listUserSessions() {
         return this.request('get')
-            .fetch(API_ROOT + 'auth/sessions')
+            .fetch(getApiRoot() + 'auth/sessions')
     }
 
     async deleteUserSession(id) {
         return this.request('delete')
-            .fetch(API_ROOT + 'auth/sessions/' + id)
+            .fetch(getApiRoot() + 'auth/sessions/' + id)
     }
 }
 

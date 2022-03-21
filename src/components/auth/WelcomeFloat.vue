@@ -49,35 +49,35 @@ export default {
     }
 
     .login-theme-autumn {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/autumn-min.jpg');
+        background-image: url('../../../assets/bg/autumn-min.jpg');
     }
 
     .login-theme-city {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/city-min.jpg');
+        background-image: url('../../../assets/bg/city-min.jpg');
     }
 
     .login-theme-clouds {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/clouds-min.jpg');
+        background-image: url('../../../assets/bg/clouds-min.jpg');
     }
 
     .login-theme-coast {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/coast-min.jpg');
+        background-image: url('../../../assets/bg/coast-min.jpg');
     }
 
     .login-theme-speckles {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/speckles-min.jpg');
+        background-image: url('../../../assets/bg/speckles-min.jpg');
     }
 
     .login-theme-trees {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/trees-min.jpg');
+        background-image: url('../../../assets/bg/trees-min.jpg');
     }
 
     .login-theme-waves {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/waves.jpg');
+        background-image: url('../../../assets/bg/waves.jpg');
     }
 
     .login-theme-yosemite {
-        background-image: url('/vendor/oxygen/ui-theme/img/bg/yosemite-falls-min.jpg');
+        background-image: url('../../../assets/bg/yosemite-falls-min.jpg');
     }
 
     .login-theme-white {

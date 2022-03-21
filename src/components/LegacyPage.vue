@@ -11,7 +11,7 @@
 <script>
 import MediaInsertModal from "./media/MediaInsertModal.vue";
 
-import { morphToNotification } from "../api";
+import {getApiHost, morphToNotification} from "../api";
 import MediaApi from "../MediaApi";
 
 // from https://gist.github.com/hdodov/a87c097216718655ead6cf2969b0dcfa
@@ -134,7 +134,7 @@ export default {
             }
         },
         vuePathToURL(path) {
-            return this.legacyPrefix + path;
+            return getApiHost() + this.legacyPrefix + path;
         },
         // We detect when the iframe url changes, and update our window accordingly...
         onNavigated(newURL) {
@@ -162,7 +162,7 @@ export default {
 
             if(path !== this.currentPath) {
                 let { loadInside, location } = this.fullURLToVuePath(path);
-                console.log('[LegacyPage] ', loadInside, location);
+                console.log('[LegacyPage] ', 'loadInside:', loadInside, 'location:', location);
                 if(loadInside === 'iframe') {
                     window.history.pushState({}, "", location);
                 } else if(loadInside === 'vue') {
@@ -182,9 +182,9 @@ export default {
         },
         loadPath(routePath) {
             let path = this.vuePathToURL(routePath);
-            if(path === '/oxygen/view/auth/login') {
+            if(path.endsWith('/oxygen/view/auth/login')) {
                 console.log('[LegacyPage] Need to login again, redirecting...');
-                window.location.replace('/oxygen/view/auth/login');
+                window.location.replace('/oxygen/auth/login');
             }
 
             console.log('[LegacyPage] Loading', path);

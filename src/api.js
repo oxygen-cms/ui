@@ -1,8 +1,20 @@
+import {getApiRoot} from "./CrudApi";
+
+export const getApiHost = () => {
+    if (parseInt(window.location.port) >= 3000) {
+        // for local development, Laravel should be running on port 80,
+        // whereas the frontend (`npm run dev`) is running on a higher port
+        return "http://localhost/";
+    } else {
+        return '/';
+    }
+}
+
 var xsrfToken = null;
 
 export const initCsrfCookie = async () => {
     await window.fetch(
-        '/sanctum/csrf-cookie',
+        getApiRoot() + 'csrf-cookie',
         {
             credentials: 'same-origin'
         });
@@ -46,7 +58,7 @@ export class FetchBuilder {
     }
 
     cookies() {
-        this.credentials = 'same-origin';
+        this.credentials = getApiHost() === '/' ? 'same-origin' : 'include';
         return this;
     }
 
@@ -90,7 +102,7 @@ export class FetchBuilder {
                     queue: false
                 });
                 return {};
-            } else if(response.status === 204) {
+            } else if(response.status === 204 || response.status === 404) {
                 // no content, we're okay
             } else {
                 console.error('Response did not contain valid JSON: ', e);
@@ -158,6 +170,8 @@ const handleAPIError = function(content, $buefy, $router, response) {
     } else if(response.status === 403 && content.code === 'email_unverified') {
         $router.push({ path: '/auth/needs-verified-email', query: {redirect: $router.currentRoute.fullPath } });
         return;
+    } else if(response.status === 404) {
+        $router.push({ name: 'error404' });
     } else if(response.status === 429) {
         $buefy.notification.open({
             message: 'Too many requests within a short timeframe. Please wait.',

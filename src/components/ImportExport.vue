@@ -14,7 +14,7 @@
 
 <script>
 import {FetchBuilder} from "../api";
-import {API_ROOT} from "../CrudApi";
+import {getApiRoot} from "../CrudApi";
 import download from "downloadjs";
 
 export default {
@@ -29,7 +29,7 @@ export default {
             this.exporting = true;
             let response = await (new FetchBuilder(this.$buefy, 'post'))
                 .cookies()
-                .fetchRaw(API_ROOT + "import-export/export");
+                .fetchRaw(getApiRoot() + "import-export/export");
             this.$buefy.notification.open({ message: 'Export successful', type: 'is-success', queue: false });
             let blob = await response.blob();
             download(blob, 'database ' + (new Date()).toLocaleString() + '.zip');

@@ -86,6 +86,7 @@ import {FetchBuilder} from "../api";
 import Internationalize from "../Internationalize";
 import UAParser from 'ua-parser-js';
 import AuthApi from "../AuthApi";
+import {getApiRoot} from "../CrudApi";
 
 const IP_INFO_LOADING = 'loading';
 
@@ -121,7 +122,7 @@ export default {
           let data = await FetchBuilder
               .default(this.$buefy, 'post')
               .withQueryParams({ page: this.paginatedItems.currentPage })
-              .fetch('/oxygen/api/auth/login-log-entries');
+              .fetch(getApiRoot() + 'auth/login-log-entries');
 
           this.paginatedItems.items = data.items.map((item) => { return { geolocationInfo: this.ipInfo.get(item.ipAddress), ...item } });
           this.paginatedItems.totalItems = data.totalItems;
@@ -143,7 +144,7 @@ export default {
             }
             this.ipInfo.set(ip, IP_INFO_LOADING);
             FetchBuilder.default(this.$buefy, 'post')
-                .fetch('/oxygen/api/auth/ip-location/' + ip, (data) => data)
+                .fetch(getApiRoot() + 'auth/ip-location/' + ip, (data) => data)
                 .then((data) => {
                     this.ipInfo.set(ip, data);
                     this.updateInfoForIp(ip);

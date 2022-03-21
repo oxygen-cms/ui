@@ -1,22 +1,8 @@
 // Set your colors
 $primary: #0053b1;
-//$twitter: #4099FF;
 
-@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/utilities/_all.sass";
 
 $menu-item-color: darken($grey, 5%);
 $menu-item-active-background-color: transparent;
 $menu-item-active-color: lighten($grey, 4%);
-
-// $menu-item-hover-background-color: rgba(255, 255, 255, 0.1);
-// $menu-item-hover-color: $white-bis;
-//$navbar-item-active-color: #fff;
-//$navbar-item-hover-background-color: #f3f3f9;
-//
-//// Links
-//$link: $primary;
-//$link-focus-border: $primary;
-
-// Import Bulma's core
-// TODO: wtf is going on here??
-@import "~bulma/sass/utilities/_all";

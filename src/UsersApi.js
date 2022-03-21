@@ -1,4 +1,4 @@
-import {API_ROOT, CrudApi} from './CrudApi';
+import {getApiRoot, CrudApi} from './CrudApi';
 
 export default class UsersApi extends CrudApi {
 
@@ -20,12 +20,12 @@ export default class UsersApi extends CrudApi {
             .withJson({
                 fullName: name
             })
-            .fetch(API_ROOT + 'users/' + id + '/fullName');
+            .fetch(getApiRoot() + 'users/' + id + '/fullName');
     }
 
     async impersonate(id) {
         return await this.request('post')
-            .fetch(API_ROOT + 'users/' + id + '/impersonate');
+            .fetch(getApiRoot() + 'users/' + id + '/impersonate');
     }
 
     async forceDelete(id) {
@@ -35,7 +35,7 @@ export default class UsersApi extends CrudApi {
 
     async stopImpersonating() {
         return await this.request('post')
-            .fetch(API_ROOT + 'users/stop-impersonating');
+            .fetch(getApiRoot() + 'users/stop-impersonating');
     }
 
 }

@@ -1,4 +1,4 @@
-import {API_ROOT} from "./CrudApi";
+import {getApiRoot} from "./CrudApi";
 import {FetchBuilder} from "./api";
 
 export const canAccessPrefs = ($buefy, userPermissions, keys) => {
@@ -26,7 +26,7 @@ export default class PreferencesApi {
 
     async getValue(key) {
         return await this.request('get')
-            .fetch(API_ROOT + 'preferences/' + key);
+            .fetch(getApiRoot() + 'preferences/' + key);
     }
 
     async checkValid(key, value) {
@@ -34,7 +34,7 @@ export default class PreferencesApi {
             .withJson({
                 value: value
             })
-            .fetch(API_ROOT + 'preferences/' + key + '/validate');
+            .fetch(getApiRoot() + 'preferences/' + key + '/validate');
     }
 
     async setValue(key, value) {
@@ -42,6 +42,6 @@ export default class PreferencesApi {
             .withJson({
                 value: value
             })
-            .fetch(API_ROOT + 'preferences/' + key);
+            .fetch(getApiRoot() + 'preferences/' + key);
     }
 }

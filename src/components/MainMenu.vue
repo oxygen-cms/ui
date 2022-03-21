@@ -60,7 +60,10 @@ export default {
             return Object.fromEntries(Object.entries(items).filter(([, item]) => this.userPermissions.has(item.permission)));
         },
         groupsWithPermission(groups) {
-            return Object.fromEntries(Object.entries(groups).filter(([, group]) => this.userPermissions.hasOneOf(this.getPermissionsForGroup(group))));
+            return Object.fromEntries(Object.entries(groups)
+                .filter(([, group]) => this.userPermissions.hasOneOf(this.getPermissionsForGroup(group)))
+                .sort(([,groupA], [,groupB]) => (groupB.order ?? 0) - (groupA.order ?? 0))
+            );
         }
     }
 }

@@ -1,9 +1,13 @@
-import {FetchBuilder} from './api.js';
+import {FetchBuilder, getApiHost} from './api.js';
 import {morphToNotification} from "./api";
 
-const API_ROOT = '/oxygen/api/';
+const API_ROOT = 'oxygen/api/';
 
-class CrudApi {
+export const getApiRoot = () => {
+    return getApiHost() + API_ROOT;
+}
+
+export class CrudApi {
 
     constructor($buefy) {
         this.$buefy = $buefy;
@@ -18,7 +22,7 @@ class CrudApi {
     }
 
     static getResourceRoot() {
-        return API_ROOT + this.getResourceName();
+        return getApiRoot() + this.getResourceName();
     }
 
     static prepareModelForAPI(data) {
@@ -108,5 +112,3 @@ class CrudApi {
             .fetch(this.constructor.getResourceRoot() + '/' + id + '/make-head');
     }
 }
-
-export { CrudApi, API_ROOT };
