@@ -5,13 +5,12 @@
         </b-menu-list>
 
         <b-menu-list v-for="(category, label) in items"
-                     :key="label"
                      v-if="userPermissions && userPermissions.hasOneOf(Object.values(category).flatMap((group) => getPermissionsForGroup(group)))"
+                     :key="label"
                      :label="label">
-            <b-menu-item v-for="(group, groupLabel) in category"
+            <b-menu-item v-for="(group, groupLabel) in groupsWithPermission(category)"
                          :key="groupLabel"
                          :icon="group.icon"
-                         v-if="userPermissions.hasOneOf(getPermissionsForGroup(group))"
                          :tag="userPermissions.has(group.listPermission) ? 'router-link' : null"
                          :expanded="group.groupPrefix ? $route.fullPath.startsWith(group.groupPrefix) : null"
                          :to="group.listAction">
@@ -24,11 +23,11 @@
                               :icon-right="group.addIcon"
                               :to="group.addAction"></b-button>
                 </template>
-                <b-menu-item v-for="(item, itemLabel) in group.items" :key="itemLabel" v-if="userPermissions.has(item.permission)" :label="itemLabel" tag="router-link" :to="item.to"></b-menu-item>
+                <b-menu-item v-for="(item, itemLabel) in itemsWithPermission(group.items)" :key="itemLabel" :label="itemLabel" tag="router-link" :to="item.to"></b-menu-item>
             </b-menu-item>
         </b-menu-list>
 
-        <b-menu-list label="System" v-if="userPermissions && userPermissions.hasOneOf(['preferences.getValue', 'users.getList', 'groups.getList', 'importExport.getList'])">
+        <b-menu-list v-if="userPermissions && userPermissions.hasOneOf(['preferences.getValue', 'users.getList', 'groups.getList', 'importExport.getList'])" label="System">
             <b-menu-item v-if="userPermissions && userPermissions.has('preferences.getValue')" icon="cogs" tag="router-link" to="/preferences" label="Preferences"></b-menu-item>
             <b-menu-item v-if="userPermissions && userPermissions.has('users.getList')" icon="users" tag="router-link" to="/users" label="Users and Permissions"></b-menu-item>
         </b-menu-list>
@@ -40,21 +39,27 @@
 export default {
     name: "MainMenu",
     props: {
-        items: Object
-    },
-    data() {
-        return {
-            getPermissionsForGroup: (group) => {
-                let values = Object.values(group.items).map(s => s.permission);
-                if(group.addPermission) { values.push(group.addPermission); }
-                if(group.listPermission) { values.push(group.listPermission); }
-                console.log(values);
-                return values;
-            }
-        };
+        items: {
+            type: Object,
+            required: true
+        }
     },
     computed: {
         userPermissions() { return this.$store.getters.userPermissions; }
+    },
+    methods: {
+        getPermissionsForGroup(group) {
+            let values = Object.values(group.items).map(s => s.permission);
+            if(group.addPermission) { values.push(group.addPermission); }
+            if(group.listPermission) { values.push(group.listPermission); }
+            return values;
+        },
+        itemsWithPermission(items) {
+            return Object.fromEntries(Object.entries(items).filter(([, item]) => this.userPermissions.has(item.permission)));
+        },
+        groupsWithPermission(groups) {
+            return Object.fromEntries(Object.entries(groups).filter(([, group]) => this.userPermissions.hasOneOf(this.getPermissionsForGroup(group))));
+        }
     }
 }
 </script>

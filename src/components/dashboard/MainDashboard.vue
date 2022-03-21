@@ -28,9 +28,9 @@
                     <div class="grid-loading">
                         <b-loading :active="!userPermissions" :is-full-page="false"></b-loading>
                         <transition name="fade">
-                            <section class="tile is-ancestor" v-if="userPermissions">
-                                <div class="tile is-vertical" v-for="group in panels">
-                                    <div class="tile is-parent is-vertical" v-if="userPermissions && userPermissions.hasOneOf(group.map(panel => panel.permission))">
+                            <section v-if="userPermissions" class="tile is-ancestor">
+                                <div v-for="(group, i) in panels"  :key="i" class="tile is-vertical">
+                                    <div v-if="userPermissions && userPermissions.hasOneOf(group.map(panel => panel.permission))" class="tile is-parent is-vertical">
                                         <div v-for="panel in group" :key="panel.name" class="tile is-child notification">
                                             <component :is="panel.component"></component>
                                         </div>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <component v-for="(item, i) in extraRows" :is="item" :key="i"></component>
+        <component :is="item" v-for="(item, i) in extraRows" :key="i"></component>
     </div>
 </template>
 
@@ -52,8 +52,14 @@
     export default {
         name: "MainDashboard",
         props: {
-            panels: Array,
-            extraRows: Array
+            panels: {
+                type: Array,
+                required: true
+            },
+            extraRows: {
+                type: Array,
+                default: () => { return []; }
+            }
         },
         data() {
             return {

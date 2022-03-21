@@ -27,9 +27,8 @@ export default class UserPermissions {
         }
 
         // check for the specific key
-        let result = this.hasKey(keyParts[0], keyParts[1]);
-        console.log(key + " = " + result);
-        return result;
+        // console.log(key + " = " + result);
+        return this.hasKey(keyParts[0], keyParts[1]);
     }
 
     hasOneOf(keys) {

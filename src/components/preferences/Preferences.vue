@@ -1,23 +1,23 @@
 <template>
     <PreferencesList>
-        <template v-slot:default="slotProps">
-            <b-tab-item label="Website Theme" v-if="slotProps.canAccessPrefs(['appearance.themes', 'appearance.pages', 'appearance.events'].concat(getExtraPrefsPermissions('appearance')))">
+        <template #default="slotProps">
+            <b-tab-item v-if="slotProps.canAccessPrefs(['appearance.themes', 'appearance.pages', 'appearance.events'].concat(getExtraPrefsPermissions('appearance')))" label="Website Theme">
                 <PreferencesThemeChooser @theme-changed="onThemeChanged" />
                 <PreferencesPageTemplates :current-theme="currentTheme" />
                 <PreferencesEventTemplates :current-theme="currentTheme" />
                 <PreferencesSiteAppearance :current-theme="currentTheme" />
-                <component v-for="pref in getExtraPrefs('appearance')" :key="pref.key" :is="pref.component" :current-theme="currentTheme" />
+                <component :is="pref.component" v-for="pref in getExtraPrefs('appearance')" :key="pref.key" :current-theme="currentTheme" />
             </b-tab-item>
-            <b-tab-item label="External Integrations" v-if="slotProps.canAccessPrefs(getExtraPrefsPermissions('external'))">
-                <component v-for="pref in getExtraPrefs('external')" :key="pref.key" :is="pref.component" :current-theme="currentTheme" />
+            <b-tab-item v-if="slotProps.canAccessPrefs(getExtraPrefsPermissions('external'))" label="External Integrations">
+                <component :is="pref.component" v-for="pref in getExtraPrefs('external')" :key="pref.key" :current-theme="currentTheme" />
             </b-tab-item>
-            <b-tab-item label="Authentication & Security" v-if="slotProps.canAccessPrefs(['modules.auth'])">
+            <b-tab-item v-if="slotProps.canAccessPrefs(['modules.auth'])" label="Authentication & Security">
                 <PreferencesAuthentication :current-theme="currentTheme" />
             </b-tab-item>
-            <b-tab-item label="Admin Look & Feel" v-if="slotProps.canAccessPrefs(['appearance.auth'])">
+            <b-tab-item v-if="slotProps.canAccessPrefs(['appearance.auth'])" label="Admin Look & Feel">
                 <PreferencesAdminAppearance :current-theme="currentTheme" />
             </b-tab-item>
-            <b-tab-item label="Website Data" v-if="userPermissions.has('importExport.getExport')">
+            <b-tab-item v-if="userPermissions.has('importExport.getExport')" label="Website Data">
                 <ImportExport />
             </b-tab-item>
         </template>
@@ -48,11 +48,19 @@ export default {
         ImportExport
     },
     props: {
-        extraPrefs: Object
+        extraPrefs: {
+            type: Object,
+            default: () => { return {}; }
+        }
     },
     data() {
         return {
             currentTheme: null,
+        }
+    },
+    computed: {
+        userPermissions() {
+            return this.$store.getters.userPermissions;
         }
     },
     methods: {
@@ -64,11 +72,6 @@ export default {
         },
         getExtraPrefs(category) {
             return (this.extraPrefs[category] ?? []);
-        }
-    },
-    computed: {
-        userPermissions() {
-            return this.$store.getters.userPermissions;
         }
     }
 }
