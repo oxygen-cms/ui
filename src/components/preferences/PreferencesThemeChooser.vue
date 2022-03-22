@@ -4,6 +4,7 @@
         <PreferencesField data-key="appearance.themes::theme" label="">
             <template #default="slotProps">
                 <b-table
+                    v-if="Object.values(slotProps.options).length > 0"
                     :data="Object.values(slotProps.options)"
                     :striped="false">
                     <b-table-column v-slot="props" label="Key">
@@ -26,6 +27,7 @@
                         <b-button v-else type="is-success" disabled>Theme is already active</b-button>
                     </b-table-column>
                 </b-table>
+                <p v-else class="has-text-centered"><em>No themes loaded.</em></p>
             </template>
         </PreferencesField>
     </ShowIfPermitted>

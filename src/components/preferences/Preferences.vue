@@ -4,7 +4,7 @@
             <b-tab-item v-if="slotProps.canAccessPrefs(['appearance.themes', 'appearance.pages', 'appearance.events'].concat(getExtraPrefsPermissions('appearance')))" label="Website Theme">
                 <PreferencesThemeChooser @theme-changed="onThemeChanged" />
                 <PreferencesPageTemplates :current-theme="currentTheme" />
-                <PreferencesEventTemplates :current-theme="currentTheme" />
+
                 <PreferencesSiteAppearance :current-theme="currentTheme" />
                 <component :is="pref.component" v-for="pref in getExtraPrefs('appearance')" :key="pref.key" :current-theme="currentTheme" />
             </b-tab-item>

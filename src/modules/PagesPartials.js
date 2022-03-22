@@ -24,21 +24,10 @@ export default function(ui) {
         items: {
         }
     });
-    ui.addMainMenuGroup(WEB_CONTENT, {
-        name: 'Events',
-        icon: 'calendar-alt',
-        listAction: '/upcoming-events',
-        listPermission: 'upcomingEvents.getList',
-        addIcon: 'calendar-plus',
-        addPermission: 'upcomingEvents.postCreate',
-        addAction: '/upcoming-events/create',
-        items: {
-        }
-    });
     ui.addAuthenticatedRoutes([
         {
             // will match everything, try to render a legacy Oxygen page...
-            path: '(pages|partials|upcoming-events)/:subpath*',
+            path: '(pages|partials)/:subpath*',
             component: LegacyPage,
             props: (route) => {
                 return {
