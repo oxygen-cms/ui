@@ -28,4 +28,16 @@ export default class Internationalize {
         }
         return format.format(datetime);
     }
+
+    static formatDateTimeRange(from, to) {
+        let format = new Intl.DateTimeFormat(this.locale , {
+            hour: 'numeric', minute: 'numeric'
+        });
+
+        if(from.getDate() === to.getDate() && from.getMonth() === to.getMonth() && from.getYear() === to.getYear()) {
+            return this.formatDate(from) + " " + format.format(from) + " - " + format.format(to);
+        } else {
+            return this.formatDate(from) + " " + format.format(from) + " - " + this.formatDate(to) + format.format(to);
+        }
+    }
 }
