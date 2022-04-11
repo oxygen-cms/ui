@@ -13,4 +13,9 @@ export default class EventsApi extends CrudApi {
         return 'upcoming-events';
     }
 
+    async listTrybookingSessions() {
+        return this.request('get')
+            .fetch(this.constructor.getResourceRoot() + '/trybooking-sessions');
+    }
+
 }
