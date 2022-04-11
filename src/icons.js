@@ -74,7 +74,7 @@ import {
     faFolderOpen,
     faImages,
     faMinusCircle,
-    faCalendarPlus, faPaperPlane, faLink, faHandshakeSlash, faHandshake
+    faCalendarPlus, faPaperPlane, faHandshakeSlash, faHandshake
 } from "@fortawesome/free-solid-svg-icons";
 
 export const addIconsToLibrary = () => {
