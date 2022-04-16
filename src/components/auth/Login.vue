@@ -89,9 +89,6 @@ export default {
                 this.submitting = false;
                 this.hasFailedLogin = false;
                 this.$store.commit('setUser', response.user);
-                if(this.$route.query.location) {
-                  window.location = this.$route.query.location;
-                }
                 this.$buefy.notification.open({
                   message: "You're now logged in.",
                   type: 'is-info',

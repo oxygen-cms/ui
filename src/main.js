@@ -133,6 +133,7 @@ export default class OxygenUI {
         });
 
         FetchBuilder.setRouter(router);
+        FetchBuilder.setStore(store);
         UserPermissions.setBuefy(this.app.$buefy);
         UserPreferences.setBuefy(this.app.$buefy)
         return this;
