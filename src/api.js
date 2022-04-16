@@ -30,9 +30,6 @@ export const initCsrfCookie = async () => {
 
 export class FetchBuilder {
 
-    static router = null;
-    static store = null;
-
     constructor($buefy, method) {
         this.$buefy = $buefy;
         this.method = method;
@@ -223,3 +220,6 @@ const handleAPIError = async (content, $buefy, $router, $store, response) => {
 export function getXsrfToken() {
     return xsrfToken;
 }
+
+FetchBuilder.router = null;
+FetchBuilder.store = null;
