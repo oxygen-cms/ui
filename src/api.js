@@ -1,4 +1,5 @@
 import {getApiRoot} from "./CrudApi";
+import {LOGIN_AGAIN_NOTIFICATION} from "./AuthApi";
 
 export const getApiHost = () => {
     if (parseInt(window.location.port) >= 3000) {
@@ -28,6 +29,10 @@ export const initCsrfCookie = async () => {
 }
 
 export class FetchBuilder {
+
+    static router = null;
+    static store = null;
+
     constructor($buefy, method) {
         this.$buefy = $buefy;
         this.method = method;
@@ -120,7 +125,7 @@ export class FetchBuilder {
             return data;
         }
 
-        handleAPIError(data, this.$buefy, FetchBuilder.router, response);
+        await handleAPIError(data, this.$buefy, FetchBuilder.router, FetchBuilder.store, response);
         let e = new Error('Received an error response from API call');
         e.response = data;
         throw e;
@@ -134,6 +139,10 @@ export class FetchBuilder {
 
     static setRouter(router) {
         FetchBuilder.router = router;
+    }
+
+    static setStore(store) {
+        FetchBuilder.store = store;
     }
 }
 
@@ -155,35 +164,29 @@ export function morphToNotification(data) {
     };
 }
 
-const handleAPIError = function(content, $buefy, $router, response) {
-    console.error('API error: ', content);
+const handleAPIError = async (content, $buefy, $router, $store, response) => {
+    console.error('API error: ', content, $router);
     if(response.status === 401 && content.code === 'unauthenticated') {
         // server is telling us to login again
-        initCsrfCookie()
-            .then(() => {
-                $router.push({path: '/auth/login', query: {redirect: $router.currentRoute.fullPath}});
-            });
-        return;
+        await $store.commit('setUser', null);
+        await initCsrfCookie();
+        await $buefy.notification.open(LOGIN_AGAIN_NOTIFICATION);
+        await $router.push({path: '/auth/login', query: {redirect: $router.currentRoute.fullPath}});
     } else if(response.status === 403 && content.code === 'two_factor_setup_required') {
-        $router.push({ path: '/auth/2fa-setup' });
-        return;
+        await $router.push({ path: '/auth/2fa-setup' });
     } else if(response.status === 403 && content.code === 'email_unverified') {
-        $router.push({ path: '/auth/needs-verified-email', query: {redirect: $router.currentRoute.fullPath } });
-        return;
+        await $router.push({ path: '/auth/needs-verified-email', query: {redirect: $router.currentRoute.fullPath } });
     } else if(response.status === 404) {
-        $router.push({ name: 'error404' });
+        await $router.push({ name: 'error404' });
     } else if(response.status === 429) {
-        $buefy.notification.open({
+        await $buefy.notification.open({
             message: 'Too many requests within a short timeframe. Please wait.',
             type: 'is-warning',
             duration: 10000,
             queue: false
         });
-        return;
-    }
-
-    // handle generic validation errors
-    if(typeof content.errors === 'object') {
+    } else if(typeof content.errors === 'object') {
+        // handle generic validation errors
         for(const [, errors ] of Object.entries(content.errors)) {
             for(let error of errors) {
                 $buefy.notification.open({
@@ -194,13 +197,10 @@ const handleAPIError = function(content, $buefy, $router, response) {
                 });
             }
         }
-        return;
-    }
-
-    if(content.content && content.status) {
-        $buefy.notification.open(morphToNotification(content));
+    } else if(content.content && content.status) {
+        await $buefy.notification.open(morphToNotification(content));
     } else if(content.exception) {
-        $buefy.notification.open({
+        await $buefy.notification.open({
             message:
                 'PHP Exception of type <pre class="no-pre">' + content.exception +
                 '</pre> with message <pre class="no-pre">' + content.message +
@@ -211,7 +211,7 @@ const handleAPIError = function(content, $buefy, $router, response) {
             type: 'is-danger'
         });
     } else if(response.status === 500) {
-        $buefy.notification.open({
+        await $buefy.notification.open({
             message:'Whoops, looks like something went wrong.',
             type: 'is-danger',
             animation: 'fade',
@@ -223,5 +223,3 @@ const handleAPIError = function(content, $buefy, $router, response) {
 export function getXsrfToken() {
     return xsrfToken;
 }
-
-FetchBuilder.router = null;

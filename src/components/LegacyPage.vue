@@ -11,8 +11,9 @@
 <script>
 import MediaInsertModal from "./media/MediaInsertModal.vue";
 
-import {getApiHost, morphToNotification} from "../api";
+import {getApiHost, initCsrfCookie, morphToNotification} from "../api";
 import MediaApi from "../MediaApi";
+import {LOGIN_AGAIN_NOTIFICATION} from "../AuthApi";
 
 // from https://gist.github.com/hdodov/a87c097216718655ead6cf2969b0dcfa
 
@@ -20,15 +21,6 @@ const iframeURLChange = (iframe, callback, legacyPage) => {
     var unloadHandler = function() {
         console.log('[LegacyPage] Starting load');
         legacyPage.loadingPath = 'unknown';
-        // Timeout needed because the URL changes immediately after
-        // the `unload` event is dispatched.
-        // TODO: this is rather brittle because I believe it relies upon timing
-        // setTimeout(function() {
-        //     console.log(iframe.contentWindow);
-        //     if(iframe.contentWindow) {
-        //         callback(iframe.contentWindow.location.href);
-        //     }
-        // }, 0);
     };
 
     function attachUnload() {
@@ -90,7 +82,7 @@ export default {
         iframe.addEventListener('load', this.onLoaded.bind(this));
         if(iframe.contentDocument.readyState === "complete") {
             console.warn('[LegacyPage] mounted: page was already loaded - perhaps this page was cached?');
-            this.onLoaded();
+            await this.onLoaded();
         }
     },
     unmounted() {
@@ -126,7 +118,8 @@ export default {
             let urlObj = new URL(url);
             let urlString = urlObj.toString();
             if(urlObj.pathname.startsWith(this.legacyPrefix)) {
-                return { loadInside: 'iframe', location: this.adminPrefix + urlString.split(this.legacyPrefix)[1] };
+                let loc = urlString.split(this.legacyPrefix)[1];
+                return { loadInside: 'iframe', location: this.adminPrefix + loc, locationWithoutPrefix: loc };
             } else if(urlObj.pathname.startsWith(this.adminPrefix)) {
                 return { loadInside: 'vue', location: urlString.split(this.adminPrefix)[1] };
             } else {
@@ -155,7 +148,7 @@ export default {
         popState() {
             this.$router.back();
         },
-        onLoaded() {
+        async onLoaded() {
             let path = this.$refs.iframe.contentWindow.location.href;
             if(path === 'about:blank') { return; }
             console.log('[LegacyPage] Loaded', path);
@@ -166,12 +159,26 @@ export default {
                 if(loadInside === 'iframe') {
                     window.history.pushState({}, "", location);
                 } else if(loadInside === 'vue') {
-                    this.$router.push(location);
+                    if(location.startsWith('/auth/login?location=')) {
+                        // If the legacy page is redirecting us to login,
+                        // then that must be because our auth expired/failed.
+                        // So we explicitly log ourselves out, and redirect to the login page.
+                        let redirectTo = this.fullURLToVuePath(this.currentPath);
+                        if(redirectTo.loadInside !== 'iframe') { throw new Error("this.currentPath was not inside iframe"); }
+                        console.log("Requested redirect to /auth/login . Clearing user state first", redirectTo);
+                        this.$store.commit('setUser', null);
+                        this.$buefy.notification.open(LOGIN_AGAIN_NOTIFICATION);
+                        await initCsrfCookie();
+                        location = { name: 'login', query: { redirect: redirectTo.locationWithoutPrefix } };
+                    }
+
+                    await this.$router.push(location);
+                    return;
                 } else {
                     // load outside of iframe
                     window.location = location;
+                    return;
                 }
-
                 this.currentPath = path;
             }
 

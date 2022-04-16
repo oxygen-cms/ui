@@ -2,6 +2,13 @@ import {getApiRoot} from "./CrudApi";
 import {FetchBuilder, initCsrfCookie} from "./api";
 import UserPermissions from "./UserPermissions";
 
+export const LOGIN_AGAIN_NOTIFICATION = {
+    message: 'You need to login again.',
+    type: 'is-warning',
+    duration: 5000,
+    queue: false
+};
+
 export default class AuthApi {
 
     constructor($buefy) {
