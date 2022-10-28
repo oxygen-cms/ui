@@ -23,6 +23,11 @@ export default class UsersApi extends CrudApi {
             .fetch(getApiRoot() + 'users/' + id + '/fullName');
     }
 
+    async getBasic(id) {
+        return this.request('get')
+            .fetch(this.constructor.getResourceRoot() + '/' + id + '/basic');
+    }
+
     async impersonate(id) {
         return await this.request('post')
             .fetch(getApiRoot() + 'users/' + id + '/impersonate');

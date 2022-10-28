@@ -19,28 +19,7 @@
             </div>
         </div>
 
-        <div class="content">
-            <div class="level level-left">
-                <strong class="mr-2">Username:</strong>
-                <span>{{ user.username }}
-                    <b-tooltip label="To change username, please contact your administrator." position="is-right" multilined><b-icon icon="info-circle"></b-icon></b-tooltip>
-                </span>
-            </div>
-            <div class="level level-left"><strong class="mr-2">Group: </strong>
-                <transition name="fade" mode="out-in">
-                        <span v-if="user">{{ user.group.name }}
-                            <b-tooltip :label="user.group.description" position="is-right" multilined><b-icon icon="info-circle"></b-icon></b-tooltip>
-                        </span>
-                    <b-skeleton v-else width="20%" :animated="true" />
-                </transition>
-            </div>
-            <div class="level level-left"><strong class="mr-2">Joined: </strong>
-                <transition name="fade" mode="out-in">
-                    <UserJoined v-if="user" :user="user" />
-                    <b-skeleton v-else width="20%" :animated="true" />
-                </transition>
-            </div>
-        </div>
+        <UserProfileDescription :user="user" :editable="true"></UserProfileDescription>
 
         <b-modal :closable="false" :active.sync="isUserPreferencesModalActive" has-modal-card trap-focus aria-role="dialog" aria-modal>
             <div class="modal-card">
@@ -136,16 +115,16 @@
 
 <script>
 import {morphToNotification} from "../api";
-import UserJoined from "./UserJoined.vue";
 import ShowIfPermitted from "./preferences/ShowIfPermitted.vue";
 import UserPreferences from "./preferences/UserPreferences.vue";
 import UsersApi from "../UsersApi";
 import AuthApi from "../AuthApi";
 import GenericEditableField from "./GenericEditableField.vue";
+import UserProfileDescription from "./UserProfileDescription.vue";
 
 export default {
     name: "UserProfileForm",
-    components: {GenericEditableField, ShowIfPermitted, UserJoined, UserPreferences },
+    components: {UserProfileDescription, GenericEditableField, ShowIfPermitted, UserPreferences },
     props: {
         user: {
             type: Object,
