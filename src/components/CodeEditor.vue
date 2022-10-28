@@ -35,8 +35,10 @@ import AceEditor from 'vue2-ace-editor';
 // language extension pre-requisite...
 import 'brace/ext/language_tools';
 import 'brace/mode/html';
+import 'brace/mode/json';
 import 'brace/mode/twig';
 import 'brace/snippets/html';
+import 'brace/snippets/json';
 import 'brace/snippets/twig';
 import 'brace/theme/tomorrow_night_eighties';
 import 'brace/theme/tomorrow_night';

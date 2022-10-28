@@ -12,6 +12,10 @@ export default class Internationalize {
         return format.format(date);
     }
 
+    static formatDateExtended(date) {
+        return new Date(date).toDateString();
+    }
+
     static formatLastUpdated(updatedAt) {
         let d = new Date(updatedAt);
         return d.toDateString() + ' ' + d.toLocaleTimeString();
