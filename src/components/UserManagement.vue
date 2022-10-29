@@ -85,7 +85,8 @@
 import UsersApi from "../UsersApi";
 import UserJoined from "./UserJoined.vue";
 import {morphToNotification} from "../api";
-import {isNavigationFailure, NavigationFailureType} from "vue-router/src/util/errors";
+import VueRouter from 'vue-router';
+const { isNavigationFailure, NavigationFailureType } = VueRouter;
 import GenericEditableField from "./GenericEditableField.vue";
 import GroupsChooser from "./GroupsChooser.vue";
 import GroupsList from "./GroupsList.vue";
