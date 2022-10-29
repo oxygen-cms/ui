@@ -29,7 +29,7 @@
     "vex-js": "~4.1.0",
     "vue": "^2.6.11",
     "vue-async-computed": "^3.9.0",
-    "vue-router": "^3.5.1",
+    "vue-router": "^31.5.1",
     "vue-template-compiler": "^2.6.11",
     "vue2-ace-editor": "^0.0.15",
     "vuex": "^3.6.2"

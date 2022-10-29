@@ -58,7 +58,8 @@
 <script>
 import UsersApi from "../UsersApi";
 import {morphToNotification} from "../api";
-import {isNavigationFailure, NavigationFailureType} from "vue-router/src/util/errors";
+import VueRouter from 'vue-router';
+const { isNavigationFailure, NavigationFailureType } = VueRouter;
 
 export default {
     name: "AuthenticatedLayout",
