@@ -45,7 +45,7 @@
 
 <script>
 import PreferencesApi from "../../PreferencesApi";
-import debounce from 'lodash/debounce';
+import { debounce } from "lodash";
 import {morphToNotification} from "../../api";
 
 export default {
