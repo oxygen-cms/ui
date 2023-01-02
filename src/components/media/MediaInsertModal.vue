@@ -1,5 +1,5 @@
 <template>
-    <b-modal :active.sync="active" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus width="80%" class="media-insert-modal">
+    <b-modal :active="active" @update:active="updateActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus width="80%" class="media-insert-modal">
         <div class="modal-card">
             <header class="modal-card-head">
                 <slot name="title"><p class="modal-card-title">Choose an item to insert</p></slot>
@@ -62,6 +62,11 @@ export default {
         },
         doInsert() {
             this.$emit('select', this.selectedFiles);
+        },
+        updateActive(newVal) {
+            if(!newVal) {
+                this.emitClose();
+            }
         }
     }
 }

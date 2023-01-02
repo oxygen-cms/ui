@@ -79,7 +79,7 @@ export default {
     props: {
         value: { type: String, default: null },
         height: { type: String, required: true },
-        lang: { type: String, required:  true }
+        lang: { type: String, required: true }
     },
     data() {
         return {

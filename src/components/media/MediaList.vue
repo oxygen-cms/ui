@@ -1,5 +1,4 @@
 <template>
-
     <div class="full-height full-height-container media-container">
         <div class="top-bar">
             <div v-if="!paginatedItems.loading && !inTrash && !searchQuery" class="breadcrumb">

@@ -1,5 +1,6 @@
 import LegacyPage from "../components/LegacyPage.vue";
 import { WEB_CONTENT } from "../main.js";
+import PageCreate from "../components/PageCreate.vue";
 
 export default function(ui) {
     ui.addMainMenuGroup(WEB_CONTENT, {
@@ -36,6 +37,10 @@ export default function(ui) {
                     adminPrefix: '/oxygen'
                 }
             }
+        },
+        {
+            path: 'pages2',
+            component: PageCreate
         }
     ]);
 }

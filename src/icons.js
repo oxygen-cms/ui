@@ -74,7 +74,26 @@ import {
     faFolderOpen,
     faImages,
     faMinusCircle,
-    faCalendarPlus, faPaperPlane, faHandshakeSlash, faHandshake, faExclamation, faMousePointer, faUnlink, faAngry
+    faCalendarPlus,
+    faPaperPlane,
+    faHandshakeSlash,
+    faHandshake,
+    faExclamation,
+    faMousePointer,
+    faUnlink,
+    faAngry,
+    faGripVertical,
+    faHeading,
+    faQuoteLeft,
+    faListUl,
+    faListOl,
+    faBold,
+    faItalic,
+    faParagraph,
+    faCode,
+    faThLarge,
+    faSave,
+    faSlidersH, faRulerHorizontal, faStrikethrough, faUnderline, faRemoveFormat, faLink
 } from "@fortawesome/free-solid-svg-icons";
 
 export const addIconsToLibrary = () => {
@@ -83,9 +102,9 @@ export const addIconsToLibrary = () => {
         faArrowUp, faAngleRight, faEnvelope, faAngleLeft, faTicketAlt, faUserCog, faTags, faCalendarDay, faTimesCircle,
         faMusic, faPencilAlt, faRedoAlt, faBan, faExternalLinkAlt,
         faSearch, faAngleDown, faUserAlt, faCogs, faPhotoVideo, faPuzzlePiece, faPlus, faUserPlus, faMailBulk, faUsers,
-        faArrowLeft, faRecycle, faList, faStamp, faCalendarAlt, faAddressCard, faFileImport, faFileExport, faDownload,
+        faArrowLeft, faRecycle, faList, faStamp, faCalendarAlt, faAddressCard, faHeading, faQuoteLeft, faListUl, faListOl, faSave, faSlidersH, faCode, faThLarge, faBold, faItalic, faParagraph, faFileImport, faFileExport, faDownload,
         faFileExcel, faFileCsv, faChevronCircleDown, faChevronCircleUp, faTrash,
-        faEye, faEyeSlash, faCaretDown, faCaretUp, faUpload, faUser, faFolder, faHome, faFilePdf, faSignOutAlt, faTag,
-        faFolderPlus, faTimes, faQuestionCircle, faFileUpload, faLandmark,
-        faFolderOpen, faFile, faFileAudio, faFileImage, faShare, faImages, faCalendarPlus, faPaperPlane, faHandshake, faHandshakeSlash, faExclamation, faMousePointer, faUnlink, faAngry);
+        faEye, faEyeSlash, faCaretDown, faCaretUp, faUpload, faUser, faFolder, faHome, faFilePdf, faSignOutAlt, faTag, faStrikethrough, faUnderline, faRemoveFormat, faLink,
+        faFolderPlus, faTimes, faQuestionCircle, faFileUpload, faLandmark, faRulerHorizontal,
+        faFolderOpen, faFile, faFileAudio, faFileImage, faShare, faGripVertical, faImages, faCalendarPlus, faPaperPlane, faHandshake, faHandshakeSlash, faExclamation, faMousePointer, faUnlink, faAngry);
 };
