@@ -57,7 +57,7 @@ export default {
             isEditModalActive: false,
             newName: '',
             newSlug: '',
-            mediaDirectoryApi: new MediaDirectoryApi(this.$buefy)
+            mediaDirectoryApi: new MediaDirectoryApi()
         }
     },
     computed: {

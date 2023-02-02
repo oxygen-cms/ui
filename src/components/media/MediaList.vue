@@ -19,7 +19,7 @@
                 <b-button outlined rounded icon-left="arrow-left" class="action-bar-pad" @click="navigateTo({ currentPath: '' })">All Items</b-button>
                 <div class="title action-bar-pad">Search results for "{{ searchQuery }}"</div>
             </div>
-            <ul v-else>
+            <ul v-else class="breadcrumb">
                 <li><b-skeleton :animated="true" size="is-large" :width="100"></b-skeleton></li>
             </ul>
 
@@ -139,8 +139,8 @@ export default {
             isCreateDirectoryModalActive: false,
             newDirectoryName: '',
             searchDebounce: null,
-            mediaApi: new MediaApi(this.$buefy),
-            mediaDirectoryApi: new MediaDirectoryApi(this.$buefy),
+            mediaApi: new MediaApi(),
+            mediaDirectoryApi: new MediaDirectoryApi(),
             getDirectoryBreadcrumbItems: getDirectoryBreadcrumbItems
         }
     },
@@ -173,7 +173,7 @@ export default {
             this.paginatedItems.files = []
             this.paginatedItems.directories = [];
 
-            let data = await this.mediaApi.list(this.inTrash, this.searchQuery, this.paginatedItems.currentPage, this.searchQuery ? '' : this.currentPath);
+            let data = await this.mediaApi.list({ inTrash: this.inTrash, q: this.searchQuery, page: this.paginatedItems.currentPage, path: this.searchQuery ? '' : this.currentPath });
 
             this.paginatedItems.currentDirectory = data.currentDirectory;
             this.paginatedItems.directories = data.directories.map(dir => { dir.selected = false; return dir; });

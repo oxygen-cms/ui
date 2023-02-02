@@ -30,6 +30,7 @@
     "downloadjs": "^1.4.7",
     "libphonenumber-js": "^1.9.11",
     "lodash": "^4.17.21",
+    "portal-vue": "^2.1.7",
     "tippy.js": "^6.3.7",
     "title-case": "^3.0.3",
     "ua-parser-js": "^0.7.24",
@@ -40,7 +41,8 @@
     "vue-router": "^3.5.1",
     "vue-template-compiler": "^2.6.11",
     "vue2-ace-editor": "^0.0.15",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "zeed-dom": "^0.9.26"
   },
   "devDependencies": {
     "@babel/core": "^7.13.1",

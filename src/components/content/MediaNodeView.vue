@@ -1,8 +1,8 @@
 <template>
-    <NodeViewWrapper :class="{selected: selected}">
+    <NodeViewWrapper :class="{selected: isEditable && selected}">
         <MediaInsertModal :multiselect-allowed="false" :active="mediaSelectActive" @select="selectItem" @close="removeSelf"></MediaInsertModal>
         <MediaItemPreview v-if="item" :item="item">
-            <b-field v-if="isEditable">
+            <b-field v-if="isEditable && selected">
                 <p class="control">
                     <b-button icon-left="grip-vertical" size="is-small" data-drag-handle></b-button>
                 </p>
@@ -30,7 +30,7 @@ export default {
     props: nodeViewProps,
     data() {
         return {
-            mediaApi: new MediaApi(this.$buefy),
+            mediaApi: new MediaApi(),
             mediaSelectActive: false,
             item: null
         }

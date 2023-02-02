@@ -30,7 +30,7 @@ export default {
     },
     data() {
         return {
-            groupsApi: new GroupsApi(this.$buefy),
+            groupsApi: new GroupsApi(),
             loading: true,
             users: []
         }
@@ -46,7 +46,7 @@ export default {
     methods: {
         async fetchData(name) {
             this.loading = true;
-            this.users = (await this.groupsApi.list(false, 1, name)).items;
+            this.users = (await this.groupsApi.list({ inTrash: false, page: 1, q: name })).items;
             this.loading = false;
         }
     }

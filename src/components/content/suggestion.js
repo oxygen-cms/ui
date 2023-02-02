@@ -114,7 +114,7 @@ export function items({ query, canConvert }) {
         // },
         {
             title: 'Media',
-            icon: 'file-image',
+            icon: 'photo-video',
             canConvert: false,
             node: ({editor}) => {
                 return editor.schema.node('mediaItem');
@@ -165,6 +165,40 @@ export function items({ query, canConvert }) {
                 return command
                     .insertContent({
                         type: 'partial'
+                    });
+            },
+        },
+        {
+            title: 'Link to Page',
+            icon: 'file-alt',
+            canConvert: false,
+            node: ({editor}) => {
+                return editor.schema.node('objectLink', { type: 'page', id: null, content: null});
+            },
+            command: ({ editor, range, command }) => {
+                return command
+                    .insertContent({
+                        type: 'objectLink',
+                        attrs: {
+                            type: 'page', id: null, content: null
+                        }
+                    });
+            },
+        },
+        {
+            title: 'Link to Media',
+            icon: 'file-image',
+            canConvert: false,
+            node: ({editor}) => {
+                return editor.schema.node('objectLink', { type: 'media', id: null, content: null});
+            },
+            command: ({ editor, range, command }) => {
+                return command
+                    .insertContent({
+                        type: 'objectLink',
+                        attrs: {
+                            type: 'media', id: null, content: null
+                        }
                     });
             },
         },

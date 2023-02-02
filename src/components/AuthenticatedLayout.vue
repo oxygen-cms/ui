@@ -51,6 +51,8 @@
                 <router-view></router-view>
             </transition>
 
+            <portal-target name="editors"></portal-target>
+
         </div>
     </div>
 </template>
@@ -66,7 +68,7 @@ export default {
     emits: ["logout"],
     data() {
         return {
-            usersApi: new UsersApi(this.$buefy),
+            usersApi: new UsersApi(),
             setCollapsed: false,
             requestedCollapsed: false
         }

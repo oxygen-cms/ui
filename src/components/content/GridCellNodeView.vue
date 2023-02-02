@@ -1,6 +1,6 @@
 <template>
-    <NodeViewWrapper :class="{'Cell': true, 'Cell--narrow': cellType === 'narrow', 'Cell--wide': cellType === 'wide', 'editable': editor.isEditable}">
-        <b-field class="toolbar" v-if="editor.isEditable">
+    <NodeViewWrapper :class="{'Cell': true, 'Cell--narrow': cellType === 'narrow', 'Cell--wide': cellType === 'wide', 'editable': editor.isEditable, 'selected': editor.isEditable && selectedOrChildSelected}">
+        <b-field class="toolbar" v-if="editor.isEditable && selectedOrChildSelected">
             <p class="control">
                 <b-button icon-left="grip-vertical" size="is-small" data-drag-handle></b-button>
             </p>
@@ -20,6 +20,17 @@ export default {
     computed: {
         cellType() {
             return this.node.attrs.cellType ?? 'narrow';
+        },
+        selectedOrChildSelected() {
+            if(this.selected) {return true;}
+            let anchor = this.editor.state.selection.$anchor;
+            for(let i = anchor.depth; i >= 0; i--) {
+                // console.log(JSON.stringify(this.node), JSON.stringify(anchor.node(i).toJSON()), this.node.eq(anchor.node(i)));
+                if(this.node.eq(anchor.node(i))) {
+                    return true;
+                }
+            }
+            return false;
         }
     },
     data() {
@@ -49,6 +60,9 @@ export default {
 .Cell.editable {
     outline: 1px dashed blue;
     min-height: 4rem;
+}
+.Cell.selected {
+    outline: 2px solid blue;
 }
 
 .Cell .toolbar {

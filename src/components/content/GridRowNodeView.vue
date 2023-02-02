@@ -37,7 +37,7 @@ export default {
 }
 .wrapper.editable {
     min-height: 4rem;
-    outline: 1px dashed red;
+    outline: 2px dashed red;
 }
 
 .toolbar {

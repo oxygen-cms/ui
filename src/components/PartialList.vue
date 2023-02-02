@@ -40,7 +40,7 @@ export default {
     components: {ContentEditor},
     data() {
         return {
-            partialsApi: new PartialsApi(this.$buefy),
+            partialsApi: new PartialsApi(),
             paginatedItems: {items: [], totalItems: 0, itemsPerPage: 0, loading: false, currentPage: 1},
         }
     },
@@ -52,7 +52,7 @@ export default {
             this.paginatedItems.loading = true;
             this.paginatedItems.items = [];
 
-            let data = await this.partialsApi.list(this.inTrash, this.paginatedItems.currentPage, this.searchQuery);
+            let data = await this.partialsApi.list({ inTrash: this.inTrash, page: this.paginatedItems.currentPage, q: this.searchQuery });
 
             this.paginatedItems.items = data.items;
             this.paginatedItems.loading = false;

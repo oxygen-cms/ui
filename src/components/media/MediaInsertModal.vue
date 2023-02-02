@@ -9,7 +9,7 @@
             </section>
             <footer class="modal-card-foot is-flex">
                 <div class="is-flex-grow-1"></div>
-                <b-button @click="emitClose">Close</b-button>
+                <b-button @click="emitClose">{{ closeVerb }}</b-button>
                 <b-button :disabled="selectedFiles.length === 0 || (!multiselectAllowed && selectedFiles.length > 1)" type="is-primary" @click="doInsert">
                     <span v-if="selectedFiles.length === 0">{{ actionVerb }}</span>
                     <span v-else-if="selectedFiles.length === 1">{{actionVerb }} item</span>
@@ -36,6 +36,10 @@ export default {
         actionVerb: {
             type: String,
             default: 'Insert'
+        },
+        closeVerb: {
+            type: String,
+            default: 'Close'
         }
     },
     data() {

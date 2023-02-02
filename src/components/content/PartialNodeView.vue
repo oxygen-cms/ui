@@ -1,7 +1,7 @@
 <template>
-    <NodeViewWrapper class="wrapper" :class="{editable: isEditable, selected: selected}">
+    <NodeViewWrapper class="wrapper" :class="{editable: isEditable, selected: isEditable && selectedOrEditorFocused}">
         <div class="toolbar" v-if="isEditable">
-            <b-field class="has-addons" style="width: 100%">
+            <div class="my-field has-addons" style="width: 100%">
                 <p class="control" v-if="!partial">
                     <b-button size="is-small" @click="partialChooserActive = true">Choose an existing partial</b-button>
                 </p>
@@ -12,6 +12,9 @@
                 <p class="control" v-if="partial">
                     <b-button size="is-small" @click="partialChooserActive = true" type="is-dark">{{ partial.key }}</b-button>
                 </p>
+<!--                <p class="control">-->
+<!--                    <b-button size="is-small" data-drag-handle type="is-dark" icon-left="grip-vertical"></b-button>-->
+<!--                </p>-->
                 <p class="control" v-if="partial">
                     <b-button size="is-small" @click="savePartial" :disabled="!saveButtonEnabled" icon-left="save" type="is-dark"></b-button>
                 </p>
@@ -38,7 +41,7 @@
                     </b-dropdown>
                 </p>
                 <p class="control"><b-button icon-left="trash" size="is-small" @click="removeSelf" type="is-danger"></b-button></p>
-            </b-field>
+            </div>
         </div>
         <b-modal :active="partialChooserActive" @update:active="(v) => partialChooserActive = v" has-modal-card aria-role="dialog" aria-modal auto-focus>
             <div class="modal-card">
@@ -76,7 +79,7 @@
                 </footer>
             </div>
         </b-modal>
-        <ContentEditor ref="editor" v-if="partial !== null" :editable="isEditable" :content="partial.richContent" @update:content="updateContent" class="editor-content" />
+        <ContentEditor v-if="partial !== null" ref="editor" :editable="isEditable" :content="partial.richContent" @update:content="updateContent" class="editor-content" />
         <em v-else-if="!isEditable">Unlinked partial block...</em>
     </NodeViewWrapper>
 </template>
@@ -93,21 +96,24 @@ export default {
     props: nodeViewProps,
     data() {
         return {
-            partialsApi: new PartialsApi(this.$buefy),
+            partialsApi: new PartialsApi(),
             partialChooserActive: false,
             createPartialModalActive: false,
             partial: null,
             serverPartial: null,
             slug: 'layout.nav',
-            title: 'Navigation'
+            title: 'Navigation',
         }
     },
     computed: {
         isEditable() {
-            return this.editor.isEditable;
+            return true; // this.editor.isEditable;
         },
         saveButtonEnabled() {
             return this.partial && (JSON.stringify(this.partial) !== JSON.stringify(this.serverPartial));
+        },
+        selectedOrEditorFocused() {
+            return this.selected || (this.$refs.editor && this.$refs.editor.editor.isFocused);
         }
     },
     watch: {
@@ -144,6 +150,11 @@ export default {
             this.serverPartial = { ... partial };
             this.partialChooserActive = false;
             this.updateAttributes({ id: this.partial.id });
+            // let rect = this.$el.getBoundingClientRect();
+            // console.log(rect);
+            // this.absTop = rect.top;
+            // this.absLeft = rect.left;
+            // this.absWidth = rect.width;
         },
         updateContent(newContent) {
             this.partial.richContent = newContent;
@@ -186,7 +197,21 @@ export default {
     width: 100%;
 }
 
+.editor-content {
+    position: relative;
+}
+
 p.control {
     margin-bottom: 0;
+}
+
+.my-field {
+    display: flex;
+}
+</style>
+
+<style>
+.my-field > .control > .button {
+    border-radius: 0;
 }
 </style>

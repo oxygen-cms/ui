@@ -1,6 +1,6 @@
 <template>
     <NodeViewWrapper>
-        <div :class="{wrapper: true, editable: isEditable, selected: selected}">
+        <div :class="{wrapper: true, editable: isEditable, selected: isEditable && selected}">
             <template v-if="editing && isEditable">
                 <CodeEditor lang="html" height="20em" :value="node.attrs.code" @input="onInput"></CodeEditor>
                 <b-field class="toolbar">
@@ -10,8 +10,9 @@
             </template>
             <template v-else>
                 <b-field class="toolbar" v-if="isEditable">
-                    <p class="control"><b-button disabled size="is-small">Raw HTML</b-button></p>
+                    <p class="control"><b-button size="is-small" data-drag-handle icon-left="grip-vertical"></b-button></p>
                     <p class="control"><b-button @click="editing = true" size="is-small" icon-left="pencil-alt"></b-button></p>
+                    <p class="control"><b-button @click="removeSelf" size="is-small" icon-left="trash"></b-button></p>
                 </b-field>
                 <div v-html="node.attrs.code"></div>
             </template>

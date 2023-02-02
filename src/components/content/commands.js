@@ -27,10 +27,7 @@ export default Extension.create({
                                 return;
                             }
 
-                            // console.log(props);
-
                             let rect = props.clientRect();
-                            // console.log(rect, props.editor.editorComponent);
                             editorComponent.commandsListVisible = true;
                             editorComponent.commandsListTop = rect.top;
                             editorComponent.commandsListLeft = rect.left;
@@ -40,7 +37,6 @@ export default Extension.create({
 
                         onUpdate(props) {
                             let rect = props.clientRect();
-                            // console.log(rect, props.editor.editorComponent);
                             editorComponent.commandsListTop = rect.top;
                             editorComponent.commandsListLeft = rect.left;
                             editorComponent.commandsListItems = props.items;
@@ -48,19 +44,15 @@ export default Extension.create({
                         },
 
                         onKeyDown(props) {
-                            console.log(props);
                             if (props.event.key === 'Escape') {
                                 editorComponent.commandsListVisible = false;
-                                return true
+                                return true;
                             }
                             return editorComponent.$refs['commandsList'].onKeyDown(props);
                         },
 
                         onExit(props) {
-                            console.log(props);
                             editorComponent.commandsListVisible = false;
-                            // popup[0].destroy()
-                            // component.destroy()
                         },
                     }
                 },
