@@ -1,7 +1,7 @@
 <template>
     <tr :class="'row-depth-' + depth + (isFirst ? ' first-child' : '')">
         <td>
-            <a role="button" v-if="item.numChildren > 0" @click="event => $emit('toggle-expand', item)" class="expand-button">
+            <a v-if="item.numChildren > 0" role="button" class="expand-button" @click="event => $emit('toggle-expand', item)">
                 <b-icon :icon="expanded ? 'angle-down' : 'angle-right'"></b-icon>
             </a>
         </td>
@@ -22,6 +22,7 @@ import PagesApi from "../PagesApi.js";
 
 export default {
     name: "PageNestedRow",
+    components: {PageStatusIcon, Updated},
     props: {
         item: Object,
         isFirst: Boolean,
@@ -32,8 +33,7 @@ export default {
         return {
             PagesApi: PagesApi
         }
-    },
-    components: {PageStatusIcon, Updated}
+    }
 }
 </script>
 

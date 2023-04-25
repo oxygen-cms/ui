@@ -37,24 +37,29 @@
         </b-table-column>
         <!-- TODO: this is a massive hack, only supports up to a certain level of nesting -->
         <template #detail="slot">
-            <template v-for="(item1, i) in pagesByParent[slot.row.id].items" v-if="expanded[slot.row.id]">
-                <PageNestedRow :item="item1" :is-first="i  === 0" :depth="1" :expanded="expanded[item1.id]" @toggle-expand="item => setExpanded(item, !expanded[item.id])">
-                    <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
-                </PageNestedRow>
-                <template v-for="(item2, j) in pagesByParent[item1.id].items" v-if="expanded[item1.id]">
-                    <PageNestedRow :item="item2" :is-first="j === 0" :depth="2" :expanded="expanded[item2.id]"  @toggle-expand="item => setExpanded(item, !expanded[item.id])">
+            <template v-if="expanded[slot.row.id]">
+                <template v-for="(item1, i) in pagesByParent[slot.row.id].items">
+                    <PageNestedRow :key="item1.id" :item="item1" :is-first="i  === 0" :depth="1" :expanded="expanded[item1.id]" @toggle-expand="item => setExpanded(item, !expanded[item.id])">
                         <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
                     </PageNestedRow>
-                    <template v-for="(item3, k) in pagesByParent[item2.id].items" v-if="expanded[item2.id]">
-                        <PageNestedRow :item="item3" :is-first="k === 0" :depth="3" :expanded="expanded[item3.id]"  @toggle-expand="item => setExpanded(item, !expanded[item.id])">
-                            <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
-                        </PageNestedRow>
+                    <template v-if="expanded[item1.id]">
+                        <template v-for="(item2, j) in pagesByParent[item1.id].items">
+                            <PageNestedRow :key="item2.id" :item="item2" :is-first="j === 0" :depth="2" :expanded="expanded[item2.id]" @toggle-expand="item => setExpanded(item, !expanded[item.id])">
+                                <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
+                            </PageNestedRow>
+                            <template v-if="expanded[item2.id]">
+                            <template v-for="(item3, k) in pagesByParent[item2.id].items">
+                                <PageNestedRow :key="item3.id" :item="item3" :is-first="k === 0" :depth="3" :expanded="expanded[item3.id]" @toggle-expand="item => setExpanded(item, !expanded[item.id])">
+                                    <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
+                                </PageNestedRow>
+                            </template></template>
+                            <PageNestedPagination v-if="expanded[item2.id]" :key="item2.key" :item="item2" :pages-by-parent="pagesByParent" :depth="3" :paginate="paginate"></PageNestedPagination>
+                        </template>
                     </template>
-                    <PageNestedPagination v-if="expanded[item2.id]" :item="item2" :pages-by-parent="pagesByParent" :depth="3" :paginate="paginate"></PageNestedPagination>
+                    <PageNestedPagination v-if="expanded[item1.id]" :key="item1.key" :item="item1" :pages-by-parent="pagesByParent" :depth="2" :paginate="paginate"></PageNestedPagination>
                 </template>
-                <PageNestedPagination :item="item1" v-if="expanded[item1.id]" :pages-by-parent="pagesByParent" :depth="2" :paginate="paginate"></PageNestedPagination>
+                <PageNestedPagination :item="slot.row" :pages-by-parent="pagesByParent" :depth="1" :paginate="paginate"></PageNestedPagination>
             </template>
-            <PageNestedPagination :item="slot.row" :pages-by-parent="pagesByParent" :depth="1" :paginate="paginate"></PageNestedPagination>
         </template>
     </b-table>
 </template>
@@ -66,18 +71,17 @@ import PagesApi from "../PagesApi.js";
 import Vue from "vue";
 import PageNestedRow from "./PageNestedRow.vue";
 import PageNestedPagination from "./PageNestedPagination.vue";
-import {getApiHost} from "../api.js";
 
 export default {
     name: "PageTable",
+    components: {PageNestedPagination, PageNestedRow, PageStatusIcon, Updated},
     props: {
         sortField: String,
         sortOrder: String,
         onSort: { type: Function, default: () => {} },
-        paginatedItems: { type: Object | null },
+        paginatedItems: { type: Object },
         onPageChange: Function,
     },
-    components: {PageNestedPagination, PageNestedRow, PageStatusIcon, Updated},
     data() {
         return {
             pagesApi: new PagesApi(),
@@ -87,11 +91,11 @@ export default {
             pagesByParent: {0: {items: [], loading: true, totalItems: 0, itemsPerPage: 0, currentPage: 1}},
         }
     },
-    beforeMount() {
-        this.loadAllDetails();
-    },
     watch: {
         'paginatedItems.items': 'loadAllDetails'
+    },
+    beforeMount() {
+        this.loadAllDetails();
     },
     methods: {
         async loadAllDetails() {

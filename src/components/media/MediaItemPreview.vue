@@ -27,7 +27,6 @@ export default {
             default: 'There was an error trying to load this media item. The file may be corrupt or missing'
         }
     },
-    watch: { 'item': 'resetLoadingFailed' },
     data() {
         return {
             getApiHost: getApiHost,
@@ -38,6 +37,7 @@ export default {
             loadingError: false
         }
     },
+    watch: { 'item': 'resetLoadingFailed' },
     methods: {
         resetLoadingFailed() {
             this.loadingError = false;

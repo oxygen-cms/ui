@@ -10,11 +10,11 @@
             <div class="is-flex-grow-1"></div>
             <div>
                 <b-switch :value="editable" @input="v => editable = v">Editable?</b-switch>
-                <b-button @click="editPageModalActive = true" icon-left="cog">Page Settings</b-button>
+                <b-button icon-left="cog" @click="editPageModalActive = true">Page Settings</b-button>
                 <b-button type="is-primary" icon-left="save" @click="save">Save</b-button>
             </div>
         </div>
-        <b-modal :active="editPageModalActive" @update:active="v => editPageModalActive = v" has-modal-card trap-focus aria-modal auto-focus>
+        <b-modal :active="editPageModalActive" has-modal-card trap-focus aria-modal auto-focus @update:active="v => editPageModalActive = v">
             <div class="modal-card is-relative">
                 <div class="modal-card-head">
                     <p class="modal-card-title">Edit Page Settings</p>
@@ -23,7 +23,7 @@
                     <b-loading :active="loading" :is-full-page="false"></b-loading>
                     <div v-if="!loading">
                         <b-field label="Title">
-                            <b-input placeholder="Title" v-model="model.title"></b-input>
+                            <b-input v-model="model.title" placeholder="Title"></b-input>
                         </b-field>
                         <b-field>
                             <template #label>
@@ -32,10 +32,10 @@
                                     <b-icon size="is-small" icon="question-circle"></b-icon>
                                 </b-tooltip>
                             </template>
-                            <b-input placeholder="slug" v-model="model.slug"></b-input>
+                            <b-input v-model="model.slug" placeholder="slug"></b-input>
                         </b-field>
                         <b-field label="Description">
-                            <b-input type="textarea" placeholder="page description" v-model="model.description"></b-input>
+                            <b-input v-model="model.description" type="textarea" placeholder="page description"></b-input>
                         </b-field>
                         <b-field>
                             <template #label>

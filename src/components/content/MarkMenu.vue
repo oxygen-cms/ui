@@ -1,5 +1,5 @@
 <template>
-    <bubble-menu :editor="editor" :should-show="shouldShowMarksMenu" ref="bubbleMenu">
+    <bubble-menu ref="bubbleMenu" :editor="editor" :should-show="shouldShowMarksMenu">
         <div class="bubble-menu">
             <p class="control"><b-button size="is-small" :type="editor.isActive('bold') ? 'is-info' : 'is-light'" icon-left="bold" @click="toggleMark('bold')"></b-button></p>
             <p class="control"><b-button size="is-small" :type="editor.isActive('italic') ? 'is-info' : 'is-light'" icon-left="italic" @click="toggleMark('italic')"></b-button></p>
@@ -33,10 +33,10 @@ import {BubbleMenu, isTextSelection} from "@tiptap/vue-2";
 
 export default {
     name: "MarkMenu",
+    components: {BubbleMenu},
     props: {
         editor: {type: Object, required: true}
     },
-    components: {BubbleMenu},
     data() {
         return {
             linkPanelActive: false,

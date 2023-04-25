@@ -4,15 +4,15 @@
             <template v-if="editing && isEditable">
                 <CodeEditor lang="html" height="20em" :value="node.attrs.code" @input="onInput"></CodeEditor>
                 <b-field class="toolbar">
-                    <p class="control"><b-button @click="save" size="is-small" icon-left="save"></b-button></p>
-                    <p class="control"><b-button @click="removeSelf" size="is-small" icon-left="trash"></b-button></p>
+                    <p class="control"><b-button size="is-small" icon-left="save" @click="save"></b-button></p>
+                    <p class="control"><b-button size="is-small" icon-left="trash" @click="removeSelf"></b-button></p>
                 </b-field>
             </template>
             <template v-else>
-                <b-field class="toolbar" v-if="isEditable">
+                <b-field v-if="isEditable" class="toolbar">
                     <p class="control"><b-button size="is-small" data-drag-handle icon-left="grip-vertical"></b-button></p>
-                    <p class="control"><b-button @click="editing = true" size="is-small" icon-left="pencil-alt"></b-button></p>
-                    <p class="control"><b-button @click="removeSelf" size="is-small" icon-left="trash"></b-button></p>
+                    <p class="control"><b-button size="is-small" icon-left="pencil-alt" @click="editing = true"></b-button></p>
+                    <p class="control"><b-button size="is-small" icon-left="trash" @click="removeSelf"></b-button></p>
                 </b-field>
                 <div v-html="node.attrs.code"></div>
             </template>

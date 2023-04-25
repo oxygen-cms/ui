@@ -24,6 +24,7 @@ import ContentEditor from "./content/ContentEditor.vue";
 
 export default {
     name: "PartialList",
+    components: {ContentEditor},
     props: {
         inTrash: {
             type: Boolean,
@@ -34,15 +35,14 @@ export default {
             required: true
         }
     },
-    created() {
-        this.fetchData()
-    },
-    components: {ContentEditor},
     data() {
         return {
             partialsApi: new PartialsApi(),
             paginatedItems: {items: [], totalItems: 0, itemsPerPage: 0, loading: false, currentPage: 1},
         }
+    },
+    created() {
+        this.fetchData()
     },
     methods: {
         async fetchData() {

@@ -3,7 +3,7 @@
         <b-skeleton v-if="!resolvedHref"></b-skeleton>
         <a v-else-if="!isEditable" :href="getApiHost() + resolvedHref">{{ node.attrs.content ? node.attrs.content : defaultTitle }}</a>
         <a v-else href="#" @click="onLinkClicked">{{ node.attrs.content ? node.attrs.content : defaultTitle }}</a>
-        <b-modal :active="node.attrs.type === 'page' && !node.attrs.id" has-modal-card @close="deleteNode" aria-modal width="80%" class="choose-page">
+        <b-modal :active="node.attrs.type === 'page' && !node.attrs.id" has-modal-card aria-modal width="80%" class="choose-page" @close="deleteNode">
             <div class="modal-card">
                 <div class="modal-card-head">
                     <p class="modal-card-title">Choose a page</p>
@@ -17,8 +17,8 @@
                 </div>
             </div>
         </b-modal>
-        <MediaInsertModal :active="node.attrs.type === 'media' && !node.attrs.id" :multiselect-allowed="false" @close="deleteNode" @select="selectedMedia" close-verb="Remove link" :action-verb="shouldReturnToEditModal ? 'Choose' : 'Insert link'"></MediaInsertModal>
-        <b-modal :active="editLinkModalActive" @update:active="v => editLinkModalActive = v" has-modal-card aria-modal>
+        <MediaInsertModal :active="node.attrs.type === 'media' && !node.attrs.id" :multiselect-allowed="false" close-verb="Remove link" :action-verb="shouldReturnToEditModal ? 'Choose' : 'Insert link'" @close="deleteNode" @select="selectedMedia"></MediaInsertModal>
+        <b-modal :active="editLinkModalActive" has-modal-card aria-modal @update:active="v => editLinkModalActive = v">
             <div class="modal-card">
                 <div class="modal-card-head is-flex">
                     <div>
@@ -29,12 +29,12 @@
                 </div>
                 <div class="modal-card-body">
                     <b-field label="Title">
-                        <b-input :value="node.attrs.content" @input="v => updateAttributes({ content: v })" :placeholder="defaultTitle"></b-input>
+                        <b-input :value="node.attrs.content" :placeholder="defaultTitle" @input="v => updateAttributes({ content: v })"></b-input>
                     </b-field>
                     <div class="label">Target</div>
                     <div class="card">
                         <div class="card-content">
-                            <div class="media is-align-items-center" v-if="node.attrs.type === 'media' && resolvedObject">
+                            <div v-if="node.attrs.type === 'media' && resolvedObject" class="media is-align-items-center">
                                 <div class="media-content">
                                     <p class="title is-4">{{ resolvedObject.name }}</p>
                                     <p class="subtitle is-6">{{ resolvedObject.fullPath }}</p>
@@ -43,7 +43,7 @@
                                     <b-button icon-left="images" @click="clearId(true)">Change...</b-button>
                                 </div>
                             </div>
-                            <div class="media" v-if="node.attrs.type === 'page' && resolvedObject">
+                            <div v-if="node.attrs.type === 'page' && resolvedObject" class="media">
                                 <div class="media-icon">
                                     <b-icon icon="file-alt" size="is-large" class="mr-4 huge-icon"></b-icon>
                                 </div>
@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-image" v-if="node.attrs.type === 'media' && resolvedObject">
+                        <div v-if="node.attrs.type === 'media' && resolvedObject" class="card-image">
                             <MediaItemPreview :item="resolvedObject" />
                         </div>
                     </div>
@@ -96,12 +96,12 @@ export default {
             return this.editor.isEditable;
         }
     },
-    mounted() {
-        this.resolveUrl()
-    },
     watch: {
         'node.attrs.id': 'resolveUrl',
         'node.attrs.type': 'resolveUrl'
+    },
+    mounted() {
+        this.resolveUrl()
     },
     methods: {
         async resolveUrl() {

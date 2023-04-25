@@ -1,14 +1,14 @@
 <template>
-    <div class="editor" ref="container">
+    <div ref="container" class="editor">
         <editor-content class="oxygen-editor-content" :editor="editor" />
-        <CommandsList :visible="commandsListVisible" ref="commandsList" :items="commandsListItems" :command="commandsListCommand" :top="commandsListTop - boundingClientRect().top" :left="commandsListLeft - boundingClientRect().left" />
-        <MarkMenu :editor="editor" v-if="editor" />
-        <floating-menu :editor="editor" v-if="editor && isEditable" v-show="!commandsListVisible" :should-show="shouldShowFloatingMenu" :tippy-options="{ popperOptions: { strategy: 'fixed', placement: 'left' }, getReferenceClientRect: getFloatingMenuClientRect, zIndex: 39 }" class="floating-menu-contents">
-                <b-dropdown @active-change="insertBlockMenuActiveChange" scrollable ref="insertBlockDropdown">
+        <CommandsList ref="commandsList" :visible="commandsListVisible" :items="commandsListItems" :command="commandsListCommand" :top="commandsListTop - boundingClientRect().top" :left="commandsListLeft - boundingClientRect().left" />
+        <MarkMenu v-if="editor" :editor="editor" />
+        <floating-menu v-if="editor && isEditable" v-show="!commandsListVisible" :editor="editor" :should-show="shouldShowFloatingMenu" :tippy-options="{ popperOptions: { strategy: 'fixed', placement: 'left' }, getReferenceClientRect: getFloatingMenuClientRect, zIndex: 39 }" class="floating-menu-contents">
+                <b-dropdown ref="insertBlockDropdown" scrollable @active-change="insertBlockMenuActiveChange">
                     <template #trigger>
                         <b-button icon-left="plus" class="floating-menu-button first-child"></b-button>
                     </template>
-                    <b-input type="search" v-model="commandSearchQuery" placeholder="Choose block to insert" ref="insertBlockSearch"></b-input>
+                    <b-input ref="insertBlockSearch" v-model="commandSearchQuery" type="search" placeholder="Choose block to insert"></b-input>
                     <b-dropdown-item v-for="(item, index) in filteredNewBlocks" :key="index" @click="insertBlock(item)">
                         <b-icon :icon="item.icon"></b-icon>
                         {{ item.title }}
@@ -17,13 +17,13 @@
                         No blocks found.
                     </b-dropdown-item>
                 </b-dropdown>
-                <b-button icon-left="trash" @click="deleteBlock" class="floating-menu-button"></b-button>
-                <b-dropdown @active-change="convertBlockMenuActiveChange" scrollable ref="convertBlockDropdown">
+                <b-button icon-left="trash" class="floating-menu-button" @click="deleteBlock"></b-button>
+                <b-dropdown ref="convertBlockDropdown" scrollable @active-change="convertBlockMenuActiveChange">
                     <template #trigger>
                         <b-button :icon-left="currentActiveIcon" class="floating-menu-button last-child"></b-button>
                     </template>
                     <b-dropdown-item :paddingless="true">
-                        <b-input type="search" v-model="commandSearchQuery" placeholder="Change current block" ref="convertBlockSearch"></b-input>
+                        <b-input ref="convertBlockSearch" v-model="commandSearchQuery" type="search" placeholder="Change current block"></b-input>
                     </b-dropdown-item>
                     <b-dropdown-item v-for="(item, index) in filteredConvertibleBlocks" :key="index" @click="convertBlock(item)">
                         <b-icon :icon="item.icon"></b-icon>
@@ -45,7 +45,6 @@ import Link from '@tiptap/extension-link'
 import StarterKit from '@tiptap/starter-kit'
 import { Node, mergeAttributes, posToDOMRect } from '@tiptap/core'
 import MediaNodeView from "./MediaNodeView.vue";
-import MediaInsertModal from "../media/MediaInsertModal.vue";
 import HtmlNodeView from "./HtmlNodeView.vue";
 import GridRowNodeView from "./GridRowNodeView.vue";
 import Commands from './commands'
@@ -60,7 +59,7 @@ import {getApiRoot} from "../../CrudApi.js";
 
 export default {
     name: "ContentEditor",
-    components: {MediaInsertModal, EditorContent, CommandsList, FloatingMenu, MarkMenu },
+    components: {EditorContent, CommandsList, FloatingMenu, MarkMenu },
     props: {
         content: {
             required: true
@@ -86,10 +85,6 @@ export default {
             currentActiveIcon: 'pencil-alt'
         }
     },
-    watch: {
-        'editable': 'updateEditable',
-        'content': 'setContent'
-    },
     computed: {
         isEditable() {
             return this.editor ? this.editor.isEditable : false;
@@ -100,6 +95,10 @@ export default {
         filteredNewBlocks() {
             return items({ query: this.commandSearchQuery });
         }
+    },
+    watch: {
+        'editable': 'updateEditable',
+        'content': 'setContent'
     },
     async mounted() {
         const PartialNodeView = (await import("./PartialNodeView.vue")).default;
@@ -405,7 +404,7 @@ export default {
             console.log('updating editable state', newEditable);
             this.editor.setEditable(newEditable);
         },
-        shouldShowFloatingMenu({editor, view, state, oldState}) {
+        shouldShowFloatingMenu({editor}) {
             return editor.isActive('paragraph') || editor.isActive('bulletList') || editor.isActive('blockquote') || editor.isActive('heading') || editor.isActive('orderedList') || editor.isActive('horizontalRule');
         },
         getFloatingMenuClientRect() {

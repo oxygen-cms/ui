@@ -7,7 +7,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                   return editor.schema.node('paragraph');
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph();
             },
         },
@@ -18,7 +18,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('heading', {level: 1});
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().setNode('heading', {level: 1});
             },
         },
@@ -29,7 +29,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('heading', {level: 2});
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().setNode('heading', {level: 2});
             },
         },
@@ -40,7 +40,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('heading', {level: 3});
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().setNode('heading', {level: 3});
             },
         },
@@ -51,7 +51,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('blockquote', {}, [editor.schema.node('paragraph', {}, [])]);
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().setBlockquote();
             },
         },
@@ -62,7 +62,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('orderedList', {}, [editor.schema.node('listItem', {}, [editor.schema.node('paragraph', {}, [])])]);
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().toggleOrderedList();
             },
         },
@@ -73,7 +73,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('bulletList', {}, [editor.schema.node('listItem', {}, [editor.schema.node('paragraph', {}, [])])]);
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().toggleBulletList();
             },
         },
@@ -84,7 +84,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('horizontalRule');
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command.setParagraph().setHorizontalRule();
             },
         },
@@ -119,7 +119,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('mediaItem');
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command
                     .insertContent({
                         type: 'mediaItem'
@@ -133,7 +133,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('rawHtml');
             },
-            command: ({ editor, range, command}) => {
+            command: ({ command}) => {
                 return command
                     .insertContent({
                         type: 'rawHtml'
@@ -147,7 +147,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('gridRow');
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                return command
                     .insertContent({
                         type: 'gridRow'
@@ -161,7 +161,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('partial');
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command
                     .insertContent({
                         type: 'partial'
@@ -175,7 +175,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('objectLink', { type: 'page', id: null, content: null});
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command
                     .insertContent({
                         type: 'objectLink',
@@ -192,7 +192,7 @@ export function items({ query, canConvert }) {
             node: ({editor}) => {
                 return editor.schema.node('objectLink', { type: 'media', id: null, content: null});
             },
-            command: ({ editor, range, command }) => {
+            command: ({ command }) => {
                 return command
                     .insertContent({
                         type: 'objectLink',

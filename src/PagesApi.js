@@ -1,5 +1,5 @@
 import  { CrudApi } from './CrudApi';
-import {getApiHost, morphToNotification} from "./api.js";
+import {getApiHost} from "./api.js";
 
 export default class PagesApi extends CrudApi {
 

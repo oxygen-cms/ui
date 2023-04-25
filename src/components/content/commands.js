@@ -51,7 +51,7 @@ export default Extension.create({
                             return editorComponent.$refs['commandsList'].onKeyDown(props);
                         },
 
-                        onExit(props) {
+                        onExit() {
                             editorComponent.commandsListVisible = false;
                         },
                     }

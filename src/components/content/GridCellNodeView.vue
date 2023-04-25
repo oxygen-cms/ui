@@ -1,11 +1,11 @@
 <template>
     <NodeViewWrapper :class="{'Cell': true, 'Cell--narrow': cellType === 'narrow', 'Cell--wide': cellType === 'wide', 'editable': editor.isEditable, 'selected': editor.isEditable && selectedOrChildSelected}">
-        <b-field class="toolbar" v-if="editor.isEditable && selectedOrChildSelected">
+        <b-field v-if="editor.isEditable && selectedOrChildSelected" class="toolbar">
             <p class="control">
                 <b-button icon-left="grip-vertical" size="is-small" data-drag-handle></b-button>
             </p>
-            <p class="control"><b-button icon-left="trash" size="is-small" @click="removeSelf" class="trash"></b-button></p>
-            <p class="control"><b-button @click="toggleSize" size="is-small">Toggle size</b-button></p>
+            <p class="control"><b-button icon-left="trash" size="is-small" class="trash" @click="removeSelf"></b-button></p>
+            <p class="control"><b-button size="is-small" @click="toggleSize">Toggle size</b-button></p>
         </b-field>
         <NodeViewContent></NodeViewContent>
     </NodeViewWrapper>
@@ -17,6 +17,10 @@ export default {
     name: "GridCellNodeView",
     components: { NodeViewWrapper, NodeViewContent },
     props: nodeViewProps,
+    data() {
+        return {
+        }
+    },
     computed: {
         cellType() {
             return this.node.attrs.cellType ?? 'narrow';
@@ -31,10 +35,6 @@ export default {
                 }
             }
             return false;
-        }
-    },
-    data() {
-        return {
         }
     },
     methods: {

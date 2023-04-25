@@ -34,21 +34,19 @@
 
 <script>
 import Updated from "./Updated.vue";
-import PageNestedRow from "./PageNestedRow.vue";
-import PageNestedPagination from "./PageNestedPagination.vue";
 import PartialStatusIcon from "./PartialStatusIcon.vue";
 
 export default {
     name: "PartialTable",
+    components: {PartialStatusIcon, Updated},
     props: {
         detailed: Boolean,
         sortField: String,
         sortOrder: String,
         onSort: { type: Function, default: () => {} },
-        paginatedItems: { type: Object | null },
+        paginatedItems: { type: Object, default: null },
         onPageChange: Function,
     },
-    components: {PageNestedPagination, PageNestedRow, PartialStatusIcon, Updated},
     data() {
         return {
         }

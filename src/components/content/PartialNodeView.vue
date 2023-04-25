@@ -1,24 +1,24 @@
 <template>
     <NodeViewWrapper class="wrapper" :class="{editable: isEditable, selected: isEditable && selectedOrEditorFocused}">
-        <div class="toolbar" v-if="isEditable">
+        <div v-if="isEditable" class="toolbar">
             <div class="my-field has-addons" style="width: 100%">
-                <p class="control" v-if="!partial">
+                <p v-if="!partial" class="control">
                     <b-button size="is-small" @click="partialChooserActive = true">Choose an existing partial</b-button>
                 </p>
-                <p class="control" v-if="!partial">
+                <p v-if="!partial" class="control">
                     <b-button size="is-small" @click="createPartialModalActive = true">Create from scratch</b-button>
                 </p>
                 <div class="is-flex-grow-1"></div>
-                <p class="control" v-if="partial">
-                    <b-button size="is-small" @click="partialChooserActive = true" type="is-dark">{{ partial.key }}</b-button>
+                <p v-if="partial" class="control">
+                    <b-button size="is-small" type="is-dark" @click="partialChooserActive = true">{{ partial.key }}</b-button>
                 </p>
 <!--                <p class="control">-->
 <!--                    <b-button size="is-small" data-drag-handle type="is-dark" icon-left="grip-vertical"></b-button>-->
 <!--                </p>-->
-                <p class="control" v-if="partial">
-                    <b-button size="is-small" @click="savePartial" :disabled="!saveButtonEnabled" icon-left="save" type="is-dark"></b-button>
+                <p v-if="partial" class="control">
+                    <b-button size="is-small" :disabled="!saveButtonEnabled" icon-left="save" type="is-dark" @click="savePartial"></b-button>
                 </p>
-                <p class="control" v-if="partial">
+                <p v-if="partial" class="control">
                     <b-dropdown position="is-bottom-left">
                         <template #trigger>
                             <b-button icon-left="sliders-h" size="is-small" type="is-dark"></b-button>
@@ -27,7 +27,7 @@
                             <header class="modal-card-head">
                                 <p class="modal-card-title">Edit Partial Settings</p>
                             </header>
-                            <div class="modal-card-body" v-if="partial">
+                            <div v-if="partial" class="modal-card-body">
 <!--                                <h2></h2>-->
                                 <b-field label="Title" label-position="on-border">
                                     <b-input :value="partial.title" @input="v => partial.title = v"></b-input>
@@ -40,10 +40,10 @@
                         </div>
                     </b-dropdown>
                 </p>
-                <p class="control"><b-button icon-left="trash" size="is-small" @click="removeSelf" type="is-danger"></b-button></p>
+                <p class="control"><b-button icon-left="trash" size="is-small" type="is-danger" @click="removeSelf"></b-button></p>
             </div>
         </div>
-        <b-modal :active="partialChooserActive" @update:active="(v) => partialChooserActive = v" has-modal-card aria-role="dialog" aria-modal auto-focus>
+        <b-modal :active="partialChooserActive" has-modal-card aria-role="dialog" aria-modal auto-focus @update:active="(v) => partialChooserActive = v">
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Choose a partial to use</p>
@@ -54,7 +54,7 @@
                 <footer class="modal-card-foot"></footer>
             </div>
         </b-modal>
-        <b-modal :active="createPartialModalActive" @update:active="(v) => createPartialModalActive = v" has-modal-card aria-role="dialog" aria-modal auto-focus>
+        <b-modal :active="createPartialModalActive" has-modal-card aria-role="dialog" aria-modal auto-focus @update:active="(v) => createPartialModalActive = v">
             <div class="modal-card">
                 <header class="modal-card-head">
                     <p class="modal-card-title">Partial</p>
@@ -79,7 +79,7 @@
                 </footer>
             </div>
         </b-modal>
-        <ContentEditor v-if="partial !== null" ref="editor" :editable="isEditable" :content="partial.richContent" @update:content="updateContent" class="editor-content" />
+        <ContentEditor v-if="partial !== null" ref="editor" :editable="isEditable" :content="partial.richContent" class="editor-content" @update:content="updateContent" />
         <em v-else-if="!isEditable">Unlinked partial block...</em>
     </NodeViewWrapper>
 </template>

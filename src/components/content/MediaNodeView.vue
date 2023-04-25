@@ -7,10 +7,10 @@
                     <b-button icon-left="grip-vertical" size="is-small" data-drag-handle></b-button>
                 </p>
                 <p class="control">
-                    <b-button @click="mediaSelectActive=true" size="is-small" icon-left="file-image"></b-button>
+                    <b-button size="is-small" icon-left="file-image" @click="mediaSelectActive=true"></b-button>
                 </p>
                 <p class="control">
-                    <b-button @click="removeSelf" size="is-small" icon-left="trash"></b-button>
+                    <b-button size="is-small" icon-left="trash" @click="removeSelf"></b-button>
                 </p>
             </b-field>
         </MediaItemPreview>
@@ -40,14 +40,14 @@ export default {
             return this.editor.isEditable;
         }
     },
+    watch: {
+        'node.attrs.id': 'fetchMediaItem'
+    },
     mounted() {
         if(!this.node.attrs.id) {
             this.mediaSelectActive = true;
         }
         this.fetchMediaItem()
-    },
-    watch: {
-        'node.attrs.id': 'fetchMediaItem'
     },
     methods: {
         async fetchMediaItem() {

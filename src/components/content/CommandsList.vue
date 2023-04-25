@@ -1,5 +1,5 @@
 <template>
-    <b-dropdown v-model="selectedIndex" ref="dropdown" :inline="true" :scrollable="true" class="items" :style="{ top: (top + 30) + 'px', left: (left + 4) + 'px', display: !visible ? 'none !important' : 'inherit' }" @change="index => selectItem(items[index])">
+    <b-dropdown ref="dropdown" v-model="selectedIndex" :inline="true" :scrollable="true" class="items" :style="{ top: (top + 30) + 'px', left: (left + 4) + 'px', display: !visible ? 'none !important' : 'inherit' }" @change="index => selectItem(items[index])">
         <b-dropdown-item
             v-for="(item, index) in items"
             :key="index"

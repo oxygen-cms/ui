@@ -45,6 +45,7 @@ import {debounce} from "lodash";
 
 export default {
     name: "ResourceList",
+    components: {ContentEditor},
     props: {
         routePrefix: String,
         displayName: String,
@@ -59,6 +60,14 @@ export default {
         actionsComponent: Object,
         resourceApi: Object
     },
+    data() {
+        return {
+            searchQuery: '',
+            sortField: this.defaultSortField,
+            sortOrder: this.defaultSortOrder,
+            paginatedItems: {items: [], totalItems: 0, itemsPerPage: 0, loading: false, currentPage: 1},
+        }
+    },
     watch: {
         'resourceApi': 'fetchData',
         'inTrash': 'fetchData',
@@ -69,15 +78,6 @@ export default {
     },
     created() {
         this.fetchData()
-    },
-    components: {ContentEditor},
-    data() {
-        return {
-            searchQuery: '',
-            sortField: this.defaultSortField,
-            sortOrder: this.defaultSortOrder,
-            paginatedItems: {items: [], totalItems: 0, itemsPerPage: 0, loading: false, currentPage: 1},
-        }
     },
     methods: {
         debouncedFetchData: debounce(async function() {

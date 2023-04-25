@@ -1,6 +1,6 @@
 <template>
     <NodeViewWrapper class="wrapper" :class="{editable: editor.isEditable}">
-        <b-field class="toolbar" v-if="editor.isEditable">
+        <b-field v-if="editor.isEditable" class="toolbar">
             <p class="control"><b-button icon-left="trash" size="is-small" @click="removeSelf"></b-button></p>
             <p class="control"><b-button icon-left="plus" size="is-small" @click="addCell"></b-button></p>
         </b-field>

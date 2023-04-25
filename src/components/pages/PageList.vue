@@ -22,14 +22,14 @@ export default {
             pagesApi: new PagesApi()
         }
     },
-    created() {
-        this.fetchData()
-    },
     watch: {
         'paginatedItems.currentPage': 'fetchData',
         'searchQuery': 'fetchData',
         'sortField': 'fetchData',
         'sortOrder': 'fetchData'
+    },
+    created() {
+        this.fetchData()
     },
     methods: {
         onSort(field, order) {

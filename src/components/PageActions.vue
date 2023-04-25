@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-button v-if="item.stage !== STAGE_PUBLISHED" rounded size="is-small" icon-left="globe-asia" @click="publish" class="mr-2">Publish</b-button>
+        <b-button v-if="item.stage !== STAGE_PUBLISHED" rounded size="is-small" icon-left="globe-asia" class="mr-2" @click="publish">Publish</b-button>
     </div>
 </template>
 
@@ -10,7 +10,7 @@ import PagesApi from "../PagesApi.js";
 export default {
     name: "PageActions",
     props: {
-        item: Object
+        item: { type: Object, required: true }
     },
     data() {
         return {
