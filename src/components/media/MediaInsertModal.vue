@@ -1,5 +1,5 @@
 <template>
-    <b-modal :active.sync="active" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus width="80%" class="media-insert-modal">
+    <b-modal :active="active" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus width="80%" class="media-insert-modal" @update:active="updateActive">
         <div class="modal-card">
             <header class="modal-card-head">
                 <slot name="title"><p class="modal-card-title">Choose an item to insert</p></slot>
@@ -9,7 +9,7 @@
             </section>
             <footer class="modal-card-foot is-flex">
                 <div class="is-flex-grow-1"></div>
-                <b-button @click="emitClose">Close</b-button>
+                <b-button @click="emitClose">{{ closeVerb }}</b-button>
                 <b-button :disabled="selectedFiles.length === 0 || (!multiselectAllowed && selectedFiles.length > 1)" type="is-primary" @click="doInsert">
                     <span v-if="selectedFiles.length === 0">{{ actionVerb }}</span>
                     <span v-else-if="selectedFiles.length === 1">{{actionVerb }} item</span>
@@ -36,6 +36,10 @@ export default {
         actionVerb: {
             type: String,
             default: 'Insert'
+        },
+        closeVerb: {
+            type: String,
+            default: 'Close'
         }
     },
     data() {
@@ -62,6 +66,11 @@ export default {
         },
         doInsert() {
             this.$emit('select', this.selectedFiles);
+        },
+        updateActive(newVal) {
+            if(!newVal) {
+                this.emitClose();
+            }
         }
     }
 }

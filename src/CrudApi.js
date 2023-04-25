@@ -9,12 +9,13 @@ export const getApiRoot = () => {
 
 export class CrudApi {
 
-    constructor($buefy) {
+    static setBuefy($buefy) {
         this.$buefy = $buefy;
     }
 
     request(method) {
-        return FetchBuilder.default(this.$buefy, method);
+        if(!CrudApi.$buefy) { throw new Error("need to call setBuefy() first"); }
+        return FetchBuilder.default(CrudApi.$buefy, method);
     }
 
     static getResourceName() {
@@ -31,12 +32,18 @@ export class CrudApi {
         return m;
     }
 
-    async list(inTrash, page, searchQuery) {
+    static convertModelFromAPI(data) {
+        return data;
+    }
+
+    async list({ inTrash, page, q, sortField, sortOrder }) {
         return this.request('get')
             .withQueryParams({
-                page: (searchQuery !== null && searchQuery !== '' ) ? null : page,
+                page: (q !== null && q !== '' ) ? null : page,
+                sortField: sortField,
+                sortOrder: sortOrder,
                 trash: (inTrash ? 'true' : 'false'),
-                q: (searchQuery !== null && searchQuery !== '' ) ? searchQuery : null
+                q: (q !== null && q !== '' ) ? q : null
             })
             .fetch(this.constructor.getResourceRoot());
     }
@@ -77,7 +84,7 @@ export class CrudApi {
 
     async confirmForceDelete(id) {
         const promise = new Promise((resolve) => {
-            this.$buefy.dialog.confirm({
+            CrudApi.$buefy.dialog.confirm({
                 message: 'Are you sure you want to delete this record forever?',
                 onConfirm: resolve
             });
@@ -85,20 +92,20 @@ export class CrudApi {
 
         await promise;
         let data = await this.forceDelete(id);
-        this.$buefy.toast.open(morphToNotification(data));
+        CrudApi.$buefy.toast.open(morphToNotification(data));
         return data;
     }
 
     async restoreAndNotify(id) {
         let data = await this.request('post')
             .fetch(this.constructor.getResourceRoot() + '/' + id + '/restore');
-        this.$buefy.toast.open(morphToNotification(data));
+        CrudApi.$buefy.toast.open(morphToNotification(data));
         return data;
     }
 
     async deleteAndNotify(id) {
         let data = await this.delete(id);
-        this.$buefy.toast.open(morphToNotification(data));
+        CrudApi.$buefy.toast.open(morphToNotification(data));
         return data;
     }
 
@@ -111,4 +118,11 @@ export class CrudApi {
         return this.request('post')
             .fetch(this.constructor.getResourceRoot() + '/' + id + '/make-head');
     }
+
+    async publish(id) {
+        let data = await this.request('post').fetch(this.constructor.getResourceRoot() + '/' + id + '/publish');
+        CrudApi.$buefy.toast.open(morphToNotification(data));
+        return data.item;
+    }
+
 }

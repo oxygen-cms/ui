@@ -43,5 +43,5 @@
 }
 
 .top-bar .title:not(:first-child) {
-    margin-left: 1rem;
+    margin-left: 0.8rem;
 }

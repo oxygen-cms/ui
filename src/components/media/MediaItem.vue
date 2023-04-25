@@ -185,7 +185,7 @@ export default {
             versions: [],
             caption: null,
             description: null,
-            mediaApi: new MediaApi(this.$buefy),
+            mediaApi: new MediaApi(),
             Internationalize
         }
     },

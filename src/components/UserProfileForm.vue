@@ -144,7 +144,7 @@ export default {
             isChangePasswordModalActive: false,
             isUserPreferencesModalActive: false,
             authApi: new AuthApi(this.$buefy),
-            usersApi: new UsersApi(this.$buefy)
+            usersApi: new UsersApi()
         }
     },
     methods: {

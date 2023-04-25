@@ -67,7 +67,7 @@ export default {
     },
     data() {
         return {
-            mediaDirectoryApi: new MediaDirectoryApi(this.$buefy),
+            mediaDirectoryApi: new MediaDirectoryApi(),
             newDirectory: null,
             isLoading: false,
             searchQuery: '',
@@ -92,7 +92,7 @@ export default {
     methods: {
         async fetchData() {
             this.isLoading = true;
-            let data = await this.mediaDirectoryApi.list(false, 1, null);
+            let data = await this.mediaDirectoryApi.list({ inTrash: false, page: 1, q: null });
             this.directoriesList = data.items;
             this.directoriesList.sort((a, b) => {
                 return getDirectoryPathString(a).localeCompare(getDirectoryPathString(b))

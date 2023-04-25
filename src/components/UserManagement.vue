@@ -100,7 +100,7 @@ export default {
         EditButtonOnRowHover, GroupsChooser, GenericEditableField, UserJoined, GroupsList},
     data() {
         return {
-            usersApi: new UsersApi(this.$buefy),
+            usersApi: new UsersApi(),
             selectedUser: null,
             searchQuery: null,
             isCreateUserModalActive: false,
@@ -116,7 +116,7 @@ export default {
     methods: {
         async fetchData() {
             this.paginatedItems.loading = true;
-            let data = await this.usersApi.list(false, this.paginatedItems.currentPage, this.searchQuery);
+            let data = await this.usersApi.list({ inTrash: false, page: this.paginatedItems.currentPage, q: this.searchQuery });
 
             this.paginatedItems.items = data.items;
             this.paginatedItems.totalItems = data.totalItems;

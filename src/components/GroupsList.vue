@@ -86,7 +86,7 @@ export default {
     components: { UserJoined, GenericEditableField, EditButtonOnRowHover },
     data() {
         return {
-            groupsApi: new GroupsApi(this.$buefy),
+            groupsApi: new GroupsApi(),
             paginatedItems: {items: null, totalItems: null, itemsPerPage: null, loading: false, currentPage: 1},
         }
     },
@@ -96,7 +96,7 @@ export default {
     methods: {
         async fetchData() {
             this.paginatedItems.loading = true;
-            let data = await this.groupsApi.list(false, this.paginatedItems.currentPage, null);
+            let data = await this.groupsApi.list({ inTrash: false, page: this.paginatedItems.currentPage, q: null });
             this.paginatedItems.items = data.items;
             this.paginatedItems.totalItems = data.totalItems;
             this.paginatedItems.itemsPerPage = data.itemsPerPage;

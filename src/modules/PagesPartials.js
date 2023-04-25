@@ -1,5 +1,13 @@
 import LegacyPage from "../components/LegacyPage.vue";
 import { WEB_CONTENT } from "../main.js";
+import PageEdit from "../components/PageEdit.vue";
+import ResourceList from "../components/ResourceList.vue";
+import PageTable from "../components/PageTable.vue";
+import PagesApi from "../PagesApi.js";
+import PartialsApi from "../PartialsApi.js";
+import PartialTable from "../components/PartialTable.vue";
+import PageActions from "../components/PageActions.vue";
+import PartialActions from "../components/PartialActions.vue";
 
 export default function(ui) {
     ui.addMainMenuGroup(WEB_CONTENT, {
@@ -24,10 +32,13 @@ export default function(ui) {
         items: {
         }
     });
+
+    const partialsProps = { displayName: 'Partials', routePrefix: 'partials', inTrash: false, tableComponent: PartialTable, actionsComponent: PartialActions, singularDisplayName: 'Partial', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PartialsApi() }
+    const pagesProps = { displayName: 'Pages', routePrefix: 'pages', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi() }
+
     ui.addAuthenticatedRoutes([
         {
-            // will match everything, try to render a legacy Oxygen page...
-            path: '(pages|partials)/:subpath*',
+            path: '(pages|partials)/create',
             component: LegacyPage,
             props: (route) => {
                 return {
@@ -36,6 +47,67 @@ export default function(ui) {
                     adminPrefix: '/oxygen'
                 }
             }
+        },
+        {
+            path: '(pages|partials)/:subpath/edit',
+            component: LegacyPage,
+            props: (route) => {
+                return {
+                    fullPath: route.fullPath,
+                    legacyPrefix: '/oxygen/view',
+                    adminPrefix: '/oxygen'
+                }
+            }
+        },
+        {
+            path: 'partials/trash',
+            name: 'partials.trash',
+            component: ResourceList,
+            meta: { title: 'Deleted Partials' },
+            props: { ...partialsProps, inTrash: true }
+        },
+        {
+            path: 'partials',
+            name: 'partials.list',
+            component: ResourceList,
+            meta: { title: 'List Partials' },
+            props: { ...partialsProps, inTrash: false }
+        },
+        {
+            path: 'partials/:id',
+            redirect: to => {
+                return { path: 'partials/' + to.params.id + '/edit' }
+            }
+        },
+        {
+            path: 'partials/create',
+            redirect: 'partials/create'
+        },
+        {
+            path: 'pages/trash',
+            name: 'pages.trash',
+            component: ResourceList,
+            meta: { title: 'Deleted Pages' },
+            props: { ...pagesProps, inTrash: true }
+        },
+        {
+            path: 'pages2/:id',
+            name: 'pages.edit',
+            component: PageEdit,
+            meta: { title: 'Edit Page' }
+        },
+        {
+            path: 'pages/:id',
+            redirect: to => {
+                return { path: 'pages/' + to.params.id + '/edit' }
+            }
+        },
+        {
+            path: 'pages',
+            name: 'pages.list',
+            component: ResourceList,
+            meta: { title: 'List Pages' },
+            props: { ...pagesProps, inTrash: false }
         }
     ]);
 }

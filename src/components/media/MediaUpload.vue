@@ -56,7 +56,7 @@ export default {
         return {
             filesToUpload: [],
             isUploading: false,
-            mediaApi: new MediaApi(this.$buefy)
+            mediaApi: new MediaApi()
         }
     },
     computed: {

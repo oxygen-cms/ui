@@ -45,7 +45,7 @@ export default {
         return {
             model: null,
             loading: true,
-            usersApi: new UsersApi(this.$buefy)
+            usersApi: new UsersApi()
         }
     },
     computed: {

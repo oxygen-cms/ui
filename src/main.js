@@ -13,6 +13,8 @@ import createStore from "./store/index";
 import { checkAuthenticated } from "./AuthApi";
 import Error404 from "./components/Error404.vue";
 import Preferences from "./components/preferences/Preferences.vue";
+import PortalVue from "portal-vue";
+import {CrudApi} from "./CrudApi.js";
 
 /**
  * Creates the Vue.js Oxygen application, allowing for a few points of customization (i.e.: adding modules)
@@ -82,6 +84,7 @@ export default class OxygenUI {
         this.Vue.use(VHotkey);
         this.Vue.use(AsyncComputed);
         this.Vue.use(Router);
+        this.Vue.use(PortalVue);
 
         const store = createStore(this.Vue);
 
@@ -136,6 +139,7 @@ export default class OxygenUI {
         FetchBuilder.setStore(store);
         UserPermissions.setBuefy(this.app.$buefy);
         UserPreferences.setBuefy(this.app.$buefy)
+        CrudApi.setBuefy(this.app.$buefy);
         return this;
     }
 

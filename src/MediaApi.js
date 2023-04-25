@@ -33,12 +33,12 @@ export default class MediaApi extends CrudApi {
             .fetch(this.constructor.getResourceRoot());
     }
 
-    async list(inTrash, searchQuery, page, path) {
+    async list({ inTrash, q, page, path }) {
         return this.request('get')
             .withQueryParams({
                 path: path,
-                q: (searchQuery !== null && searchQuery !== '' ) ? searchQuery : null,
-                page: (searchQuery !== null && searchQuery !== '' ) ? null : page,
+                q: (q !== null && q !== '' ) ? q : null,
+                page: (q !== null && q !== '' ) ? null : page,
                 trash: (inTrash ? 'true' : 'false'),
             })
             .fetch(this.constructor.getResourceRoot());

@@ -47,7 +47,7 @@ export default {
             fullName: '',
             group: null,
             submitting: false,
-            usersApi: new UsersApi(this.$buefy)
+            usersApi: new UsersApi()
         }
     },
     methods: {
