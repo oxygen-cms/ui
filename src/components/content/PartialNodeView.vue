@@ -107,7 +107,7 @@ export default {
     },
     computed: {
         isEditable() {
-            return true; // this.editor.isEditable;
+            return this.editor.isEditable;
         },
         saveButtonEnabled() {
             return this.partial && (JSON.stringify(this.partial) !== JSON.stringify(this.serverPartial));

@@ -1,11 +1,9 @@
 <template>
     <div class="editor" ref="container">
-        <editor-content class="content" :editor="editor" />
-<!--        <b-button v-if="expanded" @click="getJSON">Get JSON</b-button>-->
-<!--        <b-button v-if="expanded" @click="getHTML">Get HTML</b-button>-->
+        <editor-content class="oxygen-editor-content" :editor="editor" />
         <CommandsList :visible="commandsListVisible" ref="commandsList" :items="commandsListItems" :command="commandsListCommand" :top="commandsListTop - boundingClientRect().top" :left="commandsListLeft - boundingClientRect().left" />
         <MarkMenu :editor="editor" v-if="editor" />
-        <floating-menu :editor="editor" v-if="editor && isEditable" v-show="!commandsListVisible" :should-show="shouldShowFloatingMenu" :tippy-options="{ popperOptions: { strategy: 'fixed', placement: 'left' }, getReferenceClientRect: getFloatingMenuClientRect }" class="floating-menu-contents">
+        <floating-menu :editor="editor" v-if="editor && isEditable" v-show="!commandsListVisible" :should-show="shouldShowFloatingMenu" :tippy-options="{ popperOptions: { strategy: 'fixed', placement: 'left' }, getReferenceClientRect: getFloatingMenuClientRect, zIndex: 39 }" class="floating-menu-contents">
                 <b-dropdown @active-change="insertBlockMenuActiveChange" scrollable ref="insertBlockDropdown">
                     <template #trigger>
                         <b-button icon-left="plus" class="floating-menu-button first-child"></b-button>
@@ -57,6 +55,8 @@ import CommandsList from "./CommandsList.vue";
 import {debounce} from "lodash";
 import {items} from "./suggestion";
 import MarkMenu from "./MarkMenu.vue";
+import {FetchBuilder, getApiHost} from "../../api.js";
+import {getApiRoot} from "../../CrudApi.js";
 
 export default {
     name: "ContentEditor",
@@ -325,15 +325,17 @@ export default {
         extensions.push(BlockEmphasisNode);
         extensions.push(SmallMark);
 
-        console.log('instantiating editor with content', JSON.stringify(this.content));
-        this.editor = new Editor({
-            content: this.content,
-            editable: this.editable,
-            onUpdate: this.onUpdate.bind(this),
-            onSelectionUpdate: this.onSelectionUpdate.bind(this),
-            extensions: extensions
-        });
-        this.editor.state.doc.check();
+        this.setupStyles().then(() => {
+            console.log('instantiating editor with content', JSON.stringify(this.content));
+            this.editor = new Editor({
+                content: this.content,
+                editable: this.editable,
+                onUpdate: this.onUpdate.bind(this),
+                onSelectionUpdate: this.onSelectionUpdate.bind(this),
+                extensions: extensions
+            });
+            this.editor.state.doc.check();
+        })
     },
     beforeDestroy() {
         if(this.editor) {
@@ -341,6 +343,19 @@ export default {
         }
     },
     methods: {
+        async setupStyles() {
+            let themeDetails = await FetchBuilder.default(this.$buefy, 'get')
+                    .fetch(getApiRoot() + 'theme/details');
+            const singletonId = "contentEditorStylesheet";
+            const element = document.createElement("link");
+            element.setAttribute("rel", "stylesheet");
+            element.setAttribute("type", "text/css");
+            element.setAttribute("href", getApiHost() + themeDetails.contentStylesheet);
+            element.setAttribute("id", singletonId);
+            if(!document.getElementById(singletonId)) {
+                document.getElementsByTagName("head")[0].appendChild(element);
+            }
+        },
         onUpdate() {
             this.onUpdateDebounced();
             this.onSelectionUpdate();
@@ -448,7 +463,7 @@ export default {
     background-color: #fff;
 }
 
-.content {
+.oxygen-editor-content {
     margin-bottom: 0;
 }
 

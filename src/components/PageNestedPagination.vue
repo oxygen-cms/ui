@@ -4,7 +4,7 @@
         <td colspan="5">
             <div class="is-flex">
                 <div class="is-flex-grow-1"></div>
-                <b-pagination :total="pagesByParent[item.id].totalItems" :current="pagesByParent[item.id].currentPage" :per-page="pagesByParent[item.id].itemsPerPage" @change="p => paginate(item, p, true)"></b-pagination>
+                <b-pagination :total="pagesByParent[item.id].totalItems" :current="pagesByParent[item.id].currentPage" :per-page="pagesByParent[item.id].itemsPerPage" @change="p => paginate(item, p)"></b-pagination>
             </div>
         </td>
     </tr>

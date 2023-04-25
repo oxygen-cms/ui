@@ -1,15 +1,15 @@
 <template>
     <b-table
         ref="table"
-        :data="paginatedItems === null || paginatedItems.items === null ? [] : paginatedItems.items"
-        :loading="paginatedItems === null || paginatedItems.items === null || paginatedItems.loading"
+        :data="pagesByParent[0].items"
+        :loading="pagesByParent[0].loading"
         custom-row-key="id"
-        :paginated="paginatedItems !== null && (paginatedItems.totalItems > paginatedItems.itemsPerPage)"
+        :paginated="pagesByParent[0].totalItems > pagesByParent[0].itemsPerPage"
         backend-pagination
-        :total="paginatedItems !== null ? paginatedItems.totalItems : 0"
-        :per-page="paginatedItems !== null ? paginatedItems.itemsPerPage : 0"
-        :current-page="paginatedItems !== null ? paginatedItems.currentPage : 1"
-        :detailed="detailed"
+        :total="pagesByParent[0].totalItems"
+        :per-page="pagesByParent[0].itemsPerPage"
+        :current-page="pagesByParent[0].currentPage"
+        detailed
         :has-detailed-visible="rowHasChildren"
         custom-detail-row
         :backend-sorting="!!onSort"
@@ -37,22 +37,22 @@
         </b-table-column>
         <!-- TODO: this is a massive hack, only supports up to a certain level of nesting -->
         <template #detail="slot">
-            <template v-for="(item1, i) in (pagesByParent[slot.row.id] ? pagesByParent[slot.row.id].items : [])">
-                <PageNestedRow :item="item1" :is-first="i  === 0" :depth="1" :has-children="rowHasChildren(item1)" @toggle-expand="item => setExpanded(item, !item.expanded)">
+            <template v-for="(item1, i) in pagesByParent[slot.row.id].items" v-if="expanded[slot.row.id]">
+                <PageNestedRow :item="item1" :is-first="i  === 0" :depth="1" :expanded="expanded[item1.id]" @toggle-expand="item => setExpanded(item, !expanded[item.id])">
                     <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
                 </PageNestedRow>
-                <template v-for="(item2, j) in (pagesByParent[item1.id] ? pagesByParent[item1.id].items : [])" v-if="item1.expanded">
-                    <PageNestedRow :item="item2" :is-first="j === 0" :depth="2" :has-children="rowHasChildren(item2)" @toggle-expand="item => setExpanded(item, !item.expanded)">
+                <template v-for="(item2, j) in pagesByParent[item1.id].items" v-if="expanded[item1.id]">
+                    <PageNestedRow :item="item2" :is-first="j === 0" :depth="2" :expanded="expanded[item2.id]"  @toggle-expand="item => setExpanded(item, !expanded[item.id])">
                         <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
                     </PageNestedRow>
-                    <template v-for="(item3, k) in (pagesByParent[item2.id] ? pagesByParent[item2.id].items : [])" v-if="item2.expanded">
-                        <PageNestedRow :item="item3" :is-first="k === 0" :depth="3" :has-children="rowHasChildren(item3)">
+                    <template v-for="(item3, k) in pagesByParent[item2.id].items" v-if="expanded[item2.id]">
+                        <PageNestedRow :item="item3" :is-first="k === 0" :depth="3" :expanded="expanded[item3.id]"  @toggle-expand="item => setExpanded(item, !expanded[item.id])">
                             <template #actions="props"><slot name="actions" :row="props.row"></slot></template>
                         </PageNestedRow>
                     </template>
-                    <PageNestedPagination v-if="item2.expanded" :item="item2" :pages-by-parent="pagesByParent" :depth="3" :paginate="paginate"></PageNestedPagination>
+                    <PageNestedPagination v-if="expanded[item2.id]" :item="item2" :pages-by-parent="pagesByParent" :depth="3" :paginate="paginate"></PageNestedPagination>
                 </template>
-                <PageNestedPagination :item="item1" v-if="item1.expanded" :pages-by-parent="pagesByParent" :depth="2" :paginate="paginate"></PageNestedPagination>
+                <PageNestedPagination :item="item1" v-if="expanded[item1.id]" :pages-by-parent="pagesByParent" :depth="2" :paginate="paginate"></PageNestedPagination>
             </template>
             <PageNestedPagination :item="slot.row" :pages-by-parent="pagesByParent" :depth="1" :paginate="paginate"></PageNestedPagination>
         </template>
@@ -71,7 +71,6 @@ import {getApiHost} from "../api.js";
 export default {
     name: "PageTable",
     props: {
-        detailed: Boolean,
         sortField: String,
         sortOrder: String,
         onSort: { type: Function, default: () => {} },
@@ -83,7 +82,9 @@ export default {
         return {
             pagesApi: new PagesApi(),
             PagesApi: PagesApi,
-            pagesByParent: {}
+            expanded: {},
+            // `0` denotes the "root" level
+            pagesByParent: {0: {items: [], loading: true, totalItems: 0, itemsPerPage: 0, currentPage: 1}},
         }
     },
     beforeMount() {
@@ -93,53 +94,56 @@ export default {
         'paginatedItems.items': 'loadAllDetails'
     },
     methods: {
-        loadAllDetails() {
-            this.paginatedItems.items.forEach(this.loadChildren);
+        async loadAllDetails() {
+            this.pagesByParent[0].loading = true;
+            this.pagesByParent[0].items = await Promise.all(this.paginatedItems.items.map(this.loadChildren));
+            this.pagesByParent[0].totalItems = this.paginatedItems.totalItems;
+            this.pagesByParent[0].itemsPerPage = this.paginatedItems.itemsPerPage;
+            this.pagesByParent[0].currentPage = this.paginatedItems.currentPage;
+            this.pagesByParent[0].loading = false;
         },
         rowHasChildren(row) {
-            return this.pagesByParent[row.id] && this.pagesByParent[row.id].items.length > 0;
+            return row.numChildren > 0;
         },
         async loadChildren(page) {
-            return await this.paginate(page, 1, false);
+            return await this.paginate(page, 1);
         },
-        async paginate(page, pageNum, forceLoadChildren) {
-            if (this.pagesByParent[page.id] && this.pagesByParent[page.id].currentPage === pageNum) {
-                console.log('already loaded ' + page.slug + ' page ' + pageNum);
-                return;
-            }
+        async paginate(page, pageNum) {
             if (!this.pagesByParent[page.id]) {
                 Vue.set(this.pagesByParent, page.id, {items: [], itemsPerPage: 1, totalItems: 0, currentPage: pageNum});
             }
 
             // if the slug is the root ( "/" ) then we don't show any child pages, since they're displayed as sibling pages.
-            if (page.slug !== '/') {
+            if (page.slug !== '/' && page.numChildren > 0) {
+                console.log('loading children for', page.slug, 'page #', pageNum);
                 let result = await this.pagesApi.list({ inTrash: false, page: pageNum, q: null, path: page.slug, sortField: this.sortField, sortOrder: this.sortOrder });
-                this.pagesByParent[page.id].items = result.items.map(child => {
-                    return {expanded: false, ...child};
-                });
+                // TODO: this currently recursively grabs all children ==> as many as N http requests where N is the number of pages in the site.
+                // Can we be more efficient?
+                this.pagesByParent[page.id].items = await Promise.all(result.items.map(this.loadChildren));
                 this.pagesByParent[page.id].itemsPerPage = result.itemsPerPage;
                 this.pagesByParent[page.id].totalItems = result.totalItems;
                 this.pagesByParent[page.id].currentPage = pageNum;
+            } else {
+                this.pagesByParent[page.id].items = [];
+                this.pagesByParent[page.id].itemsPerPage = 0;
+                this.pagesByParent[page.id].totalItems = 0;
+                this.pagesByParent[page.id].currentPage = 1;
             }
 
-            // we should reload children because e.g.: we just switched pages...
-            if (forceLoadChildren) {
-                this.pagesByParent[page.id].items.forEach(this.loadChildren);
-            }
-
-            return this.pagesByParent[page.id].items;
+            return page;
         },
-        setExpanded(item, expanded) {
-            item.expanded = expanded;
-            if (item.expanded) {
-                this.pagesByParent[item.id].items.forEach(this.loadChildren);
-            }
+        async setExpanded(item, expanded) {
+            let o = {};
+            o[item.id] = expanded;
+            this.expanded = Object.assign({}, this.expanded, o);
         }
     }
 }
 </script>
 
 <style scoped lang="scss">
+    @import "./util.css";
+
     ::v-deep .table-wrapper.has-sticky-header {
         flex: 1 1 auto;
     }

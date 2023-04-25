@@ -1,8 +1,8 @@
 <template>
     <tr :class="'row-depth-' + depth + (isFirst ? ' first-child' : '')">
         <td>
-            <a role="button" v-if="hasChildren" @click="event => $emit('toggle-expand', item)" class="expand-button">
-                <b-icon :icon="item.expanded ? 'angle-down' : 'angle-right'"></b-icon>
+            <a role="button" v-if="item.numChildren > 0" @click="event => $emit('toggle-expand', item)" class="expand-button">
+                <b-icon :icon="expanded ? 'angle-down' : 'angle-right'"></b-icon>
             </a>
         </td>
         <td>{{ item.title }} <PageStatusIcon :item="item"></PageStatusIcon></td>
@@ -26,7 +26,7 @@ export default {
         item: Object,
         isFirst: Boolean,
         depth: Number,
-        hasChildren: Boolean
+        expanded: Boolean
     },
     data() {
         return {

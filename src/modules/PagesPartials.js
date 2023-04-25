@@ -13,7 +13,7 @@ export default function(ui) {
     ui.addMainMenuGroup(WEB_CONTENT, {
         name: 'Pages',
         icon: 'file-alt',
-        listAction: '/pages2',
+        listAction: '/pages',
         listPermission: 'pages.getList',
         addIcon: 'plus',
         addPermission: 'pages.postCreate',
@@ -24,7 +24,7 @@ export default function(ui) {
     ui.addMainMenuGroup(WEB_CONTENT, {
         name: 'Partials',
         icon: 'puzzle-piece',
-        listAction: '/partials2',
+        listAction: '/partials',
         listPermission: 'partials.getList',
         addIcon: 'plus',
         addPermission: 'partials.postCreate',
@@ -33,13 +33,12 @@ export default function(ui) {
         }
     });
 
-    const partialsProps = { displayName: 'Partials', routePrefix: 'partials2', inTrash: false, tableComponent: PartialTable, actionsComponent: PartialActions, singularDisplayName: 'Partial', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PartialsApi() }
-    const pagesProps = { displayName: 'Pages', routePrefix: 'pages2', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi() }
+    const partialsProps = { displayName: 'Partials', routePrefix: 'partials', inTrash: false, tableComponent: PartialTable, actionsComponent: PartialActions, singularDisplayName: 'Partial', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PartialsApi() }
+    const pagesProps = { displayName: 'Pages', routePrefix: 'pages', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi() }
 
     ui.addAuthenticatedRoutes([
         {
-            // will match everything, try to render a legacy Oxygen page...
-            path: '(pages|partials)/:subpath*',
+            path: '(pages|partials)/create',
             component: LegacyPage,
             props: (route) => {
                 return {
@@ -50,31 +49,42 @@ export default function(ui) {
             }
         },
         {
-            path: 'partials2/trash',
+            path: '(pages|partials)/:subpath/edit',
+            component: LegacyPage,
+            props: (route) => {
+                return {
+                    fullPath: route.fullPath,
+                    legacyPrefix: '/oxygen/view',
+                    adminPrefix: '/oxygen'
+                }
+            }
+        },
+        {
+            path: 'partials/trash',
             name: 'partials.trash',
             component: ResourceList,
             meta: { title: 'Deleted Partials' },
             props: { ...partialsProps, inTrash: true }
         },
         {
-            path: 'partials2',
+            path: 'partials',
             name: 'partials.list',
             component: ResourceList,
             meta: { title: 'List Partials' },
             props: { ...partialsProps, inTrash: false }
         },
         {
-            path: 'partials2/:id',
+            path: 'partials/:id',
             redirect: to => {
                 return { path: 'partials/' + to.params.id + '/edit' }
             }
         },
         {
-            path: 'partials2/create',
+            path: 'partials/create',
             redirect: 'partials/create'
         },
         {
-            path: 'pages2/trash',
+            path: 'pages/trash',
             name: 'pages.trash',
             component: ResourceList,
             meta: { title: 'Deleted Pages' },
@@ -87,11 +97,13 @@ export default function(ui) {
             meta: { title: 'Edit Page' }
         },
         {
-            path: 'pages2/create',
-            redirect: 'pages/create'
+            path: 'pages/:id',
+            redirect: to => {
+                return { path: 'pages/' + to.params.id + '/edit' }
+            }
         },
         {
-            path: 'pages2',
+            path: 'pages',
             name: 'pages.list',
             component: ResourceList,
             meta: { title: 'List Pages' },
