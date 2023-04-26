@@ -62,6 +62,7 @@ export default {
     components: {EditorContent, CommandsList, FloatingMenu, MarkMenu },
     props: {
         content: {
+            type: String,
             required: true
         },
         expanded: {

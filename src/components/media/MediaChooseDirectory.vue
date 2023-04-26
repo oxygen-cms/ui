@@ -122,7 +122,7 @@ export default {
 </script>
 
 <style>
-    .dropdown-content {
+    .choose-directory-dropdown .dropdown-content {
         padding-top: 0;
         padding-bottom: 0;
     }
