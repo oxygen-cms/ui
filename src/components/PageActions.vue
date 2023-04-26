@@ -62,9 +62,6 @@ export default {
         this.isLoading = true;
         this.fetchData()
     },
-    watch: {
-        'movePageSearchQuery': 'fetchData'
-    },
     data() {
         return {
             STAGE_PUBLISHED: PagesApi.STAGE_PUBLISHED,
@@ -74,7 +71,8 @@ export default {
             pagesList: []
         }
     },
-    computed: {
+    watch: {
+        'movePageSearchQuery': 'fetchData'
     },
     methods: {
         async fetchData() {
