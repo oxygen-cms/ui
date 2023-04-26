@@ -19,7 +19,7 @@
             <component :is="tableComponent" :paginated-items="paginatedItems" :on-page-change="page => paginatedItems.currentPage = page" :detailed="!searchQuery" :on-sort="onSort">
                 <template #actions="slotProps">
                     <div class="buttons" style="min-width: 18rem">
-                        <component :is="actionsComponent" :item="slotProps.row" @update="updateItem"></component>
+                        <component :is="actionsComponent" :item="slotProps.row" @update="updateItem" @reload="fetchData"></component>
                         <b-button rounded icon-left="pencil-alt" tag="router-link" :to="'/' + routePrefix + '/' + slotProps.row.id" size="is-small">Edit</b-button>
                         <b-button
                             v-if="inTrash" rounded outlined icon-left="recycle"
@@ -69,12 +69,12 @@ export default {
         }
     },
     watch: {
-        'resourceApi': 'fetchData',
-        'inTrash': 'fetchData',
-        'sortField': 'fetchData',
-        'sortOrder': 'fetchData',
+        'resourceApi': 'debouncedFetchData',
+        'inTrash': 'debouncedFetchData',
+        'sortField': 'debouncedFetchData',
+        'sortOrder': 'debouncedFetchData',
         'searchQuery': 'debouncedFetchData',
-        'paginatedItems.currentPage': 'fetchData'
+        'paginatedItems.currentPage': 'debouncedFetchData'
     },
     created() {
         this.fetchData()
@@ -82,7 +82,7 @@ export default {
     methods: {
         debouncedFetchData: debounce(async function() {
             await this.fetchData()
-        }, 1000),
+        }, 200),
         async fetchData() {
             if(this.paginatedItems.loading) {
                 return;

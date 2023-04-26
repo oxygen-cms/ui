@@ -107,7 +107,7 @@ export default {
             this.pagesByParent[0].loading = false;
         },
         rowHasChildren(row) {
-            return row.numChildren > 0;
+            return row.slug !== '/' && row.numChildren > 0;
         },
         async loadChildren(page) {
             return await this.paginate(page, 1);

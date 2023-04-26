@@ -25,8 +25,7 @@ export default class PagesApi extends CrudApi {
     }
 
     static slugToUrl(slug) {
-        if(slug === '/') { slug = ''; }
-        return getApiHost() + slug;
+        return getApiHost() + slug.trimStart('/');
     }
 
     async list({ inTrash, page, q, path, sortField, sortOrder }) {
