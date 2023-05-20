@@ -69,12 +69,12 @@ export default {
         }
     },
     watch: {
-        'resourceApi': 'debouncedFetchData',
-        'inTrash': 'debouncedFetchData',
+        'resourceApi': 'fetchData',
+        'inTrash': 'fetchData',
         'sortField': 'debouncedFetchData',
         'sortOrder': 'debouncedFetchData',
         'searchQuery': 'debouncedFetchData',
-        'paginatedItems.currentPage': 'debouncedFetchData'
+        'paginatedItems.currentPage': 'debouncedFetchData',
     },
     created() {
         this.fetchData()
