@@ -27,7 +27,7 @@
         @details-close="item => setExpanded(item, false)"
         @sort="onSort">
         <b-table-column v-slot="props" label="Title" :sortable="!!onSort" field="title">{{ props.row.title }} <PageStatusIcon :item="props.row"></PageStatusIcon></b-table-column>
-        <b-table-column v-slot="props" label="URL"  :sortable="!!onSort" field="slugPart"><a :href="PagesApi.slugToUrl(props.row.slug)" class="is-size-7" target="_blank">{{ PagesApi.slugToUrl(props.row.slug) }} <b-icon icon="external-link-alt"></b-icon></a></b-table-column>
+        <b-table-column v-slot="props" label="URL"  :sortable="!!onSort" field="slugPart"><a :href="PagesApi.slugToUrl(props.row.slug)" class="is-size-7" target="_blank" v-if="props.row.stage === PagesApi.STAGE_PUBLISHED">{{ PagesApi.slugToUrl(props.row.slug) }} <b-icon icon="external-link-alt"></b-icon></a><em v-else class="is-size-7">(unpublished)</em></b-table-column>
         <b-table-column v-slot="props" label="Description" width="30%" :sortable="!!onSort" field="description"><div class="is-size-7">{{ props.row.description }}</div></b-table-column>
         <b-table-column v-slot="props" label="Last Updated" field="updatedAt" :sortable="!!onSort">
             <div v-if="props.row.updatedAt" class="is-size-7"><Updated :model="props.row"></Updated></div>
