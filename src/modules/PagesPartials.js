@@ -8,6 +8,8 @@ import PartialsApi from "../PartialsApi.js";
 import PartialTable from "../components/PartialTable.vue";
 import PageActions from "../components/PageActions.vue";
 import PartialActions from "../components/PartialActions.vue";
+import CreatePageDropdown from "../components/pages/CreatePageDropdown.vue";
+import CreatePartialDropdown from "../components/partials/CreatePartialDropdown.vue";
 
 export default function(ui) {
     ui.addMainMenuGroup(WEB_CONTENT, {
@@ -33,8 +35,8 @@ export default function(ui) {
         }
     });
 
-    const partialsProps = { displayName: 'Partials', routePrefix: 'partials', inTrash: false, tableComponent: PartialTable, actionsComponent: PartialActions, singularDisplayName: 'Partial', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PartialsApi() }
-    const pagesProps = { displayName: 'Pages', routePrefix: 'pages', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi() }
+    const partialsProps = { displayName: 'Partials', routePrefix: 'partials', inTrash: false, tableComponent: PartialTable, actionsComponent: PartialActions, singularDisplayName: 'Partial', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PartialsApi(), createDropdownComponent: CreatePartialDropdown }
+    const pagesProps = { displayName: 'Pages', routePrefix: 'pages', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi(), createDropdownComponent: CreatePageDropdown }
 
     ui.addAuthenticatedRoutes([
         {

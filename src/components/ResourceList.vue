@@ -9,8 +9,12 @@
             <div class="is-flex-grow-1">
             </div>
             <b-input v-model.lazy="searchQuery" rounded :placeholder="'Search ' + displayName" icon="search" icon-pack="fas" class="mr-3"></b-input>
-            <b-button v-if="!inTrash" tag="router-link" :to="'/' + routePrefix + '/create'" type="is-success" icon-left="pencil-alt" class="mr-3">Create
-                {{ singularDisplayName }}</b-button>
+
+            <component v-if="!inTrash"
+                       :is="createDropdownComponent"
+                       class="mr-3"
+                       @created="fetchData" />
+
             <b-button v-if="!inTrash" tag="router-link" :to="'/' + routePrefix + '/trash'" type="is-danger" outlined icon-left="trash">Deleted
                 {{ displayName }}</b-button>
         </div>
@@ -58,7 +62,11 @@ export default {
         defaultSortOrder: String,
         tableComponent: Object,
         actionsComponent: Object,
-        resourceApi: Object
+        resourceApi: Object,
+        createDropdownComponent: {
+            type: Object,
+            required: true
+        }
     },
     data() {
         return {
