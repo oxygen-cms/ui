@@ -20,6 +20,7 @@ export default function(ui) {
         addIcon: 'plus',
         addPermission: 'pages.postCreate',
         addAction: '/pages/create',
+        addDropdownComponent: CreatePageDropdown,
         items: {
         }
     });
@@ -31,6 +32,7 @@ export default function(ui) {
         addIcon: 'plus',
         addPermission: 'partials.postCreate',
         addAction: '/partials/create',
+        addDropdownComponent: CreatePartialDropdown,
         items: {
         }
     });
@@ -39,17 +41,6 @@ export default function(ui) {
     const pagesProps = { displayName: 'Pages', routePrefix: 'pages', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi(), createDropdownComponent: CreatePageDropdown }
 
     ui.addAuthenticatedRoutes([
-        {
-            path: '(pages|partials)/create',
-            component: LegacyPage,
-            props: (route) => {
-                return {
-                    fullPath: route.fullPath,
-                    legacyPrefix: '/oxygen/view',
-                    adminPrefix: '/oxygen'
-                }
-            }
-        },
         {
             path: '(pages|partials)/:subpath/edit',
             component: LegacyPage,

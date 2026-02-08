@@ -1,13 +1,17 @@
 <template>
     <b-dropdown
         ref="dropdown"
-        position="is-bottom-left"
-        append-to-body
+        :position="minimal ? 'is-bottom-right' : 'is-bottom-left'"
         aria-role="menu"
         trap-focus
+        append-to-body
         class="create-page-dropdown">
         <template #trigger="{ active }">
-            <b-button :type="active ? '' : 'is-success'" icon-left="pencil-alt" :disabled="active">
+            <MinimalDropdownButton v-if="minimal" icon="plus"/>
+            <b-button v-else
+                      :type="active ? '' : 'is-success'"
+                      icon-left="pencil-alt"
+                      :disabled="active">
                 Create Page
             </b-button>
         </template>
@@ -82,9 +86,17 @@
 import PagesApi from "../../PagesApi.js";
 import { morphToNotification } from "../../api.js";
 import { slugify } from "../../util.js";
+import MinimalDropdownButton from "../MinimalDropdownButton.vue";
 
 export default {
     name: "CreatePageDropdown",
+    components: { MinimalDropdownButton },
+    props: {
+        minimal: {
+            type: Boolean,
+            default: false
+        }
+    },
     created() {
         this.fetchPages();
     },

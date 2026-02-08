@@ -1,13 +1,17 @@
 <template>
     <b-dropdown
         ref="dropdown"
-        position="is-bottom-left"
-        append-to-body
+        :position="minimal ? 'is-bottom-right' : 'is-bottom-left'"
         aria-role="menu"
         trap-focus
+        append-to-body
         class="create-partial-dropdown">
         <template #trigger="{ active }">
-            <b-button :type="active ? '' : 'is-success'" icon-left="pencil-alt" :disabled="active">
+            <MinimalDropdownButton v-if="minimal" icon="plus"/>
+            <b-button v-else
+                      :type="active ? '' : 'is-success'"
+                      icon-left="pencil-alt"
+                      :disabled="active">
                 Create Partial
             </b-button>
         </template>
@@ -54,9 +58,17 @@
 import PartialsApi from "../../PartialsApi.js";
 import { morphToNotification } from "../../api.js";
 import { slugifyKey } from "../../util.js";
+import MinimalDropdownButton from "../MinimalDropdownButton.vue";
 
 export default {
     name: "CreatePartialDropdown",
+    components: { MinimalDropdownButton },
+    props: {
+        minimal: {
+            type: Boolean,
+            default: false
+        }
+    },
     data() {
         return {
             title: '',
