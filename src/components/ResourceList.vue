@@ -19,6 +19,8 @@
                 {{ displayName }}</b-button>
         </div>
 
+        <slot name="before-table" :search-query="searchQuery"></slot>
+
         <div class="full-height full-height-container box">
             <component :is="tableComponent" :paginated-items="paginatedItems" :on-page-change="page => paginatedItems.currentPage = page" :detailed="!searchQuery" :on-sort="onSort">
                 <template #actions="slotProps">
