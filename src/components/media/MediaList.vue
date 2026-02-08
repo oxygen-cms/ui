@@ -35,7 +35,7 @@
             </b-field>
 
             <b-button v-if="!inTrash && !searchQuery" icon-left="folder-plus" class="action-bar-pad" @click="isCreateDirectoryModalActive = true">New Directory</b-button>
-            <b-button v-if="!inTrash && !searchQuery" icon-left="file-upload" type="is-success" class="action-bar-pad" @click="$router.push({ query: { upload: true }})">Upload Files</b-button>
+            <MediaUploadDropdown v-if="!inTrash && !searchQuery" class="action-bar-pad" :current-directory="paginatedItems.currentDirectory" @uploaded="fetchData" />
             <b-input v-if="!inTrash" rounded placeholder="Search photos and files..." icon="search"
                      icon-pack="fas" :value="searchQuery" class="action-bar-pad" @input="value => navigateTo({searchQuery: value})"></b-input>
             <b-button v-if="!inTrash" icon-left="trash" type="is-danger" outlined class="action-bar-pad" @click="navigateTo({inTrash: true})">Deleted Items</b-button>
@@ -101,10 +101,6 @@
             </div>
         </b-modal>
 
-        <b-modal :active.sync="isUploadModalActive" trap-focus has-modal-card aria-role="dialog" aria-modal auto-focus>
-            <MediaUpload :current-directory="paginatedItems.currentDirectory" @close="$router.push({ query: { }})" @uploaded="fetchData"></MediaUpload>
-        </b-modal>
-
     </div>
 
 </template>
@@ -115,11 +111,11 @@ import MediaDirectory from "./MediaDirectory.vue";
 import MediaItem from "./MediaItem.vue";
 import MediaDirectoryApi, {getDirectoryBreadcrumbItems, getDirectoryPathString} from "../../MediaDirectoryApi";
 import {morphToNotification} from "../../api";
-import MediaUpload from "./MediaUpload.vue";
+import MediaUploadDropdown from "./MediaUploadDropdown.vue";
 
 export default {
     name: "MediaList",
-    components: { MediaDirectory, MediaItem, MediaUpload },
+    components: { MediaDirectory, MediaItem, MediaUploadDropdown },
     props: {
         currentPath: {
             type: String,
@@ -145,9 +141,6 @@ export default {
         }
     },
     computed: {
-        isUploadModalActive() {
-            return this.$route.query.upload === 'true';
-        },
         displayPath() {
             return getDirectoryPathString(this.paginatedItems.currentDirectory);
         },

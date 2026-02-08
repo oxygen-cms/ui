@@ -1,5 +1,6 @@
 import MediaPage from "../components/media/MediaPage.vue";
 import MediaResponsiveImages from "../components/media/MediaResponsiveImages.vue";
+import MediaUploadDropdown from "../components/media/MediaUploadDropdown.vue";
 import {WEB_CONTENT} from "../main";
 
 export default function(ui) {
@@ -10,6 +11,7 @@ export default function(ui) {
         addAction: '/media/list/?upload=true',
         addIcon: 'upload',
         addPermission: 'media.postCreate',
+        addDropdownComponent: MediaUploadDropdown,
         listAction: '/media/list',
         listPermission: 'media.getList',
         items: {

@@ -62,4 +62,24 @@ const tryParseTelephone = (telephone) => {
     }
 };
 
-export { strEquals, convertStr, nestedGet, nestedSet, tryParseTelephone };
+const slugify = (str) => {
+    if(!str) return '';
+    return str
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')      // Remove non-word chars except spaces and hyphens
+        .replace(/[\s_-]+/g, '-')       // Replace spaces, underscores, multiple hyphens with single hyphen
+        .replace(/^-+|-+$/g, '');       // Remove leading/trailing hyphens
+};
+
+const slugifyKey = (str) => {
+    if(!str) return '';
+    return str
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s.-]/g, '')      // Remove non-word chars except spaces, dots, and hyphens
+        .replace(/[\s_-]+/g, '.')       // Replace spaces, underscores, hyphens with dots
+        .replace(/^\.+|\.+$/g, '');     // Remove leading/trailing dots
+};
+
+export { strEquals, convertStr, nestedGet, nestedSet, tryParseTelephone, slugify, slugifyKey };

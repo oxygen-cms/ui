@@ -15,12 +15,18 @@
                          :to="group.listAction">
                 <template #label>
                     {{ groupLabel }}
-                    <b-button v-if="userPermissions.has(group.addPermission)"
-                              tag="router-link"
-                              type="is-text"
-                              class="is-pulled-right show-if-active"
-                              :icon-right="group.addIcon"
-                              :to="group.addAction"></b-button>
+                    <span v-if="userPermissions.has(group.addPermission) && group.addDropdownComponent"
+                          class="is-pulled-right show-if-active add-dropdown-trigger"
+                          @click.stop.prevent
+                          @mousedown.stop.prevent>
+                        <component :is="group.addDropdownComponent"
+                                   :minimal="true" />
+                    </span>
+                    <router-link v-else-if="userPermissions.has(group.addPermission)"
+                               class="is-pulled-right show-if-active"
+                               :to="group.addAction">
+                        <MinimalDropdownButton :icon="group.addIcon" />
+                    </router-link>
                 </template>
                 <b-menu-item v-for="(item, itemLabel) in itemsWithPermission(group.items)" :key="itemLabel" :label="itemLabel" tag="router-link" :to="item.to"></b-menu-item>
             </b-menu-item>
@@ -35,8 +41,11 @@
 </template>
 
 <script>
+import MinimalDropdownButton from "./MinimalDropdownButton.vue";
+
 export default {
     name: "MainMenu",
+    components: { MinimalDropdownButton },
     props: {
         items: {
             type: Object,
