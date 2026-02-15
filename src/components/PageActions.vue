@@ -63,10 +63,6 @@ export default {
     props: {
         item: { type: Object, required: true }
     },
-    created() {
-        this.isLoading = true;
-        this.fetchData()
-    },
     data() {
         return {
             STAGE_PUBLISHED: PagesApi.STAGE_PUBLISHED,
@@ -88,6 +84,10 @@ export default {
     },
     watch: {
         'movePageSearchQuery': 'fetchData'
+    },
+    created() {
+        this.isLoading = true;
+        this.fetchData()
     },
     methods: {
         async fetchData() {

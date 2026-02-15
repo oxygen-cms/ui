@@ -10,8 +10,8 @@
             </div>
             <b-input v-model.lazy="searchQuery" rounded :placeholder="'Search ' + displayName" icon="search" icon-pack="fas" class="mr-3"></b-input>
 
-            <component v-if="!inTrash"
-                       :is="createDropdownComponent"
+            <component :is="createDropdownComponent"
+                       v-if="!inTrash"
                        class="mr-3"
                        @created="fetchData" />
 
