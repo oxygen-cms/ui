@@ -36,7 +36,7 @@
                             </div>
 
                             <b-field class="is-flex" style="gap: 0.25rem;">
-                                <p class="control">
+                                <p v-if="hasPublish" class="control">
                                 <b-button
                                     icon-left="globe-asia"
                                     size="is-small"
@@ -87,21 +87,30 @@
                                         </b-dropdown-item>
 
                                         <b-dropdown-item
-                                            v-if="version.deletedAt"
-                                            aria-role="menuitem"
-                                            @click="restoreVersion(version)"
-                                        >
-                                            <b-icon icon="recycle"></b-icon>
-                                            Restore Version
-                                        </b-dropdown-item>
-
-                                        <b-dropdown-item
                                             v-if="!isHeadVersion(version) && !version.deletedAt"
                                             aria-role="menuitem"
                                             @click="deleteVersion(version)"
                                         >
                                             <b-icon icon="trash"></b-icon>
                                             Delete Version
+                                        </b-dropdown-item>
+
+                                        <b-dropdown-item
+                                            v-if="version.deletedAt"
+                                            aria-role="menuitem"
+                                            @click="forceDeleteVersion(version)"
+                                        >
+                                            <b-icon icon="trash"></b-icon>
+                                            Delete Forever
+                                        </b-dropdown-item>
+
+                                        <b-dropdown-item
+                                            v-if="version.deletedAt"
+                                            aria-role="menuitem"
+                                            @click="restoreVersion(version)"
+                                        >
+                                            <b-icon icon="recycle"></b-icon>
+                                            Restore Version
                                         </b-dropdown-item>
                                     </b-dropdown>
                                 </p>
@@ -136,11 +145,16 @@ export default {
         },
         publishedStage: {
             type: Number,
-            required: true
+            required: false,
+            default: null
         },
         hasVersionActions: {
             type: Boolean,
             default: false  // e.g., true for pages (View on Site), false for partials
+        },
+        hasPublish: {
+            type: Boolean,
+            default: true  // Whether this resource type supports publish functionality
         }
     },
     data() {
@@ -166,11 +180,11 @@ export default {
     methods: {
         shouldDisableDropdown(version) {
             const isHead = this.isHeadVersion(version);
-            const isPublished = version.stage === this.publishedStage;
+            const isPublished = this.hasPublish && this.publishedStage !== null && version.stage === this.publishedStage;
             const isDeleted = version.deletedAt;
 
-            // Disable if head version that's not published and not deleted (original behavior)
-            if (isHead && !isPublished && !isDeleted) {
+            // Disable if head version that's not published and not deleted (original behavior, only if has publish)
+            if (this.hasPublish && isHead && !isPublished && !isDeleted) {
                 return true;
             }
 
@@ -178,9 +192,10 @@ export default {
             const hasPromoteAction = !isHead;
             const hasRestoreAction = isDeleted;
             const hasDeleteAction = !isHead && !isDeleted;
-            const hasSlotActions = this.hasVersionActions && isPublished;
+            const hasForceDeleteAction = isDeleted;
+            const hasSlotActions = this.hasVersionActions && (!this.hasPublish || isPublished);
 
-            const hasAnyAction = hasPromoteAction || hasRestoreAction || hasDeleteAction || hasSlotActions;
+            const hasAnyAction = hasPromoteAction || hasRestoreAction || hasDeleteAction || hasForceDeleteAction || hasSlotActions;
 
             return !hasAnyAction;
         },
@@ -241,28 +256,27 @@ export default {
                 }
             });
         },
-        deleteVersion(version) {
-            this.$buefy.dialog.confirm({
-                message: `Are you sure you want to delete this version? This cannot be undone.`,
-                confirmText: 'Delete Version',
-                type: 'is-danger',
-                onConfirm: async () => {
-                    try {
-                        await this.resourceApi.delete(version.id);
-                        this.$buefy.toast.open({
-                            message: 'Version deleted successfully',
-                            type: 'is-success'
-                        });
-                        await this.loadVersions();
-                    } catch (error) {
-                        console.error('Failed to delete version:', error);
-                        this.$buefy.toast.open({
-                            message: 'Failed to delete version',
-                            type: 'is-danger'
-                        });
-                    }
-                }
-            });
+        async deleteVersion(version) {
+            // Soft delete - no confirmation needed
+            try {
+                await this.resourceApi.delete(version.id);
+                this.$buefy.toast.open({
+                    message: 'Version deleted successfully',
+                    type: 'is-success'
+                });
+                await this.loadVersions();
+            } catch (error) {
+                console.error('Failed to delete version:', error);
+                this.$buefy.toast.open({
+                    message: 'Failed to delete version',
+                    type: 'is-danger'
+                });
+            }
+        },
+        async forceDeleteVersion(version) {
+            // Permanent delete - uses confirmForceDelete which has built-in confirmation
+            await this.resourceApi.confirmForceDelete(version.id);
+            await this.loadVersions();
         },
         async restoreVersion(version) {
             try {
@@ -281,7 +295,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../styles/_variables.scss";
+@import "../styles/_variables.scss";
 .versions-drawer {
     position: fixed;
     top: 0;

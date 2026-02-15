@@ -1,14 +1,14 @@
 import LegacyPage from "../components/LegacyPage.vue";
 import { WEB_CONTENT } from "../main.js";
-import PageEdit from "../components/PageEdit.vue";
-import PartialEdit from "../components/PartialEdit.vue";
+import PageEdit from "../components/pages/PageEdit.vue";
+import PartialEdit from "../components/partials/PartialEdit.vue";
 import ResourceList from "../components/ResourceList.vue";
-import PageTable from "../components/PageTable.vue";
+import PageTable from "../components/pages/PageTable.vue";
 import PagesApi from "../PagesApi.js";
 import PartialsApi from "../PartialsApi.js";
-import PartialTable from "../components/PartialTable.vue";
-import PageActions from "../components/PageActions.vue";
-import PartialActions from "../components/PartialActions.vue";
+import PartialTable from "../components/partials/PartialTable.vue";
+import PageActions from "../components/pages/PageActions.vue";
+import PartialActions from "../components/partials/PartialActions.vue";
 import CreatePageDropdown from "../components/pages/CreatePageDropdown.vue";
 import CreatePartialDropdown from "../components/partials/CreatePartialDropdown.vue";
 

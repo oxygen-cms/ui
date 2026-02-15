@@ -14,7 +14,7 @@
       <b-field label="Key">
         <template #label>
           Key
-          <b-tooltip multilined position="is-right" type="is-dark"
+          <b-tooltip multilined position="is-bottom-right" type="is-dark"
                      label="A unique machine-readable identifier for this partial (e.g., 'footer.copyright', 'header.navigation')">
             <b-icon size="is-small" icon="question-circle"></b-icon>
           </b-tooltip>
@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import ContentResourceEdit from './ContentResourceEdit.vue';
-import PartialsApi from '../PartialsApi.js';
+import ContentResourceEdit from '../ContentResourceEdit.vue';
+import PartialsApi from '../../PartialsApi.js';
 
 export default {
   name: "PartialEdit",

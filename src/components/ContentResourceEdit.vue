@@ -1,5 +1,5 @@
 <template>
-    <div v-hotkey="keymap" class="page-edit-new full-height is-flex is-flex-direction-column" :class="{ 'is-fullscreen': isFullscreen }">
+    <div v-hotkey="keymap" class="edit-container is-flex is-flex-direction-column" :class="{ 'is-fullscreen': isFullscreen }">
 
         <!-- Version Warning Banner -->
         <div v-if="!isFullscreen && !loading && editingNonHead" :class="(editOverrideConfirmed ? 'has-background-info-light' : 'has-background-warning') + ' px-4 py-4'">
@@ -14,8 +14,8 @@
         <div v-if="!isFullscreen && !loading && isTrashed" class="has-background-grey-light px-4 py-4">
             <div class="is-flex is-align-items-center">
                 <b-icon icon="trash" class="mr-2"></b-icon>
-                This {{ displayName.toLowerCase() }} is in the trash. Editing trashed items is not recommended.
-                <b-button class="ml-2" type="is-text is-dark" size="is-small" icon-left="recycle" @click="restoreResource">Restore</b-button>
+                This {{ displayName.toLowerCase() }} is in the trash. Editing trashed items is supported, but not recommended.
+                <b-button rounded class="ml-2" type="is-dark" size="is-small" icon-left="recycle" @click="restoreResource">Restore</b-button>
             </div>
         </div>
 
@@ -32,6 +32,13 @@
                         <b-tag v-if="isHeadVersion" type="is-success" size="is-small" class="ml-2" icon="star">
                             Latest version
                         </b-tag>
+                        <!-- SLOT: Resource-specific title tags (e.g., "Sent" tag for emails) -->
+                        <slot
+                            name="title-tags"
+                            :model="model"
+                            :is-dirty="isDirty"
+                            :loading="loading"
+                        ></slot>
                         <b-tag v-if="isDirty" type="is-info">Unsaved changes</b-tag>
                     </div>
                     <b-field v-else key="editing" expanded class="title-editing">
@@ -58,7 +65,7 @@
 
             <div class="is-flex" style="gap: 0.5rem;">
                 <b-button
-                    v-if="!loading"
+                    v-if="!loading && hasPublish"
                     :disabled="isPublished"
                     :type="isPublished ? '' : 'is-success'"
                     icon-left="globe-asia"
@@ -66,6 +73,16 @@
                 >
                     {{ isPublished ? 'Published' : 'Publish' }}
                 </b-button>
+
+                <!-- SLOT: Resource-specific top-bar actions (e.g., send button for emails) -->
+                <slot
+                    name="top-bar-actions"
+                    :model="model"
+                    :is-published="isPublished"
+                    :is-dirty="isDirty"
+                    :loading="loading"
+                ></slot>
+
                 <b-button
                     v-if="!loading"
                     icon-left="eye"
@@ -76,9 +93,9 @@
                 </b-button>
                 <b-field>
                 <p class="control">
-                    <b-button icon-left="cog" @click="openSettings">{{ displayName }} Settings</b-button>
+                    <b-button icon-left="cog" @click="openSettings">{{ settingsLabel || (displayName + ' Settings') }}</b-button>
                 </p>
-                <p class="control">
+                <p v-if="hasVersions" class="control">
                     <b-button icon-left="history" @click="openVersionDrawer">Versions</b-button>
                 </p>
                 <p class="control">
@@ -94,19 +111,37 @@
                             :is-published="isPublished"
                         ></slot>
 
-                        <b-dropdown-item aria-role="menuitem" @click="saveAsNewVersion">
+                        <b-dropdown-item v-if="hasVersions" aria-role="menuitem" @click="saveAsNewVersion">
                             <b-icon icon="plus"></b-icon>
                             New Version
                         </b-dropdown-item>
-                        <b-dropdown-item aria-role="menuitem" @click="confirmDelete">
+                        <b-dropdown-item v-if="!isTrashed" aria-role="menuitem" @click="deleteResource">
                             <b-icon icon="trash"></b-icon>
                             Delete
+                        </b-dropdown-item>
+                        <b-dropdown-item v-if="isTrashed" aria-role="menuitem" @click="forceDeleteResource">
+                            <b-icon icon="trash"></b-icon>
+                            Delete Forever
+                        </b-dropdown-item>
+                        <b-dropdown-item v-if="isTrashed" aria-role="menuitem" @click="restoreResource">
+                            <b-icon icon="recycle"></b-icon>
+                            Restore
                         </b-dropdown-item>
                     </b-dropdown>
                 </p>
                 </b-field>
             </div>
         </div>
+
+        <!-- SLOT: Inline settings (shown between toolbar and editor) -->
+        <slot
+            name="inline-settings"
+            v-if="!isFullscreen"
+            :model="model"
+            :is-dirty="isDirty"
+            :server-model="serverModel"
+            :loading="loading"
+        ></slot>
 
         <!-- Editor Toolbar -->
         <div v-if="!loading" class="has-background-white-bis px-4 py-3 is-flex is-align-items-center" style="border-bottom: 1px solid #dbdbdb; gap: 1rem;">
@@ -138,7 +173,7 @@
                 Insert Photo or File
             </b-button>
 
-            <b-switch :value="renderLayout" size="is-small" @input="updateQueryParam('fullPage', $event)">
+            <b-switch v-if="hasFullPagePreview" :value="renderLayout" size="is-small" @input="updateQueryParam('fullPage', $event)">
                 Preview full page
             </b-switch>
 
@@ -184,46 +219,43 @@
 
         <!-- Editor Area -->
         <div class="editor-area is-flex-grow-1 is-relative">
+            <!-- Code Mode -->
+            <CodeEditor
+                v-if="editorMode === 'code'"
+                :key="'code-' + resourceId"
+                ref="codeEditor"
+                v-model="model.content"
+                lang="twig"
+                height="100%"
+            />
 
-            <div v-if="!loading" class="full-height">
-                <!-- Code Mode -->
-                <CodeEditor
-                    v-if="editorMode === 'code'"
-                    :key="'code-' + resourceId"
-                    ref="codeEditor"
-                    v-model="model.content"
-                    lang="twig"
-                    height="100%"
-                />
+            <!-- Preview Mode -->
+            <iframe
+                v-if="editorMode === 'preview'"
+                ref="previewIframe"
+                :srcdoc="previewHtml"
+                class="preview-iframe"
+                frameborder="0"
+            ></iframe>
 
-                <!-- Preview Mode -->
-                <iframe
-                    v-if="editorMode === 'preview'"
-                    ref="previewIframe"
-                    :srcdoc="previewHtml"
-                    class="preview-iframe"
-                    frameborder="0"
-                ></iframe>
-
-                <!-- Split Mode -->
-                <div v-if="editorMode === 'split'" class="split-mode is-flex full-height">
-                    <div class="split-left" style="flex: 1; border-right: 1px solid #dbdbdb;">
-                        <CodeEditor
-                            :key="'split-' + resourceId"
-                            ref="splitCodeEditor"
-                            v-model="model.content"
-                            lang="twig"
-                            height="100%"
-                        />
-                    </div>
-                    <div class="split-right" style="flex: 1;">
-                        <iframe
-                            ref="splitPreviewIframe"
-                            :srcdoc="previewHtml"
-                            class="preview-iframe"
-                            frameborder="0"
-                        ></iframe>
-                    </div>
+            <!-- Split Mode -->
+            <div v-if="editorMode === 'split'" class="split-mode is-flex">
+                <div class="split-left" style="flex: 1; border-right: 1px solid #dbdbdb;">
+                    <CodeEditor
+                        :key="'split-' + resourceId"
+                        ref="splitCodeEditor"
+                        v-model="model.content"
+                        lang="twig"
+                        height="100%"
+                    />
+                </div>
+                <div class="split-right" style="flex: 1;">
+                    <iframe
+                        ref="splitPreviewIframe"
+                        :srcdoc="previewHtml"
+                        class="preview-iframe"
+                        frameborder="0"
+                    ></iframe>
                 </div>
             </div>
         </div>
@@ -232,11 +264,11 @@
         <!-- Settings Drawer -->
         <transition name="slide-right">
             <div v-if="editSettingsModalActive" class="settings-drawer">
-                <div class="drawer-overlay" @click="editSettingsModalActive = false"></div>
-                <div class="drawer-content">
+                <div class="drawer-overlay" @click="updateQueryParam('settings', false)"></div>
+                <div class="drawer-content" :style="{ width: settingsDrawerWidth }">
                     <div class="drawer-header px-4 py-3 has-background-light" style="border-bottom: 1px solid #dbdbdb;">
                         <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
-                            <h2 class="title is-5 mb-0 is-flex-grow-1">{{ displayName }} Settings</h2>
+                            <h2 class="title is-5 mb-0 is-flex-grow-1">{{ settingsLabel || (displayName + ' Settings') }}</h2>
                             <b-button
                                 type="is-primary"
                                 icon-left="save"
@@ -247,7 +279,7 @@
                             >
                                 Save
                             </b-button>
-                            <b-button icon-left="times" size="is-small" @click="editSettingsModalActive = false">Close</b-button>
+                            <b-button icon-left="times" size="is-small" @click="updateQueryParam('settings', false)">Close</b-button>
                         </div>
                     </div>
 
@@ -261,36 +293,6 @@
                                 :is-dirty="isDirty"
                                 :server-model="serverModel"
                             ></slot>
-
-                            <b-field label="Description">
-                                <b-input v-model="model.description" type="textarea" placeholder="description"></b-input>
-                            </b-field>
-                            <b-field>
-                                <template #label>
-                                    Tags
-                                    <b-tooltip multilined position="is-right" type="is-dark" label="A list of keywords. Used for SEO">
-                                        <b-icon size="is-small" icon="question-circle"></b-icon>
-                                    </b-tooltip>
-                                </template>
-                                <b-taginput v-model="model.tags"></b-taginput>
-                            </b-field>
-                            <div class="field">
-                                <label class="label">
-                                    Metadata
-                                    <b-tooltip multilined label="An HTML field used to inject custom metadata. Used for SEO." position="is-right" type="is-dark">
-                                        <b-icon size="is-small" icon="question-circle"></b-icon>
-                                    </b-tooltip>
-                                </label>
-                                <div class="control">
-                                    <CodeEditor v-model="model.meta" lang="html" height="10rem" />
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label class="label">Options</label>
-                                <div class="control">
-                                    <CodeEditor v-model="model.options" lang="json" height="10rem" />
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -307,6 +309,7 @@
 
         <!-- Versions Drawer -->
         <VersionsDrawer
+            v-if="hasVersions"
             ref="versionsDrawer"
             :active="isVersionDrawerActive"
             :resource-id="resourceId"
@@ -314,6 +317,7 @@
             :resource-api="resourceApi"
             :published-stage="publishedStage"
             :has-version-actions="hasVersionActions"
+            :has-publish="hasPublish"
             @update:active="updateQueryParam('versions', $event)"
             @navigate="navigateToVersion"
             @publish="onVersionPublish"
@@ -330,7 +334,7 @@
 <script>
 import CodeEditor from './CodeEditor.vue';
 import MediaInsertModal from './media/MediaInsertModal.vue';
-import VersionsDrawer from './pages/VersionsDrawer.vue';
+import VersionsDrawer from './VersionsDrawer.vue';
 import { morphToNotification, getApiHost } from '../api.js';
 import { checkForUnsavedChanges } from '../unsavedChanges.js';
 
@@ -358,6 +362,11 @@ export default {
             type: String,
             required: true  // e.g., 'Page', 'Partial'
         },
+        settingsLabel: {
+            type: String,
+            required: false,  // e.g., 'TryBooking Settings' - defaults to '{displayName} Settings'
+            default: null
+        },
         routePrefix: {
             type: String,
             required: true  // e.g., 'pages', 'partials'
@@ -374,7 +383,8 @@ export default {
         // Stage configuration
         publishedStage: {
             type: Number,
-            required: true  // The stage value that means "published"
+            required: false,  // The stage value that means "published" (optional if no publish)
+            default: null
         },
 
         // Feature flags (only for structural features that affect template)
@@ -389,6 +399,22 @@ export default {
         hasVersionActions: {
             type: Boolean,
             default: false  // Whether versions have resource-specific actions (e.g., "View on Site")
+        },
+        hasPublish: {
+            type: Boolean,
+            default: true  // Whether this resource type supports publish/stage functionality
+        },
+        hasVersions: {
+            type: Boolean,
+            default: true  // Whether this resource type supports versioning
+        },
+        hasFullPagePreview: {
+            type: Boolean,
+            default: false  // Whether "Preview full page" toggle makes sense (Pages, Emails)
+        },
+        settingsDrawerWidth: {
+            type: String,
+            default: '500px'  // Width of settings drawer (e.g., '1000px' for wider panels)
         }
     },
     data() {
@@ -410,7 +436,6 @@ export default {
             },
             serverModel: null,
             isMediaModalActive: false,
-            editSettingsModalActive: false,
             versions: [],
             versionsLoading: false,
             versionStrategy: 'guess',
@@ -433,22 +458,17 @@ export default {
             return hv === null || hv === undefined;
         },
         isPublished() {
+            if (!this.hasPublish || this.publishedStage === null) {
+                return false;  // No publish functionality
+            }
             return this.model && this.model.stage === this.publishedStage;
         },
         isTrashed() {
             return this.model && this.model.deletedAt !== null && this.model.deletedAt !== undefined;
         },
         isDirty() {
-            if (!this.model || !this.serverModel) return false;
-            return this.model.content !== this.serverModel.content ||
-                   this.model.title !== this.serverModel.title ||
-                   this.model.slugPart !== this.serverModel.slugPart ||
-                   this.model.description !== this.serverModel.description ||
-                   this.model.meta !== this.serverModel.meta ||
-                   this.model.options !== this.serverModel.options ||
-                   this.model.stage !== this.serverModel.stage ||
-                   this.model.parent !== this.serverModel.parent ||
-                   JSON.stringify(this.model.tags) !== JSON.stringify(this.serverModel.tags);
+            // Delegate to the API class which knows which fields to check
+            return this.resourceApi.constructor.isDirty(this.model, this.serverModel);
         },
         needsEditConfirmation() {
             return !this.isHeadVersion && !this.editOverrideConfirmed;
@@ -474,7 +494,11 @@ export default {
         },
         defaultEditorMode() {
             // Get from user preferences, default to 'split'
-            return this.$store.getters.userPreferences.get('editor.defaultMode') || 'split';
+            const preferredMode = this.$store.getters.userPreferences.get('editor.defaultMode');
+            if (preferredMode) {
+                return preferredMode;
+            }
+            return 'split';
         },
         isInViewMode() {
             // View mode is: preview + fullPage + fullscreen
@@ -483,7 +507,8 @@ export default {
         // Query-string-based computed properties (single source of truth)
         editorMode() {
             const mode = this.$route.query.mode;
-            if (['code', 'split', 'preview'].includes(mode)) {
+            const validModes = ['code', 'split', 'preview'];
+            if (validModes.includes(mode)) {
                 return mode;
             }
             return this.defaultEditorMode;
@@ -496,6 +521,9 @@ export default {
         },
         isVersionDrawerActive() {
             return this.$route.query.versions === 'true';
+        },
+        editSettingsModalActive() {
+            return this.$route.query.settings === 'true';
         },
         keymap() {
             return {
@@ -565,7 +593,13 @@ export default {
         async save() {
             this.saving = true;
             try {
-                const response = await this.resourceApi.update(this.model);
+                // Strip parent field for hierarchical resources - it should only be updated via move operation
+                const saveData = { ...this.model };
+                if (this.hasHierarchy && saveData.parent !== undefined) {
+                    delete saveData.parent;
+                }
+
+                const response = await this.resourceApi.update(saveData);
                 this.setModel(response.item);
                 this.$buefy.toast.open(morphToNotification(response));
             } catch (error) {
@@ -575,6 +609,10 @@ export default {
             }
         },
         async publish() {
+            if (!this.hasPublish) {
+                console.warn('Publish called but hasPublish is false');
+                return;
+            }
             try {
                 const updatedModel = await this.resourceApi.publish(this.model.id);
                 this.setModel(updatedModel);
@@ -618,7 +656,7 @@ export default {
             if (files.length === 0) return;
 
             const file = files[0];
-            const snippet = `{{ media('${file.fullPath}') }}`;
+            const snippet = `{{ media('${file.slug}') }}`;
 
             // Get the appropriate editor ref based on mode
             const editorRef = this.editorMode === 'split' ? this.$refs.splitCodeEditor : this.$refs.codeEditor;
@@ -652,16 +690,15 @@ export default {
             this.versionStrategy = 'new';
             this.save();
         },
-        async confirmDelete() {
-            this.$buefy.dialog.confirm({
-                message: `Are you sure you want to delete this ${this.displayName.toLowerCase()}? You can restore it later from the trash if needed.`,
-                confirmText: 'Delete',
-                type: 'is-danger',
-                onConfirm: async () => {
-                    await this.resourceApi.deleteAndNotify(this.model.id);
-                    await this.fetchData();
-                }
-            });
+        async deleteResource() {
+            // Soft delete - no confirmation needed
+            await this.resourceApi.deleteAndNotify(this.model.id);
+            await this.fetchData();
+        },
+        async forceDeleteResource() {
+            // Permanent delete - uses confirmForceDelete which has built-in confirmation
+            await this.resourceApi.confirmForceDelete(this.model.id);
+            this.$router.push({ name: this.listRouteName });
         },
         navigateToVersion(versionId, options = {}) {
             const query = {};
@@ -698,6 +735,10 @@ export default {
             }
         },
         async onVersionPublish(versionId) {
+            if (!this.hasPublish) {
+                console.warn('onVersionPublish called but hasPublish is false');
+                return;
+            }
             await this.resourceApi.publish(versionId);
             // Always refresh the current page since publishing one version might unpublish another
             await this.fetchData();
@@ -753,11 +794,11 @@ export default {
                     type: 'is-warning',
                     onConfirm: () => {
                         this.editOverrideConfirmed = true;
-                        this.editSettingsModalActive = true;
+                        this.updateQueryParam('settings', true);
                     }
                 });
             } else {
-                this.editSettingsModalActive = true;
+                this.updateQueryParam('settings', true);
             }
         },
         goBack() {
@@ -797,11 +838,13 @@ export default {
 </script>
 
 <style scoped>
-.page-edit-new {
+.edit-container {
     background: white;
+    height: 100%;
+    overflow-y: scroll;
 }
 
-.page-edit-new.is-fullscreen {
+.edit-container.is-fullscreen {
     position: fixed;
     top: 0;
     left: 0;
@@ -809,10 +852,6 @@ export default {
     bottom: 0;
     z-index: 9999;
     background: white;
-}
-
-.full-height {
-    height: 100%;
 }
 
 .title-display {
@@ -833,6 +872,7 @@ export default {
 }
 
 .editor-area {
+    min-height: 40rem;
     overflow: hidden;
 }
 
@@ -845,6 +885,7 @@ export default {
 
 .split-mode {
     gap: 0;
+    height: 100%;
 }
 
 /* Fade transition for mode switching */

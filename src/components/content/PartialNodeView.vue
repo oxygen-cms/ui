@@ -88,7 +88,7 @@
 import { nodeViewProps, NodeViewWrapper } from '@tiptap/vue-2'
 import ContentEditor from "./ContentEditor.vue";
 import PartialsApi from "../../PartialsApi.js";
-import PartialList from "../PartialList.vue";
+import PartialList from "../partials/PartialList.vue";
 
 export default {
     name: "PartialNodeView",

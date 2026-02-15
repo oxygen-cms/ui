@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import Updated from "./Updated.vue";
+import Updated from "../Updated.vue";
 import PartialStatusIcon from "./PartialStatusIcon.vue";
 
 export default {

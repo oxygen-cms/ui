@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import PagesApi from "../PagesApi.js";
+import PagesApi from "../../PagesApi.js";
 
 export default {
     name: "PageStatusIcon",

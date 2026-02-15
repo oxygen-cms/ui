@@ -66,8 +66,8 @@
 
 <script>
 import PageStatusIcon from "./PageStatusIcon.vue";
-import Updated from "./Updated.vue";
-import PagesApi from "../PagesApi.js";
+import Updated from "../Updated.vue";
+import PagesApi from "../../PagesApi.js";
 import Vue from "vue";
 import PageNestedRow from "./PageNestedRow.vue";
 import PageNestedPagination from "./PageNestedPagination.vue";
@@ -146,11 +146,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    @import "./util.css";
+    @import "../util.css";
 
     ::v-deep .table-wrapper.has-sticky-header {
         flex: 1 1 auto;
     }
 
-    @import "../styles/pages-table";
+    @import "../../styles/pages-table";
 </style>

@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import PageTable from "../PageTable.vue";
+import PageTable from "./PageTable.vue";
 import PagesApi from "../../PagesApi.js";
 
 export default {
