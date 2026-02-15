@@ -40,10 +40,10 @@
                                 <b-button
                                     icon-left="globe-asia"
                                     size="is-small"
-                                    :disabled="version.stage == STAGE_PUBLISHED"
+                                    :disabled="version.stage == publishedStage"
                                     @click="publishVersion(version)"
                                 >
-                                    {{ version.stage == STAGE_PUBLISHED ? 'Published' : 'Publish' }}
+                                    {{ version.stage == publishedStage ? 'Published' : 'Publish' }}
                                 </b-button></p>
 
                                 <p class="control">
@@ -63,12 +63,19 @@
 
                                 <p class="control">
                                     <b-dropdown
-                                        :disabled="isHeadVersion(version) && version.stage !== STAGE_PUBLISHED && !version.deletedAt"
+                                        :disabled="shouldDisableDropdown(version)"
                                         position="is-bottom-left"
                                         aria-role="menu">
                                         <template #trigger>
                                             <b-button icon-left="bars" size="is-small"></b-button>
                                         </template>
+
+                                        <!-- SLOT: Resource-specific actions (e.g., "View on Site" for pages) -->
+                                        <slot
+                                            name="version-dropdown-actions"
+                                            :version="version"
+                                            :is-published="version.stage === publishedStage"
+                                        ></slot>
 
                                         <b-dropdown-item
                                             v-if="!isHeadVersion(version)"
@@ -77,15 +84,6 @@
                                         >
                                             <b-icon icon="arrow-up"></b-icon>
                                             Promote to Latest Version
-                                        </b-dropdown-item>
-
-                                        <b-dropdown-item
-                                            v-if="version.stage === STAGE_PUBLISHED"
-                                            aria-role="menuitem"
-                                            @click="viewOnSite(version)"
-                                        >
-                                            <b-icon icon="external-link-alt"></b-icon>
-                                            View on Site
                                         </b-dropdown-item>
 
                                         <b-dropdown-item
@@ -117,8 +115,6 @@
 </template>
 
 <script>
-import PagesApi from '../../PagesApi';
-
 export default {
     name: "VersionsDrawer",
     props: {
@@ -126,21 +122,31 @@ export default {
             type: Boolean,
             default: false
         },
-        pageId: {
+        resourceId: {
             type: Number,
             required: true
         },
         currentVersionId: {
             type: Number,
             default: null
+        },
+        resourceApi: {
+            type: Object,
+            required: true
+        },
+        publishedStage: {
+            type: Number,
+            required: true
+        },
+        hasVersionActions: {
+            type: Boolean,
+            default: false  // e.g., true for pages (View on Site), false for partials
         }
     },
     data() {
         return {
             versions: [],
-            versionsLoading: false,
-            pagesApi: new PagesApi(),
-            STAGE_PUBLISHED: PagesApi.STAGE_PUBLISHED
+            versionsLoading: false
         }
     },
     watch: {
@@ -158,10 +164,30 @@ export default {
         }
     },
     methods: {
+        shouldDisableDropdown(version) {
+            const isHead = this.isHeadVersion(version);
+            const isPublished = version.stage === this.publishedStage;
+            const isDeleted = version.deletedAt;
+
+            // Disable if head version that's not published and not deleted (original behavior)
+            if (isHead && !isPublished && !isDeleted) {
+                return true;
+            }
+
+            // Also disable if no actions will be available
+            const hasPromoteAction = !isHead;
+            const hasRestoreAction = isDeleted;
+            const hasDeleteAction = !isHead && !isDeleted;
+            const hasSlotActions = this.hasVersionActions && isPublished;
+
+            const hasAnyAction = hasPromoteAction || hasRestoreAction || hasDeleteAction || hasSlotActions;
+
+            return !hasAnyAction;
+        },
         async loadVersions() {
             this.versionsLoading = true;
             try {
-                const response = await this.pagesApi.listVersions(this.pageId);
+                const response = await this.resourceApi.listVersions(this.resourceId);
                 this.versions = response.items || [];
             } catch (error) {
                 console.error('Failed to load versions:', error);
@@ -215,10 +241,6 @@ export default {
                 }
             });
         },
-        viewOnSite(version) {
-            const url = this.pagesApi.constructor.slugToUrl(version.slug);
-            window.open(url, '_blank');
-        },
         deleteVersion(version) {
             this.$buefy.dialog.confirm({
                 message: `Are you sure you want to delete this version? This cannot be undone.`,
@@ -226,7 +248,7 @@ export default {
                 type: 'is-danger',
                 onConfirm: async () => {
                     try {
-                        await this.pagesApi.delete(version.id);
+                        await this.resourceApi.delete(version.id);
                         this.$buefy.toast.open({
                             message: 'Version deleted successfully',
                             type: 'is-success'
@@ -244,7 +266,7 @@ export default {
         },
         async restoreVersion(version) {
             try {
-                await this.pagesApi.restoreAndNotify(version.id);
+                await this.resourceApi.restoreAndNotify(version.id);
                 await this.loadVersions();
             } catch (error) {
                 console.error('Failed to restore version:', error);

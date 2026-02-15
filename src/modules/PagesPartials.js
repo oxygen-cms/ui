@@ -1,6 +1,7 @@
 import LegacyPage from "../components/LegacyPage.vue";
 import { WEB_CONTENT } from "../main.js";
 import PageEdit from "../components/PageEdit.vue";
+import PartialEdit from "../components/PartialEdit.vue";
 import ResourceList from "../components/ResourceList.vue";
 import PageTable from "../components/PageTable.vue";
 import PagesApi from "../PagesApi.js";
@@ -42,7 +43,7 @@ export default function(ui) {
 
     ui.addAuthenticatedRoutes([
         {
-            path: '(pages|partials)/:subpath/edit',
+            path: 'pages/:subpath/edit',
             component: LegacyPage,
             props: (route) => {
                 return {
@@ -68,9 +69,9 @@ export default function(ui) {
         },
         {
             path: 'partials/:id',
-            redirect: to => {
-                return { path: 'partials/' + to.params.id + '/edit' }
-            }
+            name: 'partials.edit',
+            component: PartialEdit,
+            meta: { title: 'Edit Partial' }
         },
         {
             path: 'partials/create',
