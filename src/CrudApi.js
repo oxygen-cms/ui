@@ -36,6 +36,45 @@ export class CrudApi {
         return data;
     }
 
+    /**
+     * Determines if a model has unsaved changes compared to the server version.
+     * Can be overridden by subclasses to check specific fields.
+     *
+     * @param {Object} model - The current model state
+     * @param {Object} serverModel - The original model from the server
+     * @returns {boolean}
+     */
+    static isDirty(model, serverModel) {
+        if (!model || !serverModel) return false;
+
+        // Get all fillable fields from the model
+        const fillableFields = this.prepareModelForAPI(model);
+        const fieldsToCheck = Object.keys(fillableFields);
+
+        // Also check common fields that might not be in prepareModelForAPI
+        const commonFields = ['content', 'title', 'description', 'stage'];
+        const allFields = new Set([...fieldsToCheck, ...commonFields]);
+
+        for (const field of allFields) {
+            const modelValue = model[field];
+            const serverValue = serverModel[field];
+
+            // Handle arrays/objects with JSON comparison
+            if (typeof modelValue === 'object' && modelValue !== null) {
+                if (JSON.stringify(modelValue) !== JSON.stringify(serverValue)) {
+                    return true;
+                }
+            } else {
+                // Simple value comparison
+                if (modelValue !== serverValue) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     async list({ inTrash, page, q, sortField, sortOrder }) {
         return this.request('get')
             .withQueryParams({

@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import PartialsApi from "../PartialsApi.js";
-import ContentEditor from "./content/ContentEditor.vue";
+import PartialsApi from "../../PartialsApi.js";
+import ContentEditor from "../content/ContentEditor.vue";
 
 export default {
     name: "PartialList",
@@ -66,7 +66,7 @@ export default {
 </script>
 
 <style scoped>
-    @import "./util.css";
+    @import "../util.css";
 
     .card {
         cursor: pointer;

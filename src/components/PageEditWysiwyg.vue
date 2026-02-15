@@ -101,7 +101,7 @@
 
 <script>
 import ContentEditor from "./content/ContentEditor.vue";
-import PagesApi from "../PagesApi";
+import PagesApi from "../PagesApi.js";
 import CodeEditor from "./CodeEditor.vue";
 import {morphToNotification} from "../api.js";
 export default {

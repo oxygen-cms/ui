@@ -102,7 +102,15 @@ import {
     faCog,
     faArchive,
     faGlobeAsia,
-    faPenSquare, faKey
+    faBars,
+    faPenSquare,
+    faKey,
+    faHistory,
+    faEllipsisV,
+    faImage,
+    faCompress,
+    faExpand,
+    faStar
 } from "@fortawesome/free-solid-svg-icons";
 
 export const addIconsToLibrary = () => {
@@ -115,5 +123,6 @@ export const addIconsToLibrary = () => {
         faFileExcel, faFileCsv, faChevronCircleDown, faChevronCircleUp, faTrash,
         faEye, faEyeSlash, faCaretDown, faCaretUp, faUpload, faUser, faFolder, faHome, faFilePdf, faSignOutAlt, faTag, faStrikethrough, faUnderline, faRemoveFormat, faLink,
         faFolderPlus, faTimes, faQuestionCircle, faFileUpload, faLandmark, faRulerHorizontal, faCog, faArchive, faGlobeAsia, faPenSquare, faKey,
-        faFolderOpen, faFile, faFileAudio, faFileImage, faShare, faGripVertical, faImages, faCalendarPlus, faPaperPlane, faHandshake, faHandshakeSlash, faExclamation, faMousePointer, faUnlink, faAngry);
+        faFolderOpen, faFile, faFileAudio, faFileImage, faShare, faGripVertical, faImages, faCalendarPlus, faPaperPlane, faHandshake, faHandshakeSlash, faExclamation, faMousePointer, faUnlink, faAngry,
+        faHistory, faEllipsisV, faImage, faCompress, faExpand, faBars, faStar);
 };

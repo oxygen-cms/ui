@@ -64,7 +64,7 @@
                             <span style="flex: 1;">
                                 <strong>{{ selectedParent.title }}</strong> - {{ selectedParent.slug }}
                             </span>
-                            <a @click.stop="clearSelectedParent" style="color: #f14668; cursor: pointer; margin-left: 0.5rem;">
+                            <a style="color: #f14668; cursor: pointer; margin-left: 0.5rem;" @click.stop="clearSelectedParent">
                                 <b-icon icon="times" size="is-small"></b-icon>
                             </a>
                         </div>
@@ -97,9 +97,6 @@ export default {
             default: false
         }
     },
-    created() {
-        this.fetchPages();
-    },
     data() {
         return {
             title: '',
@@ -124,6 +121,9 @@ export default {
     },
     watch: {
         'parentSearchQuery': 'fetchPages'
+    },
+    created() {
+        this.fetchPages();
     },
     methods: {
         slugifyTitle(str) {
@@ -173,7 +173,7 @@ export default {
                 this.$buefy.toast.open(morphToNotification(response));
                 this.close();
                 this.$emit('created', response.item);
-                this.$router.push('/pages/' + response.item.id + '/edit');
+                this.$router.push('/pages/' + response.item.id);
             } catch(e) {
                 // Error handled by API layer
             }

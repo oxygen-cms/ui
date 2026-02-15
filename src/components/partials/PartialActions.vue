@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import PartialsApi from "../PartialsApi.js";
+import PartialsApi from "../../PartialsApi.js";
 
 export default {
     name: "PartialActions",

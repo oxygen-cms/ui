@@ -101,7 +101,7 @@ export default {
                 this.$buefy.toast.open(morphToNotification(response));
                 this.close();
                 this.$emit('created', response.item);
-                this.$router.push('/partials/' + response.item.id + '/edit');
+                this.$router.push({ name: 'partials.edit', params: { id: response.item.id } });
             } catch(e) {
                 // Error handled by API layer
             }

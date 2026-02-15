@@ -1,0 +1,964 @@
+<template>
+    <div v-hotkey="keymap" class="edit-container is-flex is-flex-direction-column" :class="{ 'is-fullscreen': isFullscreen }">
+
+        <!-- Version Warning Banner -->
+        <div v-if="!isFullscreen && !loading && editingNonHead" :class="(editOverrideConfirmed ? 'has-background-info-light' : 'has-background-warning') + ' px-4 py-4'">
+            <div class="is-flex is-align-items-center">
+                <b-icon icon="exclamation-triangle" class="mr-2"></b-icon>
+                You're viewing a version from {{ formatDate(model.updatedAt) }}. This is not the current version.
+                <b-button class="ml-2" type="is-text is-warning" size="is-small" icon-left="pencil-alt" @click="navigateToHeadVersion">Edit Latest</b-button>
+            </div>
+        </div>
+
+        <!-- Trashed Warning Banner -->
+        <div v-if="!isFullscreen && !loading && isTrashed" class="has-background-grey-light px-4 py-4">
+            <div class="is-flex is-align-items-center">
+                <b-icon icon="trash" class="mr-2"></b-icon>
+                This {{ displayName.toLowerCase() }} is in the trash. Editing trashed items is supported, but not recommended.
+                <b-button rounded class="ml-2" type="is-dark" size="is-small" icon-left="recycle" @click="restoreResource">Restore</b-button>
+            </div>
+        </div>
+
+        <!-- Header Bar -->
+        <div v-if="!isFullscreen" class="header-bar px-4 py-3 is-flex is-align-items-center" style="border-bottom: 1px solid #dbdbdb;">
+            <b-button rounded icon-left="angle-left" @click="goBack">Back</b-button>
+
+            <div class="mx-4 is-flex-grow-1">
+                <transition name="fade" mode="out-in">
+                    <b-skeleton v-if="loading" key="skeleton" width="200px"></b-skeleton>
+                    <div v-else-if="!editingTitle" key="display" class="title-display">
+                        <span class="title is-4">{{ model.title || ('Untitled ' + displayName) }}</span>
+                        <b-button rounded size="is-small" type="is-light" icon-left="pencil-alt" @click="startEditingTitle"></b-button>
+                        <b-tag v-if="isHeadVersion" type="is-success" size="is-small" class="ml-2" icon="star">
+                            Latest version
+                        </b-tag>
+                        <!-- SLOT: Resource-specific title tags (e.g., "Sent" tag for emails) -->
+                        <slot
+                            name="title-tags"
+                            :model="model"
+                            :is-dirty="isDirty"
+                            :loading="loading"
+                        ></slot>
+                        <b-tag v-if="isDirty" type="is-info">Unsaved changes</b-tag>
+                    </div>
+                    <b-field v-else key="editing" expanded class="title-editing">
+                        <b-input
+                            ref="titleInput"
+                            v-model="editingTitleValue"
+                            :placeholder="displayName + ' Title'"
+                            expanded
+                            class="mr-2"
+                            @keyup.enter.native="finishEditingTitle"
+                            @keyup.esc.native="cancelEditingTitle"
+                        />
+                        <b-field>
+                            <p class="control">
+                                <b-button type="is-primary" @click="finishEditingTitle">Done</b-button>
+                            </p>
+                            <p class="control">
+                                <b-button @click="cancelEditingTitle">Cancel</b-button>
+                            </p>
+                        </b-field>
+                    </b-field>
+                </transition>
+            </div>
+
+            <div class="is-flex" style="gap: 0.5rem;">
+                <b-button
+                    v-if="!loading && hasPublish"
+                    :disabled="isPublished"
+                    :type="isPublished ? '' : 'is-success'"
+                    icon-left="globe-asia"
+                    @click="isPublished ? null : publish()"
+                >
+                    {{ isPublished ? 'Published' : 'Publish' }}
+                </b-button>
+
+                <!-- SLOT: Resource-specific top-bar actions (e.g., send button for emails) -->
+                <slot
+                    name="top-bar-actions"
+                    :model="model"
+                    :is-published="isPublished"
+                    :is-dirty="isDirty"
+                    :loading="loading"
+                ></slot>
+
+                <b-button
+                    v-if="!loading"
+                    icon-left="eye"
+                    :disabled="isInViewMode"
+                    @click="viewFullscreen"
+                >
+                    View
+                </b-button>
+                <b-field>
+                <p class="control">
+                    <b-button icon-left="cog" @click="openSettings">{{ settingsLabel || (displayName + ' Settings') }}</b-button>
+                </p>
+                <p v-if="hasVersions" class="control">
+                    <b-button icon-left="history" @click="openVersionDrawer">Versions</b-button>
+                </p>
+                <p class="control">
+                    <b-dropdown position="is-bottom-left" aria-role="menu">
+                        <template #trigger>
+                            <b-button icon-left="bars"></b-button>
+                        </template>
+
+                        <!-- SLOT: Resource-specific dropdown items (e.g., "View on Site" for pages) -->
+                        <slot
+                            name="dropdown-actions"
+                            :model="model"
+                            :is-published="isPublished"
+                        ></slot>
+
+                        <b-dropdown-item v-if="hasVersions" aria-role="menuitem" @click="saveAsNewVersion">
+                            <b-icon icon="plus"></b-icon>
+                            New Version
+                        </b-dropdown-item>
+                        <b-dropdown-item v-if="!isTrashed" aria-role="menuitem" @click="deleteResource">
+                            <b-icon icon="trash"></b-icon>
+                            Delete
+                        </b-dropdown-item>
+                        <b-dropdown-item v-if="isTrashed" aria-role="menuitem" @click="forceDeleteResource">
+                            <b-icon icon="trash"></b-icon>
+                            Delete Forever
+                        </b-dropdown-item>
+                        <b-dropdown-item v-if="isTrashed" aria-role="menuitem" @click="restoreResource">
+                            <b-icon icon="recycle"></b-icon>
+                            Restore
+                        </b-dropdown-item>
+                    </b-dropdown>
+                </p>
+                </b-field>
+            </div>
+        </div>
+
+        <!-- SLOT: Inline settings (shown between toolbar and editor) -->
+        <slot
+            name="inline-settings"
+            v-if="!isFullscreen"
+            :model="model"
+            :is-dirty="isDirty"
+            :server-model="serverModel"
+            :loading="loading"
+        ></slot>
+
+        <!-- Editor Toolbar -->
+        <div v-if="!loading" class="has-background-white-bis px-4 py-3 is-flex is-align-items-center" style="border-bottom: 1px solid #dbdbdb; gap: 1rem;">
+            <b-field class="mb-0">
+                <p class="control">
+                <b-button
+                    :type="editorMode === 'code' ? 'is-dark' : ''"
+                    @click="switchEditorMode('code')"
+                >
+                    Code
+                </b-button></p>
+                <p class="control">
+                <b-button
+                    :type="editorMode === 'split' ? 'is-dark' : ''"
+                    @click="switchEditorMode('split')"
+                >
+                    Split
+                </b-button></p>
+                <p class="control">
+                <b-button
+                    :type="editorMode === 'preview' ? 'is-dark' : ''"
+                    @click="switchEditorMode('preview')"
+                >
+                    Preview
+                </b-button></p>
+            </b-field>
+
+            <b-button icon-left="image" :disabled="editorMode === 'preview'" @click="isMediaModalActive = true">
+                Insert Photo or File
+            </b-button>
+
+            <b-switch v-if="hasFullPagePreview" :value="renderLayout" size="is-small" @input="updateQueryParam('fullPage', $event)">
+                Preview full page
+            </b-switch>
+
+            <b-switch
+                :value="isFullscreen" size="is-small" @input="updateQueryParam('fullscreen', $event)"
+            >Focus</b-switch>
+
+            <div class="is-flex-grow-1"></div>
+
+            <b-field>
+                <p class="control">
+                    <b-dropdown position="is-bottom-left" aria-role="menu">
+                        <template #trigger>
+                            <b-button :label="versionStrategyLabel" icon-right="caret-down" :disabled="!isDirty" />
+                        </template>
+                        <b-dropdown-item aria-role="menuitem" @click="versionStrategy = 'guess'">
+                            Create New Version if Needed
+                        </b-dropdown-item>
+                        <b-dropdown-item aria-role="menuitem" @click="versionStrategy = 'new'">
+                            Save as New Version
+                        </b-dropdown-item>
+                        <b-dropdown-item aria-role="menuitem" @click="versionStrategy = 'overwrite'">
+                            Overwrite Current Version
+                        </b-dropdown-item>
+                    </b-dropdown>
+                </p>
+                <p class="control">
+                    <b-button
+                        type="is-primary"
+                        icon-left="save"
+                        :loading="saving"
+                        :disabled="!isDirty"
+                        @click="save"
+                    >
+                        Save
+                    </b-button>
+                </p>
+            </b-field>
+        </div>
+
+        <!-- Fullscreen Loading -->
+        <b-loading :active="loading" :is-full-page="true"></b-loading>
+
+        <!-- Editor Area -->
+        <div class="editor-area is-flex-grow-1 is-relative">
+            <!-- Code Mode -->
+            <CodeEditor
+                v-if="editorMode === 'code'"
+                :key="'code-' + resourceId"
+                ref="codeEditor"
+                v-model="model.content"
+                lang="twig"
+                height="100%"
+            />
+
+            <!-- Preview Mode -->
+            <iframe
+                v-if="editorMode === 'preview'"
+                ref="previewIframe"
+                :srcdoc="previewHtml"
+                class="preview-iframe"
+                frameborder="0"
+            ></iframe>
+
+            <!-- Split Mode -->
+            <div v-if="editorMode === 'split'" class="split-mode is-flex">
+                <div class="split-left" style="flex: 1; border-right: 1px solid #dbdbdb;">
+                    <CodeEditor
+                        :key="'split-' + resourceId"
+                        ref="splitCodeEditor"
+                        v-model="model.content"
+                        lang="twig"
+                        height="100%"
+                    />
+                </div>
+                <div class="split-right" style="flex: 1;">
+                    <iframe
+                        ref="splitPreviewIframe"
+                        :srcdoc="previewHtml"
+                        class="preview-iframe"
+                        frameborder="0"
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Settings Drawer -->
+        <transition name="slide-right">
+            <div v-if="editSettingsModalActive" class="settings-drawer">
+                <div class="drawer-overlay" @click="updateQueryParam('settings', false)"></div>
+                <div class="drawer-content" :style="{ width: settingsDrawerWidth }">
+                    <div class="drawer-header px-4 py-3 has-background-light" style="border-bottom: 1px solid #dbdbdb;">
+                        <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
+                            <h2 class="title is-5 mb-0 is-flex-grow-1">{{ settingsLabel || (displayName + ' Settings') }}</h2>
+                            <b-button
+                                type="is-primary"
+                                icon-left="save"
+                                size="is-small"
+                                :loading="saving"
+                                :disabled="!isDirty"
+                                @click="save"
+                            >
+                                Save
+                            </b-button>
+                            <b-button icon-left="times" size="is-small" @click="updateQueryParam('settings', false)">Close</b-button>
+                        </div>
+                    </div>
+
+                    <div class="drawer-body is-relative">
+                        <b-loading :active="loading" :is-full-page="false"></b-loading>
+                        <div v-if="!loading" class="px-4 py-4">
+                            <!-- SLOT: Resource-specific settings fields (e.g., slug for pages, key for partials) -->
+                            <slot
+                                name="settings-drawer-fields"
+                                :model="model"
+                                :is-dirty="isDirty"
+                                :server-model="serverModel"
+                            ></slot>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- Media Insert Modal -->
+        <MediaInsertModal
+            :active="isMediaModalActive"
+            :multiselect-allowed="false"
+            @close="isMediaModalActive = false"
+            @select="onMediaInserted"
+        />
+
+        <!-- Versions Drawer -->
+        <VersionsDrawer
+            v-if="hasVersions"
+            ref="versionsDrawer"
+            :active="isVersionDrawerActive"
+            :resource-id="resourceId"
+            :current-version-id="model ? model.id : null"
+            :resource-api="resourceApi"
+            :published-stage="publishedStage"
+            :has-version-actions="hasVersionActions"
+            :has-publish="hasPublish"
+            @update:active="updateQueryParam('versions', $event)"
+            @navigate="navigateToVersion"
+            @publish="onVersionPublish"
+            @make-head="onMakeHeadVersion"
+        >
+            <!-- Pass through the version-dropdown-actions slot from parent -->
+            <template #version-dropdown-actions="slotProps">
+                <slot name="version-dropdown-actions" v-bind="slotProps"></slot>
+            </template>
+        </VersionsDrawer>
+    </div>
+</template>
+
+<script>
+import CodeEditor from './CodeEditor.vue';
+import MediaInsertModal from './media/MediaInsertModal.vue';
+import VersionsDrawer from './VersionsDrawer.vue';
+import { morphToNotification, getApiHost } from '../api.js';
+import { checkForUnsavedChanges } from '../unsavedChanges.js';
+
+export default {
+    name: "ContentResourceEdit",
+    components: { CodeEditor, MediaInsertModal, VersionsDrawer },
+    beforeRouteLeave(to, from, next) {
+        checkForUnsavedChanges(this.model, this.serverModel, this.$buefy, next);
+    },
+    props: {
+        // API instance
+        resourceApi: {
+            type: Object,
+            required: true,
+            validator: (api) => {
+                // Ensure it has the CrudApi interface
+                return typeof api.get === 'function' &&
+                       typeof api.update === 'function' &&
+                       typeof api.listVersions === 'function';
+            }
+        },
+
+        // Display/routing configuration (flat props like ResourceList.vue)
+        displayName: {
+            type: String,
+            required: true  // e.g., 'Page', 'Partial'
+        },
+        settingsLabel: {
+            type: String,
+            required: false,  // e.g., 'TryBooking Settings' - defaults to '{displayName} Settings'
+            default: null
+        },
+        routePrefix: {
+            type: String,
+            required: true  // e.g., 'pages', 'partials'
+        },
+        listRouteName: {
+            type: String,
+            required: true  // e.g., 'pages.list'
+        },
+        trashRouteName: {
+            type: String,
+            required: true  // e.g., 'pages.trash'
+        },
+
+        // Stage configuration
+        publishedStage: {
+            type: Number,
+            required: false,  // The stage value that means "published" (optional if no publish)
+            default: null
+        },
+
+        // Feature flags (only for structural features that affect template)
+        hasSlug: {
+            type: Boolean,
+            default: false
+        },
+        hasHierarchy: {
+            type: Boolean,
+            default: false
+        },
+        hasVersionActions: {
+            type: Boolean,
+            default: false  // Whether versions have resource-specific actions (e.g., "View on Site")
+        },
+        hasPublish: {
+            type: Boolean,
+            default: true  // Whether this resource type supports publish/stage functionality
+        },
+        hasVersions: {
+            type: Boolean,
+            default: true  // Whether this resource type supports versioning
+        },
+        hasFullPagePreview: {
+            type: Boolean,
+            default: false  // Whether "Preview full page" toggle makes sense (Pages, Emails)
+        },
+        settingsDrawerWidth: {
+            type: String,
+            default: '500px'  // Width of settings drawer (e.g., '1000px' for wider panels)
+        }
+    },
+    data() {
+        return {
+            loading: true,
+            saving: false,
+            model: {
+                content: '',
+                title: '',
+                slug: '',
+                slugPart: '',
+                description: '',
+                tags: [],
+                meta: '',
+                options: '{}',
+                stage: 0,
+                headVersion: null,
+                deletedAt: null
+            },
+            serverModel: null,
+            isMediaModalActive: false,
+            versions: [],
+            versionsLoading: false,
+            versionStrategy: 'guess',
+            editingNonHead: false,
+            editOverrideConfirmed: false,
+            previewHtml: '',
+            previewDebounceTimer: null,
+            editingTitle: false,
+            editingTitleValue: ''
+        }
+    },
+    computed: {
+        resourceId() {
+            return parseInt(this.$route.params.id);
+        },
+        isHeadVersion() {
+            // headVersion is null for head versions, or an object/ID for historical versions
+            if (!this.model) return false;
+            const hv = this.model.headVersion;
+            return hv === null || hv === undefined;
+        },
+        isPublished() {
+            if (!this.hasPublish || this.publishedStage === null) {
+                return false;  // No publish functionality
+            }
+            return this.model && this.model.stage === this.publishedStage;
+        },
+        isTrashed() {
+            return this.model && this.model.deletedAt !== null && this.model.deletedAt !== undefined;
+        },
+        isDirty() {
+            // Delegate to the API class which knows which fields to check
+            return this.resourceApi.constructor.isDirty(this.model, this.serverModel);
+        },
+        needsEditConfirmation() {
+            return !this.isHeadVersion && !this.editOverrideConfirmed;
+        },
+        versionStrategyLabel() {
+            switch(this.versionStrategy) {
+                case 'new': return 'Save as New Version';
+                case 'overwrite': return 'Overwrite Current Version';
+                default: return 'Create New Version if Needed';
+            }
+        },
+        versionStrategyIcon() {
+            switch(this.versionStrategy) {
+                case 'new': return 'plus';
+                case 'overwrite': return 'save';
+                default: return 'caret-up';
+            }
+        },
+        parentSlug() {
+            if (!this.model) return '';
+            // If parent exists, return its slug, otherwise return empty string (root level)
+            return this.model.parent ? this.model.parent.slug : '';
+        },
+        defaultEditorMode() {
+            // Get from user preferences, default to 'split'
+            const preferredMode = this.$store.getters.userPreferences.get('editor.defaultMode');
+            if (preferredMode) {
+                return preferredMode;
+            }
+            return 'split';
+        },
+        isInViewMode() {
+            // View mode is: preview + fullPage + fullscreen
+            return this.editorMode === 'preview' && this.renderLayout === true && this.fullscreen;
+        },
+        // Query-string-based computed properties (single source of truth)
+        editorMode() {
+            const mode = this.$route.query.mode;
+            const validModes = ['code', 'split', 'preview'];
+            if (validModes.includes(mode)) {
+                return mode;
+            }
+            return this.defaultEditorMode;
+        },
+        renderLayout() {
+            return this.$route.query.fullPage === 'true';
+        },
+        isFullscreen() {
+            return this.$route.query.fullscreen === 'true';
+        },
+        isVersionDrawerActive() {
+            return this.$route.query.versions === 'true';
+        },
+        editSettingsModalActive() {
+            return this.$route.query.settings === 'true';
+        },
+        keymap() {
+            return {
+                'ctrl+s': this.saveHotkey,
+            };
+        }
+    },
+    watch: {
+        'model.content': {
+            handler(newVal) {
+                console.log('model.content changed, length:', newVal ? newVal.length : 0, 'mode:', this.editorMode);
+                if (this.editorMode === 'split' || this.editorMode === 'preview') {
+                    this.debouncedRefreshPreview();
+                }
+            }
+        },
+        '$route.params.id'() {
+            // Reload when route changes (switching between versions)
+            this.editOverrideConfirmed = false; // Reset edit confirmation when switching
+            this.fetchData();
+        },
+        '$route.query': {
+            handler(newQuery, oldQuery) {
+                // Refresh preview when mode or fullPage changes (e.g., via browser back/forward)
+                const modeChanged = newQuery.mode !== oldQuery.mode;
+                const fullPageChanged = newQuery.fullPage !== oldQuery.fullPage;
+
+                if (modeChanged || fullPageChanged) {
+                    if (this.editorMode === 'split' || this.editorMode === 'preview') {
+                        this.refreshPreview();
+                    }
+                }
+            },
+            deep: true
+        }
+    },
+    mounted() {
+        this.fetchData();
+    },
+    beforeDestroy() {
+        if (this.previewDebounceTimer) {
+            clearTimeout(this.previewDebounceTimer);
+        }
+    },
+    methods: {
+        async saveHotkey(event) {
+            event.preventDefault();
+            if (this.isDirty) {
+                await this.save();
+            }
+        },
+        async fetchData() {
+            this.loading = true;
+            try {
+                const response = await this.resourceApi.get(this.resourceId);
+                this.setModel(response.item);
+                this.editingNonHead = !this.isHeadVersion;
+            } catch (error) {
+                console.error('Failed to fetch resource:', error);
+            }
+        },
+        setModel(model) {
+            this.loading = false;
+            this.model = { ...model };
+            this.serverModel = { ...model };
+        },
+        async save() {
+            this.saving = true;
+            try {
+                // Strip parent field for hierarchical resources - it should only be updated via move operation
+                const saveData = { ...this.model };
+                if (this.hasHierarchy && saveData.parent !== undefined) {
+                    delete saveData.parent;
+                }
+
+                const response = await this.resourceApi.update(saveData);
+                this.setModel(response.item);
+                this.$buefy.toast.open(morphToNotification(response));
+            } catch (error) {
+                console.error('Save failed:', error);
+            } finally {
+                this.saving = false;
+            }
+        },
+        async publish() {
+            if (!this.hasPublish) {
+                console.warn('Publish called but hasPublish is false');
+                return;
+            }
+            try {
+                const updatedModel = await this.resourceApi.publish(this.model.id);
+                this.setModel(updatedModel);
+                // Refresh versions list if drawer is open
+                if (this.$refs.versionsDrawer && this.isVersionDrawerActive) {
+                    await this.$refs.versionsDrawer.loadVersions();
+                }
+            } catch (error) {
+                console.error('Publish failed:', error);
+            }
+        },
+        async refreshPreview() {
+            if (!this.model) return;
+
+            try {
+                // Use the API endpoint for content preview
+                const url = getApiHost() + 'oxygen/api/' + this.routePrefix + '/content/' + this.model.id;
+                const response = await this.resourceApi.request('post')
+                    .withJson({
+                        content: this.model.content,
+                        renderLayout: this.renderLayout
+                    })
+                    .fetchRaw(url);
+
+                this.previewHtml = await response.text();
+            } catch (error) {
+                console.error('Preview refresh failed:', error);
+                this.previewHtml = '<div style="padding: 2rem; color: red;">Preview failed to load</div>';
+            }
+        },
+        debouncedRefreshPreview() {
+            if (this.previewDebounceTimer) {
+                clearTimeout(this.previewDebounceTimer);
+            }
+            this.previewDebounceTimer = setTimeout(() => {
+                console.log('Debounced preview refresh triggered');
+                this.refreshPreview();
+            }, 1000);
+        },
+        onMediaInserted(files) {
+            if (files.length === 0) return;
+
+            const file = files[0];
+            const snippet = `{{ media('${file.slug}') }}`;
+
+            // Get the appropriate editor ref based on mode
+            const editorRef = this.editorMode === 'split' ? this.$refs.splitCodeEditor : this.$refs.codeEditor;
+
+            if (editorRef && editorRef.$refs.ace) {
+                const editor = editorRef.$refs.ace.editor;
+                editor.insert(snippet);
+                editor.focus();
+            }
+
+            this.isMediaModalActive = false;
+        },
+        toggleFullscreen() {
+            this.updateQueryParam('fullscreen', !this.isFullscreen);
+        },
+        openVersionDrawer() {
+            this.updateQueryParam('versions', true);
+        },
+        viewFullscreen() {
+            // Update query params to enter fullscreen preview mode with full page layout
+            const query = {
+                ...this.$route.query,
+                fullscreen: 'true',
+                fullPage: 'true',
+                mode: 'preview',
+                versions: 'false'
+            };
+            this.$router.replace({ query }).catch(() => {});
+        },
+        saveAsNewVersion() {
+            this.versionStrategy = 'new';
+            this.save();
+        },
+        async deleteResource() {
+            // Soft delete - no confirmation needed
+            await this.resourceApi.deleteAndNotify(this.model.id);
+            await this.fetchData();
+        },
+        async forceDeleteResource() {
+            // Permanent delete - uses confirmForceDelete which has built-in confirmation
+            await this.resourceApi.confirmForceDelete(this.model.id);
+            this.$router.push({ name: this.listRouteName });
+        },
+        navigateToVersion(versionId, options = {}) {
+            const query = {};
+
+            // Handle versions drawer state
+            if (options.versions !== undefined) {
+                // Explicitly set versions state if provided
+                query.versions = options.versions.toString();
+            } else if (this.isVersionDrawerActive && !options.fullscreen) {
+                // Otherwise, preserve versions=true unless it's a fullscreen view action
+                query.versions = 'true';
+            }
+
+            // Add any additional query params from options
+            if (options.fullscreen !== undefined) {
+                query.fullscreen = options.fullscreen.toString();
+            }
+            if (options.fullPage !== undefined) {
+                query.fullPage = options.fullPage.toString();
+            }
+            if (options.mode) {
+                query.mode = options.mode;
+            }
+
+            this.$router.push({
+                name: this.routePrefix + '.edit',
+                params: { id: versionId },
+                query
+            });
+        },
+        navigateToHeadVersion() {
+            if (this.model.headVersion) {
+                this.$router.push({ name: this.routePrefix + '.edit', params: { id: this.model.headVersion } });
+            }
+        },
+        async onVersionPublish(versionId) {
+            if (!this.hasPublish) {
+                console.warn('onVersionPublish called but hasPublish is false');
+                return;
+            }
+            await this.resourceApi.publish(versionId);
+            // Always refresh the current page since publishing one version might unpublish another
+            await this.fetchData();
+        },
+        async onMakeHeadVersion(versionId) {
+            await this.resourceApi.makeHeadVersion(versionId);
+            await this.fetchData();
+        },
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        },
+        updateQueryParam(key, value) {
+            const query = { ...this.$route.query };
+            // Handle different value types
+            if (typeof value === 'boolean') {
+                query[key] = value.toString();
+            } else if (typeof value === 'string') {
+                query[key] = value;
+            } else if (value === null || value === undefined) {
+                delete query[key];
+            } else {
+                query[key] = String(value);
+            }
+            // Only update if query actually changed
+            if (JSON.stringify(query) !== JSON.stringify(this.$route.query)) {
+                this.$router.replace({ query }).catch(() => {});
+            }
+        },
+        switchEditorMode(newMode) {
+            // Check if we need confirmation before switching to an editable mode
+            if (this.needsEditConfirmation && (newMode === 'code' || newMode === 'split')) {
+                this.$buefy.dialog.confirm({
+                    title: 'Edit Historical Version',
+                    message: `You are about to edit a historical version of this ${this.displayName.toLowerCase()}. This is not the current version. Are you sure you want to continue?`,
+                    confirmText: 'Edit Anyway',
+                    type: 'is-warning',
+                    onConfirm: () => {
+                        this.editOverrideConfirmed = true;
+                        this.updateQueryParam('mode', newMode);
+                    }
+                });
+            } else {
+                this.updateQueryParam('mode', newMode);
+            }
+        },
+        openSettings() {
+            // Check if we need confirmation before opening settings
+            if (this.needsEditConfirmation) {
+                this.$buefy.dialog.confirm({
+                    title: 'Edit Historical Version',
+                    message: `You are about to edit a historical version of this ${this.displayName.toLowerCase()}. This is not the current version. Are you sure you want to continue?`,
+                    confirmText: 'Edit Anyway',
+                    type: 'is-warning',
+                    onConfirm: () => {
+                        this.editOverrideConfirmed = true;
+                        this.updateQueryParam('settings', true);
+                    }
+                });
+            } else {
+                this.updateQueryParam('settings', true);
+            }
+        },
+        goBack() {
+            if (this.isTrashed) {
+                this.$router.push({ name: this.trashRouteName });
+            } else {
+                this.$router.push({ name: this.listRouteName });
+            }
+        },
+        async restoreResource() {
+            try {
+                await this.resourceApi.restoreAndNotify(this.model.id);
+                await this.fetchData();
+            } catch (error) {
+                console.error('Restore failed:', error);
+            }
+        },
+        startEditingTitle() {
+            this.editingTitleValue = this.model.title;
+            this.editingTitle = true;
+            this.$nextTick(() => {
+                if (this.$refs.titleInput) {
+                    this.$refs.titleInput.focus();
+                }
+            });
+        },
+        finishEditingTitle() {
+            this.model.title = this.editingTitleValue;
+            this.editingTitle = false;
+        },
+        cancelEditingTitle() {
+            this.editingTitle = false;
+            this.editingTitleValue = '';
+        }
+    }
+}
+</script>
+
+<style scoped>
+.edit-container {
+    background: white;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.edit-container.is-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background: white;
+}
+
+.title-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.title-display .title {
+    margin: 0;
+}
+
+.title-editing {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    max-width: 40rem;
+}
+
+.editor-area {
+    min-height: 40rem;
+    overflow: hidden;
+}
+
+.preview-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+.split-mode {
+    gap: 0;
+    height: 100%;
+}
+
+/* Fade transition for mode switching */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.2s ease;
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+
+/* Settings drawer styles */
+.settings-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    pointer-events: none;
+}
+
+.settings-drawer .drawer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: all;
+}
+
+.settings-drawer .drawer-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 500px;
+    max-width: 90vw;
+    background: white;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    pointer-events: all;
+}
+
+.settings-drawer .drawer-header {
+    flex-shrink: 0;
+}
+
+.settings-drawer .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* Slide transition from right */
+.slide-right-enter-active,
+.slide-right-leave-active {
+    transition: transform 0.3s ease;
+}
+
+.slide-right-enter-active .drawer-overlay,
+.slide-right-leave-active .drawer-overlay {
+    transition: opacity 0.3s ease;
+}
+
+.slide-right-enter .drawer-content,
+.slide-right-leave-to .drawer-content {
+    transform: translateX(100%);
+}
+
+.slide-right-enter .drawer-overlay,
+.slide-right-leave-to .drawer-overlay {
+    opacity: 0;
+}
+</style>

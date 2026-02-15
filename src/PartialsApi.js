@@ -12,6 +12,13 @@ export default class PartialsApi extends CrudApi {
     static prepareModelForAPI(data) {
         let m = { ...data  };
         delete m.id;
+        delete m.stage;
+        delete m.headVersion;
+        delete m.createdAt;
+        delete m.updatedAt;
+        delete m.deletedAt;
+        delete m.createdBy;
+        delete m.updatedBy;
         return m;
     }
 

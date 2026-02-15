@@ -1,13 +1,14 @@
 import LegacyPage from "../components/LegacyPage.vue";
 import { WEB_CONTENT } from "../main.js";
-import PageEdit from "../components/PageEdit.vue";
+import PageEdit from "../components/pages/PageEdit.vue";
+import PartialEdit from "../components/partials/PartialEdit.vue";
 import ResourceList from "../components/ResourceList.vue";
-import PageTable from "../components/PageTable.vue";
+import PageTable from "../components/pages/PageTable.vue";
 import PagesApi from "../PagesApi.js";
 import PartialsApi from "../PartialsApi.js";
-import PartialTable from "../components/PartialTable.vue";
-import PageActions from "../components/PageActions.vue";
-import PartialActions from "../components/PartialActions.vue";
+import PartialTable from "../components/partials/PartialTable.vue";
+import PageActions from "../components/pages/PageActions.vue";
+import PartialActions from "../components/partials/PartialActions.vue";
 import CreatePageDropdown from "../components/pages/CreatePageDropdown.vue";
 import CreatePartialDropdown from "../components/partials/CreatePartialDropdown.vue";
 
@@ -42,7 +43,7 @@ export default function(ui) {
 
     ui.addAuthenticatedRoutes([
         {
-            path: '(pages|partials)/:subpath/edit',
+            path: 'pages/:subpath/edit',
             component: LegacyPage,
             props: (route) => {
                 return {
@@ -68,9 +69,9 @@ export default function(ui) {
         },
         {
             path: 'partials/:id',
-            redirect: to => {
-                return { path: 'partials/' + to.params.id + '/edit' }
-            }
+            name: 'partials.edit',
+            component: PartialEdit,
+            meta: { title: 'Edit Partial' }
         },
         {
             path: 'partials/create',
@@ -84,16 +85,10 @@ export default function(ui) {
             props: { ...pagesProps, inTrash: true }
         },
         {
-            path: 'pages2/:id',
+            path: 'pages/:id',
             name: 'pages.edit',
             component: PageEdit,
             meta: { title: 'Edit Page' }
-        },
-        {
-            path: 'pages/:id',
-            redirect: to => {
-                return { path: 'pages/' + to.params.id + '/edit' }
-            }
         },
         {
             path: 'pages',

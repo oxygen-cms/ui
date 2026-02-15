@@ -17,8 +17,8 @@
 
 <script>
 import PageStatusIcon from "./PageStatusIcon.vue";
-import Updated from "./Updated.vue";
-import PagesApi from "../PagesApi.js";
+import Updated from "../Updated.vue";
+import PagesApi from "../../PagesApi.js";
 
 export default {
     name: "PageNestedRow",
@@ -38,7 +38,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    @import "../styles/pages-table.scss";
+    @import "../../styles/pages-table.scss";
 
     //.has-darker-top-border {
     ////border-top-color: $grey-dark;

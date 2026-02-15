@@ -21,6 +21,8 @@ export default class PagesApi extends CrudApi {
         delete m.createdBy;
         delete m.updatedBy;
         delete m.headVersion;
+        delete m.slug; // slug is computed from slugPart, not directly fillable
+        delete m.numChildren; // computed field
         return m;
     }
 
