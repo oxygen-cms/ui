@@ -84,16 +84,10 @@ export default function(ui) {
             props: { ...pagesProps, inTrash: true }
         },
         {
-            path: 'pages2/:id',
+            path: 'pages/:id',
             name: 'pages.edit',
             component: PageEdit,
             meta: { title: 'Edit Page' }
-        },
-        {
-            path: 'pages/:id',
-            redirect: to => {
-                return { path: 'pages/' + to.params.id + '/edit' }
-            }
         },
         {
             path: 'pages',

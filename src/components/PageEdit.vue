@@ -592,12 +592,15 @@ export default {
             window.open(this.pageUrl, '_blank');
         },
         viewFullscreen() {
-            // Navigate to fullscreen preview mode with full page layout
-            this.navigateToVersion(this.pageId, {
-                fullscreen: true,
-                fullPage: true,
-                mode: 'preview'
-            });
+            // Update query params to enter fullscreen preview mode with full page layout
+            const query = {
+                ...this.$route.query,
+                fullscreen: 'true',
+                fullPage: 'true',
+                mode: 'preview',
+                versions: 'false'
+            };
+            this.$router.replace({ query }).catch(() => {});
         },
         saveAsNewVersion() {
             this.versionStrategy = 'new';

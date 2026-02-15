@@ -173,7 +173,7 @@ export default {
                 this.$buefy.toast.open(morphToNotification(response));
                 this.close();
                 this.$emit('created', response.item);
-                this.$router.push('/pages/' + response.item.id + '/edit');
+                this.$router.push('/pages/' + response.item.id);
             } catch(e) {
                 // Error handled by API layer
             }

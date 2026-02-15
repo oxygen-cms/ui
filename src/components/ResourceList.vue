@@ -25,8 +25,9 @@
             <component :is="tableComponent" :paginated-items="paginatedItems" :on-page-change="page => paginatedItems.currentPage = page" :detailed="!searchQuery" :on-sort="onSort">
                 <template #actions="slotProps">
                     <div class="buttons" style="min-width: 18rem">
-                        <component :is="actionsComponent" :item="slotProps.row" @update="updateItem" @reload="fetchData"></component>
+                        <b-button rounded icon-left="eye" tag="router-link" :to="{ path: '/' + routePrefix + '/' + slotProps.row.id, query: { fullscreen: 'true', fullPage: 'true', mode: 'preview', versions: 'false' } }" size="is-small">View</b-button>
                         <b-button rounded icon-left="pencil-alt" tag="router-link" :to="'/' + routePrefix + '/' + slotProps.row.id" size="is-small">Edit</b-button>
+                        <component :is="actionsComponent" :item="slotProps.row" @update="updateItem" @reload="fetchData"></component>
                         <b-button
                             v-if="inTrash" rounded outlined icon-left="recycle"
                             size="is-small" @click="restoreItem(slotProps.row.id)">Restore
