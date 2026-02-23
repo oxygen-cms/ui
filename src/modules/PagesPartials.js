@@ -1,4 +1,3 @@
-import LegacyPage from "../components/LegacyPage.vue";
 import { WEB_CONTENT } from "../main.js";
 import PageEdit from "../components/pages/PageEdit.vue";
 import PartialEdit from "../components/partials/PartialEdit.vue";
@@ -42,17 +41,6 @@ export default function(ui) {
     const pagesProps = { displayName: 'Pages', routePrefix: 'pages', inTrash: false, tableComponent: PageTable, actionsComponent: PageActions, singularDisplayName: 'Page', defaultSortField: 'title', defaultSortOrder: 'asc', resourceApi: new PagesApi(), createDropdownComponent: CreatePageDropdown }
 
     ui.addAuthenticatedRoutes([
-        {
-            path: 'pages/:subpath/edit',
-            component: LegacyPage,
-            props: (route) => {
-                return {
-                    fullPath: route.fullPath,
-                    legacyPrefix: '/oxygen/view',
-                    adminPrefix: '/oxygen'
-                }
-            }
-        },
         {
             path: 'partials/trash',
             name: 'partials.trash',
