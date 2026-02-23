@@ -135,8 +135,8 @@
 
         <!-- SLOT: Inline settings (shown between toolbar and editor) -->
         <slot
-            name="inline-settings"
             v-if="!isFullscreen"
+            name="inline-settings"
             :model="model"
             :is-dirty="isDirty"
             :server-model="serverModel"
@@ -144,11 +144,12 @@
         ></slot>
 
         <!-- Editor Toolbar -->
-        <div v-if="!loading" class="has-background-white-bis px-4 py-3 is-flex is-align-items-center" style="border-bottom: 1px solid #dbdbdb; gap: 1rem;">
+        <div class="has-background-white-bis px-4 py-3 is-flex is-align-items-center" style="border-bottom: 1px solid #dbdbdb; gap: 1rem;">
             <b-field class="mb-0">
                 <p class="control">
                 <b-button
                     :type="editorMode === 'code' ? 'is-dark' : ''"
+                    :disabled="loading"
                     @click="switchEditorMode('code')"
                 >
                     Code
@@ -156,6 +157,7 @@
                 <p class="control">
                 <b-button
                     :type="editorMode === 'split' ? 'is-dark' : ''"
+                    :disabled="loading"
                     @click="switchEditorMode('split')"
                 >
                     Split
@@ -163,31 +165,32 @@
                 <p class="control">
                 <b-button
                     :type="editorMode === 'preview' ? 'is-dark' : ''"
+                    :disabled="loading"
                     @click="switchEditorMode('preview')"
                 >
                     Preview
                 </b-button></p>
             </b-field>
 
-            <b-button icon-left="image" :disabled="editorMode === 'preview'" @click="isMediaModalActive = true">
+            <b-button icon-left="image" :disabled="loading || editorMode === 'preview'" @click="isMediaModalActive = true">
                 Insert Photo or File
             </b-button>
 
-            <b-switch v-if="hasFullPagePreview" :value="renderLayout" size="is-small" @input="updateQueryParam('fullPage', $event)">
+            <b-switch v-if="hasFullPagePreview" :value="renderLayout" :disabled="loading" size="is-small" @input="updateQueryParam('fullPage', $event)">
                 Preview full page
             </b-switch>
 
             <b-switch
-                :value="isFullscreen" size="is-small" @input="updateQueryParam('fullscreen', $event)"
+                :value="isFullscreen" :disabled="loading" size="is-small" @input="updateQueryParam('fullscreen', $event)"
             >Focus</b-switch>
 
             <div class="is-flex-grow-1"></div>
 
             <b-field>
                 <p class="control">
-                    <b-dropdown position="is-bottom-left" aria-role="menu">
+                    <b-dropdown position="is-bottom-left" aria-role="menu" :disabled="loading">
                         <template #trigger>
-                            <b-button :label="versionStrategyLabel" icon-right="caret-down" :disabled="!isDirty" />
+                            <b-button :label="versionStrategyLabel" icon-right="caret-down" :disabled="loading || !isDirty" />
                         </template>
                         <b-dropdown-item aria-role="menuitem" @click="versionStrategy = 'guess'">
                             Create New Version if Needed
@@ -205,7 +208,7 @@
                         type="is-primary"
                         icon-left="save"
                         :loading="saving"
-                        :disabled="!isDirty"
+                        :disabled="loading || !isDirty"
                         @click="save"
                     >
                         Save
@@ -444,7 +447,8 @@ export default {
             previewHtml: '',
             previewDebounceTimer: null,
             editingTitle: false,
-            editingTitleValue: ''
+            editingTitleValue: '',
+            isLoadingFromServer: false
         }
     },
     computed: {
@@ -534,7 +538,12 @@ export default {
     watch: {
         'model.content': {
             handler(newVal) {
-                console.log('model.content changed, length:', newVal ? newVal.length : 0, 'mode:', this.editorMode);
+                console.log('model.content changed, length:', newVal ? newVal.length : 0, 'mode:', this.editorMode, 'isLoadingFromServer:', this.isLoadingFromServer);
+                // Skip refresh if we're loading from server - the query watcher or mounted hook will handle it
+                if (this.isLoadingFromServer) {
+                    console.log('Skipping refresh - loading from server');
+                    return;
+                }
                 if (this.editorMode === 'split' || this.editorMode === 'preview') {
                     this.debouncedRefreshPreview();
                 }
@@ -577,12 +586,19 @@ export default {
         },
         async fetchData() {
             this.loading = true;
+            this.isLoadingFromServer = true;
             try {
                 const response = await this.resourceApi.get(this.resourceId);
                 this.setModel(response.item);
                 this.editingNonHead = !this.isHeadVersion;
+                // Trigger initial preview refresh after data loads
+                if (this.editorMode === 'split' || this.editorMode === 'preview') {
+                    this.refreshPreview();
+                }
             } catch (error) {
                 console.error('Failed to fetch resource:', error);
+            } finally {
+                this.isLoadingFromServer = false;
             }
         },
         setModel(model) {
