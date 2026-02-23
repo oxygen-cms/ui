@@ -135,8 +135,8 @@
 
         <!-- SLOT: Inline settings (shown between toolbar and editor) -->
         <slot
-            name="inline-settings"
             v-if="!isFullscreen"
+            name="inline-settings"
             :model="model"
             :is-dirty="isDirty"
             :server-model="serverModel"
