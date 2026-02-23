@@ -34,7 +34,7 @@
 
         <b-button v-if="admin" @click="isUserPreferencesModalActive = true">Open User Preferences...</b-button>
 
-        <ShowIfPermitted v-if="!admin" :keys="['user.general', 'user.editor']">
+        <ShowIfPermitted v-if="!admin" :keys="['user.editor']">
             <b-notification :closable="false" class="bottom-margin">
                 <h2 class="subtitle">User Preferences</h2>
                 <p>You can modify and personalize certain aspects of this administration interface to suit your own preferences.</p>
