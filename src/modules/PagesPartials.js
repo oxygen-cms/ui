@@ -17,9 +17,7 @@ export default function(ui) {
         icon: 'file-alt',
         listAction: '/pages',
         listPermission: 'pages.getList',
-        addIcon: 'plus',
         addPermission: 'pages.postCreate',
-        addAction: '/pages/create',
         addDropdownComponent: CreatePageDropdown,
         items: {
         }
@@ -29,9 +27,7 @@ export default function(ui) {
         icon: 'puzzle-piece',
         listAction: '/partials',
         listPermission: 'partials.getList',
-        addIcon: 'plus',
         addPermission: 'partials.postCreate',
-        addAction: '/partials/create',
         addDropdownComponent: CreatePartialDropdown,
         items: {
         }
