@@ -28,7 +28,7 @@
                         Uploading {{ filesToUpload.length }} item(s)
                     </p>
                 </header>
-                <section v-if="!isUploading" class="modal-card-body" style="overflow: visible;">
+                <section v-if="!isUploading" class="modal-card-body upload-body">
                     <b-upload v-model="filesToUpload"
                               multiple
                               drag-drop expanded>
@@ -55,7 +55,7 @@
                         </span>
                     </div>
                 </section>
-                <section v-else class="modal-card-body" style="overflow: visible;">
+                <section v-else class="modal-card-body upload-body">
                     <b-progress size="is-medium" type="is-info"></b-progress>
                 </section>
                 <footer class="modal-card-foot is-flex">
@@ -153,7 +153,6 @@ export default {
     }
 
     .media-upload-dropdown .dropdown-menu {
-        overflow: visible !important;
         min-width: 30rem;
     }
 
@@ -164,6 +163,11 @@ export default {
 </style>
 
 <style scoped>
+    .upload-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
     .image-preview {
         display: flex;
         flex-direction: column;
