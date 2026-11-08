@@ -44,9 +44,13 @@ export default class MediaApi extends CrudApi {
             .fetch(this.constructor.getResourceRoot());
     }
 
-    static generateIncludeStatement(item) {
-        let fullPathNoExt = item.fullPath.split('.')[0];
-        return '{{ media(\'' + fullPathNoExt + '\') }}';
+    static generateIncludeStatement(item, options = {}) {
+        let fullPathNoExt = item.fullPath.replace(/\.[^./]+$/, '').replace(/^\/+/, '');
+        let args = Object.entries(options)
+            .filter(([, v]) => v !== null && v !== undefined)
+            .map(([k, v]) => ', ' + k + '=' + (typeof v === 'number' ? v : '\'' + String(v).replace(/'/g, "\\'") + '\''))
+            .join('');
+        return '{{ media(\'' + fullPathNoExt + '\'' + args + ') }}';
     }
 
 }
