@@ -306,6 +306,7 @@
         <MediaInsertModal
             :active="isMediaModalActive"
             :multiselect-allowed="false"
+            show-size-option
             @close="isMediaModalActive = false"
             @select="onMediaInserted"
         />
@@ -340,6 +341,7 @@ import MediaInsertModal from './media/MediaInsertModal.vue';
 import VersionsDrawer from './VersionsDrawer.vue';
 import { morphToNotification, getApiHost } from '../api.js';
 import { checkForUnsavedChanges } from '../unsavedChanges.js';
+import MediaApi from '../MediaApi.js';
 
 export default {
     name: "ContentResourceEdit",
@@ -668,11 +670,11 @@ export default {
                 this.refreshPreview();
             }, 1000);
         },
-        onMediaInserted(files) {
+        onMediaInserted(files, options = {}) {
             if (files.length === 0) return;
 
             const file = files[0];
-            const snippet = `{{ media('${file.slug}') }}`;
+            const snippet = MediaApi.generateIncludeStatement(file, options);
 
             // Get the appropriate editor ref based on mode
             const editorRef = this.editorMode === 'split' ? this.$refs.splitCodeEditor : this.$refs.codeEditor;

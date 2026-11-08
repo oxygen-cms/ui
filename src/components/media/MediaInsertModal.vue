@@ -8,6 +8,14 @@
                 <MediaList :current-path="currentPath" :in-trash="inTrash" :search-query="searchQuery" @navigate="onNavigate" @double-click-action="doInsert" @select-files="items => selectedFiles = items" />
             </section>
             <footer class="modal-card-foot is-flex">
+                <b-field v-if="showSizeOption" class="size-option" label-position="on-border">
+                    <template #label>
+                        <b-tooltip position="is-right" multilined label="This controls how large the image is displayed on the page. Expressed as a percentage of the container width.">
+                            Image Size
+                        </b-tooltip>
+                    </template>
+                    <b-slider v-model="size" :min="10" :max="100" :step="10" ticks></b-slider>
+                </b-field>
                 <div class="is-flex-grow-1"></div>
                 <b-button @click="emitClose">{{ closeVerb }}</b-button>
                 <b-button :disabled="selectedFiles.length === 0 || (!multiselectAllowed && selectedFiles.length > 1)" type="is-primary" @click="doInsert">
@@ -37,6 +45,14 @@ export default {
             type: String,
             default: 'Insert'
         },
+        showSizeOption: {
+            type: Boolean,
+            default: false
+        },
+        defaultSize: {
+            type: Number,
+            default: 90
+        },
         closeVerb: {
             type: String,
             default: 'Close'
@@ -47,7 +63,8 @@ export default {
             currentPath: '',
             inTrash: false,
             searchQuery: null,
-            selectedFiles: []
+            selectedFiles: [],
+            size: this.defaultSize
         }
     },
     watch: {
@@ -65,7 +82,7 @@ export default {
             this.$emit('close');
         },
         doInsert() {
-            this.$emit('select', this.selectedFiles);
+            this.$emit('select', this.selectedFiles, this.showSizeOption ? { size: this.size } : {});
         },
         updateActive(newVal) {
             if(!newVal) {
@@ -77,6 +94,11 @@ export default {
 </script>
 
 <style scoped>
+    .size-option {
+        width: 300px;
+        margin: 0 1.5rem 0 0.5rem;
+    }
+
     .modal-card {
         width: 100%;
         height: 100%;
