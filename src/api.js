@@ -13,19 +13,28 @@ export const getApiHost = () => {
 
 var xsrfToken = null;
 
-export const initCsrfCookie = async () => {
-    await window.fetch(
-        getApiRoot() + 'csrf-cookie',
-        {
-            credentials: 'same-origin'
-        });
+/**
+ * Reads the current XSRF token from the cookie that Laravel sets on responses.
+ * The token must be read fresh for every request, since the server rotates it (e.g. on login,
+ * when the session is regenerated), and may send a new cookie with any response.
+ */
+const readXsrfCookie = () => {
     let cookiesObj = document.cookie
         .split(';')
         .reduce((res, c) => {
             const [key, val] = c.trim().split('=').map(decodeURIComponent)
             return Object.assign(res, { [key]: val });
         }, {});
-    xsrfToken = cookiesObj['XSRF-TOKEN'];
+    return cookiesObj['XSRF-TOKEN'] ?? null;
+}
+
+export const initCsrfCookie = async () => {
+    await window.fetch(
+        getApiRoot() + 'csrf-cookie',
+        {
+            credentials: 'same-origin'
+        });
+    xsrfToken = readXsrfCookie();
 }
 
 export class FetchBuilder {
@@ -65,6 +74,8 @@ export class FetchBuilder {
     }
 
     async setXsrfTokenHeader() {
+        // pick up any token the server rotated since the last request (e.g. after login)
+        xsrfToken = readXsrfCookie() ?? xsrfToken;
         if(xsrfToken === null) {
             await initCsrfCookie();
         }
@@ -218,7 +229,7 @@ const handleAPIError = async (content, $buefy, $router, $store, response) => {
 };
 
 export function getXsrfToken() {
-    return xsrfToken;
+    return readXsrfCookie() ?? xsrfToken;
 }
 
 FetchBuilder.router = null;
