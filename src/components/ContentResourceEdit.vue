@@ -63,7 +63,7 @@
                 </transition>
             </div>
 
-            <div class="is-flex" style="gap: 0.5rem;">
+            <div class="is-flex is-align-items-center" style="gap: 0.5rem;">
                 <b-button
                     v-if="!loading && hasPublish"
                     :disabled="isPublished"
@@ -551,6 +551,12 @@ export default {
                 }
             }
         },
+        'model.options'() {
+            if (this.isLoadingFromServer) return;
+            if (this.editorMode === 'split' || this.editorMode === 'preview') {
+                this.debouncedRefreshPreview();
+            }
+        },
         '$route.params.id'() {
             // Reload when route changes (switching between versions)
             this.editOverrideConfirmed = false; // Reset edit confirmation when switching
@@ -651,7 +657,9 @@ export default {
                 const response = await this.resourceApi.request('post')
                     .withJson({
                         content: this.model.content,
-                        renderLayout: this.renderLayout
+                        renderLayout: this.renderLayout,
+                        // Unsaved options (e.g. a page's customTheme) so the preview reflects them
+                        ...(this.model.options !== undefined ? { options: this.model.options } : {})
                     })
                     .fetchRaw(url);
 
