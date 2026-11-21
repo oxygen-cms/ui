@@ -72,6 +72,11 @@ export default {
         editable: {
             type: Boolean,
             default: true
+        },
+        // Optional theme key (e.g. a page's options.customTheme) used to pick the editor stylesheet
+        customTheme: {
+            type: String,
+            default: null
         }
     },
     data() {
@@ -99,7 +104,8 @@ export default {
     },
     watch: {
         'editable': 'updateEditable',
-        'content': 'setContent'
+        'content': 'setContent',
+        'customTheme': 'setupStyles'
     },
     async mounted() {
         const PartialNodeView = (await import("./PartialNodeView.vue")).default;
@@ -344,17 +350,24 @@ export default {
     },
     methods: {
         async setupStyles() {
+            const query = this.customTheme ? '?customTheme=' + encodeURIComponent(this.customTheme) : '';
             let themeDetails = await FetchBuilder.default(this.$buefy, 'get')
-                    .fetch(getApiRoot() + 'theme/details');
+                    .fetch(getApiRoot() + 'theme/details' + query);
             const singletonId = "contentEditorStylesheet";
+            const href = getApiHost() + themeDetails.contentStylesheet;
+            const existing = document.getElementById(singletonId);
+            if(existing) {
+                if(existing.getAttribute("href") !== href) {
+                    existing.setAttribute("href", href);
+                }
+                return;
+            }
             const element = document.createElement("link");
             element.setAttribute("rel", "stylesheet");
             element.setAttribute("type", "text/css");
-            element.setAttribute("href", getApiHost() + themeDetails.contentStylesheet);
+            element.setAttribute("href", href);
             element.setAttribute("id", singletonId);
-            if(!document.getElementById(singletonId)) {
-                document.getElementsByTagName("head")[0].appendChild(element);
-            }
+            document.getElementsByTagName("head")[0].appendChild(element);
         },
         onUpdate() {
             this.onUpdateDebounced();

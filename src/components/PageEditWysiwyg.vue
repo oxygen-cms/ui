@@ -94,7 +94,7 @@
         </b-modal>
         <div class="is-relative editor-parent">
             <b-loading :active="loading" :is-full-page="false"></b-loading>
-            <ContentEditor v-if="!loading" :editable="editable" :expanded="true" :content="model.richContent" @update:content="v => model.richContent = v" />
+            <ContentEditor v-if="!loading" :editable="editable" :expanded="true" :custom-theme="customTheme" :content="model.richContent" @update:content="v => model.richContent = v" />
         </div>
     </div>
 </template>
@@ -116,6 +116,17 @@ export default {
             editPageModalActive: false,
             pagesApi: new PagesApi(),
             // content: { type: 'doc', content: [{type:'paragraph',content:[{type:'text',text:'I’m running Tiptap with Vue.js. 🎉'}]}]}
+        }
+    },
+    computed: {
+        customTheme() {
+            if (!this.model || !this.model.options) return null;
+            try {
+                const options = typeof this.model.options === 'string' ? JSON.parse(this.model.options) : this.model.options;
+                return (options && typeof options.customTheme === 'string') ? options.customTheme : null;
+            } catch (e) {
+                return null; // options JSON is mid-edit / invalid
+            }
         }
     },
     mounted() {
